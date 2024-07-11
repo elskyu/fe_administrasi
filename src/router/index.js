@@ -14,19 +14,39 @@ const routes = [
         component: () => import( /* webpackChunkName: "home" */ '../views/home.vue')
     },
     {
-        path: '/posts',
-        name: 'posts.index',
-        component: () => import( /* webpackChunkName: "index" */ '../views/posts/index.vue')
+        path: '/dashboard',
+        name: 'dashboard.dashboard',
+        component: () => import( /* webpackChunkName: "dashboard" */ '../views/dashboard/dashboard.vue')
     },
     {
-        path: '/create',
-        name: 'posts.create',
-        component: () => import( /* webpackChunkName: "create" */ '../views/posts/create.vue')
+        path: '/buku',
+        name: 'buku.buku',
+        component: () => import( /* webpackChunkName: "buku" */ '../views/buku/buku.vue')
     },
     {
-        path: '/edit/:id',
-        name: 'posts.edit',
-        component: () => import( /* webpackChunkName: "edit" */ '../views/posts/edit.vue')
+        path: '/inventaris',
+        name: 'inventaris.inventaris',
+        component: () => import( /* webpackChunkName: "inventaris" */ '../views/inventaris/inventaris.vue')
+    },
+    {
+        path: '/keluar',
+        name: 'keluar.keluar',
+        component: () => import( /* webpackChunkName: "keluar" */ '../views/keluar/keluar.vue')
+    },
+    {
+        path: '/masuk',
+        name: 'masuk.masuk',
+        component: () => import( /* webpackChunkName: "masuk" */ '../views/masuk/masuk.vue')
+    },
+    {
+        path: '/reservasi',
+        name: 'reservasi.reservasi',
+        component: () => import( /* webpackChunkName: "reservasi" */ '../views/reservasi/reservasi.vue')
+    },
+    {
+        path: '/peminjaman',
+        name: 'peminjaman.peminjaman',
+        component: () => import( /* webpackChunkName: "peminjaman" */ '../views/peminjaman/peminjaman.vue')
     }
 ]
 
