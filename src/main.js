@@ -8,7 +8,7 @@ import App from './App.vue';
 import router from './router'
 
 //ngimpor praim viyu
-import PrimeVue from 'primevue/config';
+import PrimeVue from 'primevue/config';  
 
 //create App Vue
 const app = createApp(App);
