@@ -5,6 +5,7 @@
     
     <!-- Main content area -->
     <div :class="{'content-area-with-sidebar': !isLoginRoute}">
+      <router-view></router-view>
     </div>
   </div>
 </template>
