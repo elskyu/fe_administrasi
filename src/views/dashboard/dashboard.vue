@@ -4,6 +4,6 @@
 
 <template>
     <div>
-        <p>pppppppppppppppppppppppppppp</p>
+        <p>pppppppppppppp</p>
     </div>
 </template>

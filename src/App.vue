@@ -1,10 +1,10 @@
 <template>
   <div id="app">
     <!-- Conditionally render the Sidebar -->
-    <Sidebar v-if="!isLoginRoute" />
+    <Sidebar v-if="!isLoginRoute"></Sidebar>
+    
     <!-- Main content area -->
     <div :class="{'content-area-with-sidebar': !isLoginRoute}">
-      <router-view />
     </div>
   </div>
 </template>
