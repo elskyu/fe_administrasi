@@ -75,10 +75,5 @@ import '../style/sidebar.css';
             </li>
         </ul>
       </nav>
-  
-      <!-- Main content area -->
-      <!-- <div class="content-area">
-        <router-view></router-view>
-      </div> -->
     </div>
   </template>
