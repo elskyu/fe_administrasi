@@ -1,3 +1,7 @@
+<script setup>
+import '../style/sidebar.css';
+</script>
+
 <template>
     <div class="d-flex">
       <nav class="sidebar custom-sidebar">
@@ -78,53 +82,3 @@
       </div> -->
     </div>
   </template>
-  
-  
-  <style scoped>
-    .d-flex {
-      display: flex;
-    }
-    
-    .custom-sidebar {
-      width: 200px; /* Lebar sidebar */
-      height: 100vh; /* Tinggi penuh */
-      position: fixed;
-      top: 0;
-      left: 0;
-      background: linear-gradient(to bottom, rgb(27, 71, 200), rgb(52, 209, 223)); /* Warna sidebar */
-      padding-top: 20px;
-      z-index: 1000;
-    }
-    
-    .content-area {
-      margin-left: 215px; /* Sesuaikan dengan lebar sidebar */
-      padding: 0px;
-      width: calc(100% - 250px); /* Kurangi lebar sidebar */
-    }
-    
-    .nav-link {
-      display: flex;
-      align-items: center;
-      font-size: small;
-      font-weight: bold;
-      margin-left: 50px;
-      color: rgb(255, 255, 255);
-      padding: 10px; /* Atur padding untuk ruang hover */
-      transition: background-color 0.5s ease;
-    }
-    
-    .nav-link.active {
-      color: rgb(255, 255, 255);
-    }
-    
-    .nav-link:hover {
-      background-color: rgba(2, 77, 29, 0.2); /* Warna hover untuk teks dan ikon */
-    }
-    
-    .icon {
-      width: 24px; /* Atur lebar ikon */
-      height: 24px; /* Atur tinggi ikon */
-      margin-right: 8px; /* Sesuaikan jarak antara ikon dan teks */
-    }
-    
-    </style>
