@@ -1,59 +1,95 @@
-/* login.css */
 body {
-    background: linear-gradient(to right, #6a11cb, #2575fc);
+    background-color: rgb(2, 131, 145);
     font-family: 'Roboto', sans-serif;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   
   .login-container {
-    background-color: #fff;
+    width: 100%;
+    max-width: 700px;
+    margin-right: 330px;
+    margin-bottom: 75px;
     padding: 2rem;
     border-radius: 1rem;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    margin: auto;
-    margin-top: 5rem;
     animation: fadeIn 1s ease-in-out;
+  }
+
+  .card {
+    border: none;
+    box-shadow: none; /* Explicitly remove box shadow */
+    background-color: rgb(2, 131, 145); /* Set solid background color */
+  }
+  
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    background-color: rgb(2, 131, 145);
+    width: 600px;
+  }
+
+  .input-container {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .input-icon {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    fill: #ffffff;
+    color: white;
   }
   
   .login-card-title {
     font-size: 2rem;
     font-weight: bold;
-    color: #2575fc;
-  }
-  
-  .card {
-    border: none;
-  }
-  
-  .card-body {
-    padding: 2rem;
-  }
-  
-  .form-label {
-    font-weight: bold;
-    color: #555;
+    color: #FEAE6F;
+    margin-bottom: 1.5rem;
   }
   
   .form-control {
     border-radius: 0.5rem;
     padding: 0.75rem;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    padding-left: 40px;
+    background-color: rgb(2, 131, 145);
+  }
+
+  .form-control:focus {
+    background-color: rgba(2, 131, 145, 0.8); /* Ubah opacity saat fokus */
+  }
+
+  .form-control::placeholder {
+    color: #ffffff; /* Ganti dengan warna yang diinginkan */
   }
   
   .btn-primary {
-    background-color: #000000;
+    background-color: rgb(254, 174, 111);
     border: none;
     padding: 0.75rem;
-    font-size: 1rem;
+    font-size: 16pt;
     font-weight: bold;
-    border-radius: 0.5rem;
+    border-radius: 0.35rem;
+    width: 535px;
     transition: background-color 0.3s ease;
+    margin-top: 50px; 
   }
   
   .btn-primary:hover {
-    background-color: #6a11cb;
+    background-color: #ffffff;
+    color: #FEAE6F;
   }
   
-  @keyframes fadeIn {
+  /* @keyframes fadeIn {
     from {
       opacity: 0;
       transform: translateY(-10px);
@@ -62,5 +98,5 @@ body {
       opacity: 1;
       transform: translateY(0);
     }
-  }
+  } */
   
