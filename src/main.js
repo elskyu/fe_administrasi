@@ -15,8 +15,6 @@ const app = createApp(App);
 
 //gunakan "router" di Vue dengan plugin "use"
 app.use(router);
-
-
 app.use(PrimeVue);
 
 app.mount('#app');
