@@ -5,6 +5,7 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/surat_masuk.css';
 import '/src/style/background_color.css';
+import '/src/style/modal.css';
 
 // State for storing posts
 const posts = ref([]);
@@ -107,26 +108,26 @@ const saveData = async () => {
     <div class="background-container">
       <div class="content">
         <div class="container mt-5 mb-5">
-        <div class="row">
-          <h2>SURAT MASUK</h2>
-          <div class="col-md-12">
-            <div class="line"></div>
-          </div>
-          
-          <div class="col-md-6 mb-3" style="margin-top: 5px;">
-            <button @click="showModal = true" class="btn btn-md btn-success rounded shadow border-0">TAMBAH</button>
-          </div>
-    
-          <div class="col-md-6 mb-3" style="margin-top: 5px;">
-            <!-- Search Bar -->
-            <div class="d-flex justify-content-end">
-              <button @click="handleSearch" class="btn btn-primary" style="margin-left: 10px;">FILTER</button>
+            <div class="row">
+                <div class="card2" style="">
+                    <h2>SURAT MASUK</h2>
+                </div>
             </div>
-          </div>
     
-          <div class="col-md-12">
-            <div class="card border-0 rounded shadow">
+          <div class="col-md-12" style="margin-left: -10px; width: auto;">
+            <div class="card border-0">
               <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3" style="margin-top: 5px;">
+                        <button @click="showModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
+                    </div>
+    
+                    <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
+                        <!-- Search Bar -->
+                        <div class="d-flex justify-content-end">
+                            <button @click="handleSearch" class="btn btn-primary">FILTER</button>
+                        </div>
+                </div>
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
@@ -170,7 +171,7 @@ const saveData = async () => {
     <!-- Simple Pop-up Modal -->
     <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
       <div class="modal-content">
-        <h2 style="text-align: center;">Tambah Surat Baru</h2>
+        <h4 style="text-align: center; color: rgb(1, 32, 78); font-weight: bolder;">TAMBAH SURAT MASUK</h4>
         <div class="form-group">
           <label for="id">ID</label>
           <input type="text" id="id" v-model="formData.id" />
@@ -181,11 +182,11 @@ const saveData = async () => {
         </div>
         <div class="form-group-row">
           <div class="form-group">
-            <label for="tanggalSurat" style="width: 475px;">Tanggal Surat</label>
+            <label for="tanggalSurat" style="width: 225px;">Tanggal Surat</label>
             <input type="date" id="tanggalSurat" v-model="formData.tanggalSurat" />
           </div>
           <div class="form-group">
-            <label for="tanggalTerima" style="width: 475px;">Tanggal Terima</label>
+            <label for="tanggalTerima" style="width: 225px;">Tanggal Terima</label>
             <input type="date" id="tanggalTerima" v-model="formData.tanggalTerima" />
           </div>
         </div>

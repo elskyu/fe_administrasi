@@ -1,11 +1,11 @@
 .table {
-    width: 100%;
     border-collapse: collapse; /* Ensure no gaps between cells */
+    width: 100%;
   }
   
   .table th, .table td {
     border: 1px solid #dee2e6; /* Default border color */
-    padding: 8px; /* Padding inside cells */
+    padding: 5px 5px; /* Padding inside cells */
     text-align: center; /* Align text to the left */
   }
   
