@@ -19,14 +19,17 @@ body {
   color: rgb(255, 255, 255); /* Menyesuaikan warna teks agar terlihat jelas di atas background */
 }
 
-h2 {
+h2, p {
+  color: rgb(230, 131, 105); 
   font-family: 'Fredoka', sans-serif;
 }
+
 
 .line {
   height: 2px;
   background: #ffffff;
   margin-bottom: 10px;
+  background-color: rgb(230, 131, 105); 
 }
 
 .modal-overlay {
@@ -89,7 +92,7 @@ h2 {
 }
 
 .table th {
-  background-color: rgb(230, 131, 105); /* Header background color */
+  background-color: rgb(254, 174, 111); /* Header background color */
   color: #fff; /* Header text color */
 }
 
