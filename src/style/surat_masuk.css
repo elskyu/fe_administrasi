@@ -1,11 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
 
 body {
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed; /* Optional: Fixed background scrolling */
   background-position: center;
-  font-family: 'Fredoka', sans-serif;
 }
 
 .background-container {
@@ -17,16 +15,23 @@ body {
   position: relative;
   z-index: 1; /* Pastikan konten tetap di atas lapisan transparan */
   color: rgb(255, 255, 255); /* Menyesuaikan warna teks agar terlihat jelas di atas background */
+  padding-right: 10px;
 }
 
-h2, p {
+h2 {
   color: rgb(254, 174, 111); 
-  font-family: 'Fredoka', sans-serif;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+p {
+  color: rgb(254, 174, 111);
 }
 
 
 .line {
-  height: 2px;
+  height: 2.5px;
+  border-radius: 50px;
   background: #ffffff;
   margin-bottom: 10px;
   background-color: rgb(254, 174, 111); 
@@ -80,20 +85,23 @@ h2, p {
   justify-content: space-between;
 }
 
-
-
 .alert {
   margin-bottom: 0; /* No margin at the bottom */
 }
 
 .btn-primary {
-  background-color: #007bff; /* Primary button background color */
-  border-color: #007bff; /* Primary button border color */
+  background-color: rgb(1, 32, 78); /* Primary button background color */
+  border-color: rgb(1, 32, 78); /* Primary button border color */
+  max-width: 200px;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 
 .btn-success {
-  background-color: #28a745; /* Success button background color */
-  border-color: #28a745; /* Success button border color */
+  background-color: #24ff00; /* Success button background color */
+  border-color: #24ff00; /* Success button border color */
+  padding-left: 30px;
+  padding-right: 30px;
 }
 
 .btn-danger {

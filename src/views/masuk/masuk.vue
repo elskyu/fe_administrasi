@@ -108,26 +108,19 @@ const saveData = async () => {
       <div class="content">
         <div class="container mt-5 mb-5">
         <div class="row">
-          <h2 style=" font-weight: bold;">Arsip Surat</h2>
+          <h2>SURAT MASUK</h2>
           <div class="col-md-12">
             <div class="line"></div>
           </div>
           
-          <p style="margin-bottom: 25px;">Berikut ini merupakan surat - surat yang sudah terbit dan diarsipkan. Klik "Lihat" untuk menampilkan surat</p>
-          <div class="col-md-6 mb-3">
-            <button @click="showModal = true" class="btn btn-md btn-success rounded shadow border-0">TAMBAH SURAT</button>
+          <div class="col-md-6 mb-3" style="margin-top: 5px;">
+            <button @click="showModal = true" class="btn btn-md btn-success rounded shadow border-0">TAMBAH</button>
           </div>
     
-          <div class="col-md-6 mb-3">
+          <div class="col-md-6 mb-3" style="margin-top: 5px;">
             <!-- Search Bar -->
             <div class="d-flex justify-content-end">
-              <input 
-                v-model="tempSearchQuery"
-                type="text"
-                class="form-control"
-                placeholder="Cari berdasarkan judul" 
-              />
-              <button @click="handleSearch" class="btn btn-primary" style="margin-left: 10px;">CARI</button>
+              <button @click="handleSearch" class="btn btn-primary" style="margin-left: 10px;">FILTER</button>
             </div>
           </div>
     
@@ -138,16 +131,16 @@ const saveData = async () => {
                   <thead class="bg-dark text-white text-center">
                     <tr>
                       <th scope="col" style="width:10%">ID</th>
-                      <th scope="col" style="width:10%">Nomor Surat</th>
-                      <th scope="col" style="width:17%">Tanggal Surat</th>
-                      <th scope="col" style="width:17%">Tanggal Terima</th>
-                      <th scope="col" style="width:20%">Asal</th>
-                      <th scope="col" style="width:25%">Perihal</th>
+                      <th scope="col" style="width:10%">NOMOR SURAT</th>
+                      <th scope="col" style="width:15%">TANGGAL SURAT</th>
+                      <th scope="col" style="width:15%">TANGGAL TERIMA</th>
+                      <th scope="col" style="width:15%">ASAL</th>
+                      <th scope="col" style="width:25%">PERIHAL</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-if="filteredPosts.length === 0">
-                      <td colspan="5" class="text-center">
+                      <td colspan="6" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
