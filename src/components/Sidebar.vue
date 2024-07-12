@@ -4,7 +4,7 @@ import '../style/sidebar.css';
 
 <template>
     <div class="d-flex">
-      <nav class="sidebar custom-sidebar">
+      <nav class="sidebar custom-sidebar shadow">
         <ul class="navbar-nav">
             <li class="nav-item">
                 <router-link :to="{ name: 'dashboard.dashboard' }" class="nav-link active" style="font-weight: bold; margin-left: 15px; margin-right: 15px;">
