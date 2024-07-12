@@ -6,6 +6,9 @@ import '../style/sidebar.css';
     <div class="d-flex">
       <nav class="sidebar custom-sidebar" style="box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);">
         <ul class="navbar-nav">
+            <li class="header-sidebar" style="margin-top: 20px; margin-bottom: 20px; text-align: center;">
+                <span style="font-weight: bold; font-size: 18px;">Teman Kantor</span>
+            </li>
             <li class="nav-item">
                 <router-link :to="{ name: 'dashboard.dashboard' }" class="nav-link active" style="margin-left: 15px; margin-right: 15px;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
@@ -65,7 +68,7 @@ import '../style/sidebar.css';
                 <span>Reservasi</span>
                 </router-link>
             </li>
-            <li class="nav-item" style="margin-top: 300px;">
+            <li class="nav-item" style="position: absolute; bottom: 20px; width: 100%;">
                 <router-link :to="{ name: '' }" class="nav-link active" aria-current="page" style="margin-left: 15px; margin-right: 15px;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                         <path d="m23.473,16.247l-2.862,2.863-1.414-1.414,1.696-1.696h-6.892v-2h6.956l-1.76-1.761,1.414-1.414,2.862,2.862c.706.706.706,1.854,0,2.56Zm-9.473,1.753h2v5.999H0V4.199C0,2.775,1.014,1.538,2.411,1.258L8.412.057c.886-.174,1.793.051,2.491.622.428.351.728.812.908,1.319h1.19c1.654,0,3,1.346,3,3v7.001h-2v-7.001c0-.552-.449-1-1-1h-1v18h2v-3.999Zm-4.999-5.501c0-.829-.672-1.501-1.501-1.501s-1.501.672-1.501,1.501.672,1.501,1.501,1.501,1.501-.672,1.501-1.501Z"></path>
