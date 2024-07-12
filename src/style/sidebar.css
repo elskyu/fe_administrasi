@@ -3,14 +3,14 @@
   }
   
   .custom-sidebar {
-    width: 210px; /* Lebar sidebar */
-    height: 98vh; /* Tinggi penuh */
+    width: 250px; /* Lebar sidebar */
+    height: 95.5vh; /* Tinggi penuh */
     position: fixed;  
     background: #fff; /* Warna sidebar */
     padding-top: 20px;
-    margin-left: 1vh;
-    margin-top: 1vh;
-    margin-bottom: 1vh;
+    margin-left: 2.3vh;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
     flex-shrink: 0;
     border-radius: 20px;
     z-index: 1000;
