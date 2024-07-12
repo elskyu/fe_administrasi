@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import api from '../../api';
 import '/src/style/font.css';
+import '/src/style/table.css';
 import '/src/style/surat_masuk.css';
 import '/src/style/background_color.css';
 

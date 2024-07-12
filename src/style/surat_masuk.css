@@ -20,7 +20,7 @@ body {
 }
 
 h2, p {
-  color: rgb(230, 131, 105); 
+  color: rgb(254, 174, 111); 
   font-family: 'Fredoka', sans-serif;
 }
 
@@ -29,7 +29,7 @@ h2, p {
   height: 2px;
   background: #ffffff;
   margin-bottom: 10px;
-  background-color: rgb(230, 131, 105); 
+  background-color: rgb(254, 174, 111); 
 }
 
 .modal-overlay {
@@ -80,42 +80,7 @@ h2, p {
   justify-content: space-between;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse; /* Ensure no gaps between cells */
-}
 
-.table th, .table td {
-  border: 1px solid #dee2e6; /* Default border color */
-  padding: 8px; /* Padding inside cells */
-  text-align: center; /* Align text to the left */
-}
-
-.table th {
-  background-color: rgb(254, 174, 111); /* Header background color */
-  color: #fff; /* Header text color */
-}
-
-.table td {
-  background-color: #f8f9fa; /* Cell background color */
-  color: #212529; /* Cell text color */
-}
-
-.table-bordered {
-  border: 1px solid #0080ff; /* Table border color */
-}
-
-.table thead th {
-  border-bottom-width: 2px; /* Thicker border for header cells */
-}
-
-.table tbody tr {
-  transition: background-color 0.15s ease-in-out; /* Smooth transition for background color */
-}
-
-.table tbody tr:hover {
-  background-color: #e9ecef; /* Background color on hover */
-}
 
 .alert {
   margin-bottom: 0; /* No margin at the bottom */
