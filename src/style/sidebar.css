@@ -3,7 +3,7 @@
   }
   
   .custom-sidebar {
-    width: 230px; /* Lebar sidebar */
+    width: 210px; /* Lebar sidebar */
     height: 95.5vh; /* Tinggi penuh */
     position: fixed;  
     background: #fff; /* Warna sidebar */
