@@ -3,15 +3,18 @@
   }
   
   .custom-sidebar {
-    width: 200px; /* Lebar sidebar */
-    height: 100vh; /* Tinggi penuh */
-    position: fixed;
-    top: 0;
-    left: 0;
-    background: rgb(2, 131, 145); /* Warna sidebar */
+    width: 210px; /* Lebar sidebar */
+    height: 98vh; /* Tinggi penuh */
+    position: fixed;  
+    background: #fff; /* Warna sidebar */
     padding-top: 20px;
+    margin-left: 1vh;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+    flex-shrink: 0;
+    border-radius: 20px;
     z-index: 1000;
-  }
+  } 
   
   .content-area {
     margin-left: 215px; /* Sesuaikan dengan lebar sidebar */
@@ -23,38 +26,40 @@
     display: flex;
     align-items: center;
     font-size: small;
-    font-weight: bold;
+    font-weight: lighter;
     margin-left: 50px;
-    color: rgb(255, 255, 255);
+    color: rgb(54, 54, 54);
     padding: 10px; /* Atur padding untuk ruang hover */
     transition: background-color 0.5s ease;
     border-radius: 5px;
   }
   
   .nav-link.active {
-    color: rgb(255, 255, 255);
+    color: rgb(54, 54, 54);
   }
   
   .nav-link:hover {
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.8);
     border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2)
   }
 
   .nav-item {
-    color: #fff;
+    color: rgb(54, 54, 54);
+    font-weight: 10;
   }
 
   .nav-item:hover {
-    color: #FEAE6F;
+    color: #5e72e4;
   }
 
   .icon:hover {
-    color:#FEAE6F; 
+    color:#5e72e4; 
   }
   
   .icon {
-    width: 24px; /* Atur lebar ikon */
-    height: 24px; /* Atur tinggi ikon */
+    width: 20px; /* Atur lebar ikon */
+    height: 20px; /* Atur tinggi ikon */
     margin-right: 8px; /* Sesuaikan jarak antara ikon dan teks */
     fill: currentColor;
   }

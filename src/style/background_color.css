@@ -1,3 +1,21 @@
 body {
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(250, 250, 250);
+}
+
+body::before, body::after {
+    content: '';
+    position: fixed;
+    width: 100%;
+    height: 50%;
+}
+
+body::before {
+    background-color: #5e72e4;
+    top: 0;
+    height: 25%;
+}
+
+body::after {
+    background-color: rgb(250, 250, 250);
+    bottom: 0;
 }
