@@ -34,6 +34,7 @@ const showModal = ref(false); // State for controlling modal visibility
 //   }
 // };
 
+
 // Function to delete a post
 const deletePost = async (nomor_surat) => {
   if (confirm("Apakah anda ingin menghapus data ini?")) {
@@ -171,7 +172,7 @@ const saveData = async () => {
     <!-- Simple Pop-up Modal -->
     <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
       <div class="modal-content">
-        <h4 style="text-align: center; color: rgb(1, 32, 78); font-weight: bolder;">TAMBAH SURAT MASUK</h4>
+        <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH SURAT MASUK</h4>
         <div class="form-group">
           <label for="id">ID</label>
           <input type="text" id="id" v-model="formData.id" />
@@ -182,11 +183,11 @@ const saveData = async () => {
         </div>
         <div class="form-group-row">
           <div class="form-group">
-            <label for="tanggalSurat" style="width: 225px;">Tanggal Surat</label>
+            <label for="tanggalSurat" style="width: 195px;">Tanggal Surat</label>
             <input type="date" id="tanggalSurat" v-model="formData.tanggalSurat" />
           </div>
           <div class="form-group">
-            <label for="tanggalTerima" style="width: 225px;">Tanggal Terima</label>
+            <label for="tanggalTerima" style="width: 195px;">Tanggal Terima</label>
             <input type="date" id="tanggalTerima" v-model="formData.tanggalTerima" />
           </div>
         </div>
