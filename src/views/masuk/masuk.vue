@@ -129,6 +129,7 @@ const saveData = async () => {
                             <button @click="handleSearch" class="btn btn-primary">FILTER</button>
                         </div>
                 </div>
+                
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>

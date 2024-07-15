@@ -21,11 +21,14 @@ const login = async () => {
       password: password.value,
     });
     const userType = response.data.userType;
+    const token = response.data.token; // Sesuaikan dengan respon API Anda
+    
     console.log(response.data);
     // Handle successful login (e.g., store token)
     // Redirect to the dashboard
     router.push({ name: 'masuk.masuk' });
     toast.success(`Login berhasil sebagai ${userType}`);
+    localStorage.setItem('token', token); // Simpan token di localStorage
   } catch (error) {
     console.error(error);
     toast.error('Login gagal, periksa kembali email dan password Anda');

@@ -49,28 +49,28 @@ const routes = [
         component: () => import( /* webpackChunkName: "peminjaman" */ '../views/peminjaman/peminjaman.vue')
     },
     {
-        path: '/tambahadmin', // tambahkan path untuk tambahadmin
+        path: '/tambahadmin', 
         name: 'admin.tambahadmin',
         component: () => import( /* webpackChunkName: "tambahadmin" */ '../views/master/admin/tambahadmin.vue')
     },
     {
-        path: '/tambahpegawai', // tambahkan path untuk tambahadmin
+        path: '/tambahpegawai', 
         name: 'pegawai.tambahpegawai',
         component: () => import( /* webpackChunkName: "tambahpegawai" */ '../views/master/pegawai/tambahpegawai.vue')
     },
     {
-        path: '/tambahdepartemen', // tambahkan path untuk tambahadmin
+        path: '/tambahdepartemen',
         name: 'departemen.tambahdepartemen',
         component: () => import( /* webpackChunkName: "tambahdepartemen" */ '../views/master/departemen/tambahdepartemen.vue')
     },
     {
-        path: '/tambahsurat', // tambahkan path untuk tambahadmin
+        path: '/tambahsurat', 
         name: 'surat.tambahsurat',
         component: () => import( /* webpackChunkName: "tambahsurat" */ '../views/master/surat/tambahsurat.vue')
     },
     ,
     {
-        path: '/tambahruang', // tambahkan path untuk tambahadmin
+        path: '/tambahruang', 
         name: 'ruang.tambahruang',
         component: () => import( /* webpackChunkName: "tambahruang" */ '../views/master/ruang/tambahruang.vue')
     }
