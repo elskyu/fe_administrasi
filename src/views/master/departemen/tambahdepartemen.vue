@@ -141,7 +141,7 @@ onMounted(() => {
                   <tr>
                     <th scope="col" style="width:10%">ID</th>
                     <th scope="col" style="width:15%">NAMA</th>
-                    <th scope="col" style="width:15%">AKSI</th>
+                    <th scope="col" style="width:3%">AKSI</th>
                   </tr>
                 </thead>
                 <tbody>

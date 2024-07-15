@@ -7,8 +7,8 @@ import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 
-// State for storing surat
-const surat = ref([]);
+// State for storing cabang
+const cabang = ref([]);
 const searchQuery = ref(''); // State for search query
 const tempSearchQuery = ref(''); // Temporary state for holding input value
 
@@ -16,57 +16,57 @@ const tempSearchQuery = ref(''); // Temporary state for holding input value
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
-// Form data for adding a new surat
+// Form data for adding a new cabang
 const addFormData = ref({
-  kode_surat: '',
-  jenis_surat: '',
+  id_cabang: '',
+  nama_cabang: '',
 });
 
-// Form data for editing an existing surat
+// Form data for editing an existing cabang
 const editFormData = ref({
-  kode_surat: '',
-  jenis_surat: '',
+  id_cabang: '',
+  nama_cabang: '',
 });
 
-const currentSuratId = ref(null);
+const currentCabangId = ref(null);
 
-// Function to fetch surat from the API
-const fetchDataSurat = async () => {
+// Function to fetch cabang from the API
+const fetchDataCabang = async () => {
   try {
-    const response = await api.get('/api/surat');
+    const response = await api.get('/api/cabang');
     console.log(response); // Log the response to inspect its structure
-    surat.value = response.data.data.data; // Adjust based on the actual response structure
+    cabang.value = response.data.data.data; // Adjust based on the actual response structure
   } catch (error) {
-    console.error('Error fetching surat:', error);
+    console.error('Error fetching cabang:', error);
   }
 };
 
-const editSurat = (s) => {
-  currentSuratId.value = s.kode_surat;
-  editFormData.value = { ...s };
+const editCabang = (c) => {
+  currentCabangId.value = c.id_cabang;
+  editFormData.value = { ...c };
   showEditModal.value = true;
 };
 
-// Function to delete a surat
-const deleteSurat = async (kode_surat) => {
+// Function to delete a cabang
+const deleteCabang = async (id_cabang) => {
   if (confirm("Apakah anda ingin menghapus data ini?")) {
     try {
-      await api.delete(`/api/surat/${kode_surat}`);
-      // Remove the deleted surat from the surat array
-      surat.value = surat.value.filter(s => s.kode_surat !== kode_surat);
+      await api.delete(`/api/cabang/${id_cabang}`);
+      // Remove the deleted cabang from the cabang array
+      cabang.value = cabang.value.filter(c => c.id_cabang !== id_cabang);
     } catch (error) {
-      console.error('Error deleting surat:', error);
+      console.error('Error deleting cabang:', error);
     }
   }
 };
 
-// Computed property to filter surat based on search query
-const filteredSurat = computed(() => {
+// Computed property to filter cabang based on search query
+const filteredCabang = computed(() => {
   if (!searchQuery.value) {
-    return surat.value;
+    return cabang.value;
   }
-  return surat.value.filter(s => 
-    s.jenis_surat.toLowerCase().includes(searchQuery.value.toLowerCase())
+  return cabang.value.filter(c => 
+    c.nama_cabang.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
 
@@ -75,39 +75,39 @@ const handleSearch = () => {
   searchQuery.value = tempSearchQuery.value;
 };
 
-// Function to handle form submission for adding a new surat
-const saveNewSurat = async () => {
+// Function to handle form submission for adding a new cabang
+const saveNewCabang = async () => {
   try {
-    await api.post('/api/surat', addFormData.value);
+    await api.post('/api/cabang', addFormData.value);
     // Reset form data
-    addFormData.value = { kode_surat: '', jenis_surat: '' };
+    addFormData.value = { id_cabang: '', nama_cabang: '' };
     // Close the modal
     showAddModal.value = false;
-    // Refresh the surat list
-    fetchDataSurat();
+    // Refresh the cabang list
+    fetchDataCabang();
   } catch (error) {
-    console.error('Error saving new surat:', error);
+    console.error('Error saving new cabang:', error);
   }
 };
 
-// Function to handle form submission for editing a surat
-const saveEditSurat = async () => {
+// Function to handle form submission for editing a cabang
+const saveEditCabang = async () => {
   try {
-    await api.put(`/api/surat/${currentSuratId.value}`, editFormData.value);
+    await api.put(`/api/cabang/${currentCabangId.value}`, editFormData.value);
     // Reset form data
-    editFormData.value = { kode_surat: '', jenis_surat: '' };
+    editFormData.value = { id_cabang: '', nama_cabang: '' };
     // Close the modal
     showEditModal.value = false;
-    // Refresh the surat list
-    fetchDataSurat();
+    // Refresh the cabang list
+    fetchDataCabang();
   } catch (error) {
-    console.error('Error saving edit surat:', error);
+    console.error('Error saving edit cabang:', error);
   }
 };
 
 // Run hook "onMounted"
 onMounted(() => {
-  fetchDataSurat();
+  fetchDataCabang();
 });
 </script>
 
@@ -117,7 +117,7 @@ onMounted(() => {
       <div class="container mt-5 mb-5">
         <div class="row">
           <div class="card2">
-            <h2>SURAT</h2>
+            <h2>CABANG</h2>
           </div>
         </div>
 
@@ -138,25 +138,25 @@ onMounted(() => {
               <table class="table table-bordered">
                 <thead class="bg-dark text-white text-center">
                   <tr>
-                    <th scope="col" style="width:10%">KODE SURAT</th>
-                    <th scope="col" style="width:15%">JENIS SURAT</th>
+                    <th scope="col" style="width:10%">ID CABANG</th>
+                    <th scope="col" style="width:15%">NAMA CABANG</th>
                     <th scope="col" style="width:3%">AKSI</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="filteredSurat.length === 0">
+                  <tr v-if="filteredCabang.length === 0">
                     <td colspan="3" class="text-center">
                       <div class="alert alert-danger mb-0">
                         Data Belum Tersedia!
                       </div>
                     </td>
                   </tr>
-                  <tr v-else v-for="(s, index) in filteredSurat" :key="index">
-                    <td class="text-center">{{ s.kode_surat }}</td>
-                    <td>{{ s.jenis_surat }}</td>
+                  <tr v-else v-for="(c, index) in filteredCabang" :key="index">
+                    <td class="text-center">{{ c.id_cabang }}</td>
+                    <td>{{ c.nama_cabang }}</td>
                     <td class="text-center">
-                      <button @click="editSurat(s)" class="btn btn-sm btn-warning rounded-sm shadow border-0" style="margin-right: 7px;">EDIT</button>
-                      <button @click="deleteSurat(s.kode_surat)" class="btn btn-sm btn-danger rounded-sm shadow border-0" style="margin-right: 7px;">HAPUS</button>
+                      <button @click="editCabang(c)" class="btn btn-sm btn-warning rounded-sm shadow border-0" style="margin-right: 7px;">EDIT</button>
+                      <button @click="deleteCabang(c.id_cabang)" class="btn btn-sm btn-danger rounded-sm shadow border-0" style="margin-right: 7px;">HAPUS</button>
                     </td>
                   </tr>
                 </tbody>
@@ -169,39 +169,39 @@ onMounted(() => {
     </div>
   </div>
 
-  <!-- Modal for adding new surat -->
+  <!-- Modal for adding new cabang -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH SURAT</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH CABANG</h4>
       <div class="form-group">
-        <label for="kode_surat">Kode Surat</label>
-        <input type="text" id="kode_surat" v-model="addFormData.kode_surat" />
+        <label for="id_cabang">ID Cabang</label>
+        <input type="text" id="id_cabang" v-model="addFormData.id_cabang" />
       </div>
       <div class="form-group">
-        <label for="jenis_surat">Jenis Surat</label>
-        <input type="text" id="jenis_surat" v-model="addFormData.jenis_surat" />
+        <label for="nama_cabang">Nama Cabang</label>
+        <input type="text" id="nama_cabang" v-model="addFormData.nama_cabang" />
       </div>
       <div class="form-actions">
-        <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveNewSurat">Simpan</button>
+        <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveNewCabang">Simpan</button>
         <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal for editing surat -->
+  <!-- Modal for editing cabang -->
   <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">EDIT SURAT</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">EDIT CABANG</h4>
       <div class="form-group">
-        <label for="kode_surat">Kode Surat</label>
-        <input type="text" id="kode_surat" v-model="editFormData.kode_surat" />
+        <label for="id_cabang">ID Cabang</label>
+        <input type="text" id="id_cabang" v-model="editFormData.id_cabang" />
       </div>
       <div class="form-group">
-        <label for="jenis_surat">Jenis Surat</label>
-        <input type="text" id="jenis_surat" v-model="editFormData.jenis_surat" />
+        <label for="nama_cabang">Nama Cabang</label>
+        <input type="text" id="nama_cabang" v-model="editFormData.nama_cabang" />
       </div>
       <div class="form-actions">
-        <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveEditSurat">Simpan</button>
+        <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveEditCabang">Simpan</button>
         <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
       </div>
     </div>

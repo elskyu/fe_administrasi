@@ -73,6 +73,11 @@ const routes = [
         path: '/tambahruang', 
         name: 'ruang.tambahruang',
         component: () => import( /* webpackChunkName: "tambahruang" */ '../views/master/ruang/tambahruang.vue')
+    },
+    {
+        path: '/tambahcabang', 
+        name: 'cabang.tambahcabang',
+        component: () => import( /* webpackChunkName: "tambahcabang" */ '../views/master/cabang/tambahcabang.vue')
     }
     
 ]
