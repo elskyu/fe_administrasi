@@ -5,7 +5,7 @@ import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
-import '/src/style/surat_masuk.css';
+import '/src/style/admin.css';
 
 // State for storing admins
 const admins = ref([]);
@@ -103,7 +103,7 @@ const saveEditAdmin = async () => {
   try {
     await api.put(`/api/admin/${currentAdminId.value}`, editFormData.value);
     // Reset form data
-    editFormData.value = { id_admin: '', nama: '', no_hp: '', email: '', password: '' };
+    editFormData.value = null;
     // Close the modal
     showEditModal.value = false;
     // Refresh the admin list
@@ -156,17 +156,17 @@ onMounted(() => {
                       <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
                     </div>
                   </div>
-                </div>
+                
   
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">NAMA</th>
-                      <th scope="col">NO TELEPON</th>
-                      <th scope="col">EMAIL</th>
-                      <th scope="col">PASSWORD</th>
-                      <th scope="col">AKSI</th>
+                      <th scope="col" style="width:10%">ID</th>
+                      <th scope="col" style="width:15%">NAMA</th>
+                      <th scope="col" style="width:10%">NO TELEPON</th>
+                      <th scope="col" style="width:20%">EMAIL</th>
+                      <th scope="col" style="width:10%">PASSWORD</th>
+                      <th scope="col" style="width:15%">AKSI</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -195,6 +195,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
+      </div>
     </div>
   
     <!-- Modal for adding new admin -->
@@ -222,7 +223,7 @@ onMounted(() => {
           <input type="password" id="password" v-model="addFormData.password" />
         </div>
         <div class="form-actions">
-          <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveNewAdmin">Simpan</button>
+          <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveNewAdmin">Simpan Perubahan</button>
           <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
         </div>
       </div>
@@ -253,10 +254,10 @@ onMounted(() => {
           <input type="password" id="password" v-model="editFormData.password" />
         </div>
         <div class="form-actions">
-          <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveEditAdmin">Simpan</button>
+          <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveEditAdmin">Update Perubahan</button>
           <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
         </div>
       </div>
     </div>
   </template>
-  
+    
