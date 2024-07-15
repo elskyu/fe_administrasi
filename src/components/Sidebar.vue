@@ -1,5 +1,12 @@
 <script setup>
 import '../style/sidebar.css';
+import { ref } from 'vue';
+
+const showDropdown = ref(false);
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value;
+  console.log('Dropdown state:', showDropdown.value); // Debugging log
+};
 </script>
 
 <template>
@@ -67,6 +74,24 @@ import '../style/sidebar.css';
                     </svg>
                 <span>Reservasi</span>
                 </router-link>
+            </li>
+            <li class="nav-item">
+                <div @click="toggleDropdown" class="nav-link active" aria-current="page" style="margin-left: 15px; margin-right: 15px; cursor: pointer;">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" class="icon">
+                        <g>
+	                        <path d="M480,224H32c-17.673,0-32,14.327-32,32s14.327,32,32,32h448c17.673,0,32-14.327,32-32S497.673,224,480,224z"></path>
+	                        <path d="M32,138.667h448c17.673,0,32-14.327,32-32s-14.327-32-32-32H32c-17.673,0-32,14.327-32,32S14.327,138.667,32,138.667z"></path>
+	                        <path d="M480,373.333H32c-17.673,0-32,14.327-32,32s14.327,32,32,32h448c17.673,0,32-14.327,32-32S497.673,373.333,480,373.333z"></path>
+                        </g>
+                    </svg>
+                <span>Master</span>
+                </div>
+                <ul v-if="showDropdown" class="dropdown-menu" style="margin-left: 45px; border: none;">
+                    <li><router-link to="/master/kategori" class="dropdown-item">Kategori</router-link></li>
+                    <li><router-link to="/master/satuan" class="dropdown-item">Satuan</router-link></li>
+                    <li><router-link to="/master/unit" class="dropdown-item">Unit</router-link></li>
+                    <li><router-link to="/master/jenis" class="dropdown-item">Jenis</router-link></li>
+                </ul>
             </li>
             <li class="nav-item" style="position: absolute; bottom: 20px; width: 100%;">
                 <router-link :to="{ name: '' }" class="nav-link active" aria-current="page" style="margin-left: 15px; margin-right: 15px;">
