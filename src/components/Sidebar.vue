@@ -88,12 +88,25 @@ const toggleDropdown = () => {
                 </div>
                 <ul v-if="showDropdown" class="dropdown-menu" style="margin-left: 45px; border: none;">
                     
-                    <li><router-link :to="{ name: 'surat.tambahsurat' }" class="dropdown-item">Surat</router-link></li>
-                    <li><router-link :to="{ name: 'admin.tambahadmin' }" class="dropdown-item">Admin</router-link></li>
-                    <li><router-link :to="{ name: 'ruang.tambahruang' }" class="dropdown-item">Ruang</router-link></li>
-                    <li><router-link :to="{ name: 'cabang.tambahcabang' }" class="dropdown-item">Cabang</router-link></li>
-                    <li><router-link :to="{ name: 'pegawai.tambahpegawai' }" class="dropdown-item">Pegawai</router-link></li>
-                    <li><router-link :to="{ name: 'departemen.tambahdepartemen' }" class="dropdown-item">Departemen</router-link></li>
+                    <li><router-link :to="{ name: 'surat.tambahsurat' }" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
+                        <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
+                        <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
+                    </svg>Surat</router-link></li>
+                    <li><router-link :to="{ name: 'admin.tambahadmin' }" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" class="icon">
+                            <g>
+	                            <circle cx="256" cy="128" r="128"></circle>
+	                            <path d="M256,298.667c-105.99,0.118-191.882,86.01-192,192C64,502.449,73.551,512,85.333,512h341.333   c11.782,0,21.333-9.551,21.333-21.333C447.882,384.677,361.99,298.784,256,298.667z"></path>
+                            </g>
+                          </svg>Admin</router-link></li>
+                    <li><router-link :to="{ name: 'ruang.tambahruang' }" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
+                        <path d="M20,22V5c0-1.654-1.346-3-3-3h-1.19c-.18-.507-.48-.968-.908-1.319C14.205,.109,13.298-.115,12.412,.059L6.411,1.259c-1.397,.28-2.411,1.518-2.411,2.941V22H0v2H24v-2h-4Zm-7.5-8.75c-.828,0-1.5-.672-1.5-1.5s.672-1.5,1.5-1.5,1.5,.672,1.5,1.5-.672,1.5-1.5,1.5Zm5.5,8.75h-2V4h1c.551,0,1,.448,1,1V22Z"></path>
+                    </svg>Ruang</router-link></li>
+                    <li><router-link :to="{ name: 'cabang.tambahcabang' }" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon"><path d="M14.081,11.41l-3-2.349c-1.814-1.418-4.348-1.419-6.162,0l-3,2.348c-1.22,.955-1.919,2.39-1.919,3.938v4.152c0,2.481,2.019,4.5,4.5,4.5h7c2.481,0,4.5-2.019,4.5-4.5v-4.152c0-1.548-.699-2.982-1.919-3.938Zm-4.081,6.59c0,.552-.448,1-1,1h-2c-.552,0-1-.448-1-1v-2c0-.552,.448-1,1-1h2c.552,0,1,.448,1,1v2ZM19,0h-4c-2.757,0-5,2.243-5,5v1.306c.819,.245,1.606,.627,2.312,1.179l3.002,2.351c1.707,1.336,2.686,3.346,2.686,5.512v2.652c0-.553,.447-1,1-1h1c.553,0,1,.447,1,1s-.447,1-1,1h-1c-.553,0-1-.447-1-1v1.5c0,1.746-.696,3.331-1.821,4.5h2.821c2.757,0,5-2.243,5-5V5c0-2.757-2.243-5-5-5Zm-4,7h-1c-.553,0-1-.447-1-1s.447-1,1-1h1c.553,0,1,.447,1,1s-.447,1-1,1Zm5,8h-1c-.553,0-1-.447-1-1s.447-1,1-1h1c.553,0,1,.447,1,1s-.447,1-1,1Zm0-4h-1c-.553,0-1-.447-1-1s.447-1,1-1h1c.553,0,1,.447,1,1s-.447,1-1,1Zm0-4h-1c-.553,0-1-.447-1-1s.447-1,1-1h1c.553,0,1,.447,1,1s-.447,1-1,1Z"></path>
+                    </svg>Cabang</router-link></li>
+                    <li><router-link :to="{ name: 'pegawai.tambahpegawai' }" class="dropdown-item"><svg viewBox="0 0 24 24" fill="currentColor" class="icon" xmlns="http://www.w3.org/2000/svg"><path d="m7.5 13a4.5 4.5 0 1 1 4.5-4.5 4.505 4.505 0 0 1 -4.5 4.5zm7.5 7a5.006 5.006 0 0 0 -5-5h-5a5.006 5.006 0 0 0 -5 5v4h15zm2.5-11a4.5 4.5 0 1 1 4.5-4.5 4.505 4.505 0 0 1 -4.5 4.5zm1.5 2h-5a4.793 4.793 0 0 0 -.524.053 6.514 6.514 0 0 1 -1.576 2.216 7.008 7.008 0 0 1 5.1 6.731h7v-4a5.006 5.006 0 0 0 -5-5z"></path>
+                    </svg>Pegawai</router-link></li>
+                    <li><router-link :to="{ name: 'departemen.tambahdepartemen' }" class="dropdown-item"><svg  viewBox="0 0 24 24" fill="currentColor" class="icon" xmlns="http://www.w3.org/2000/svg"><path d="m11 0h-8a3 3 0 0 0 -3 3v21h14v-21a3 3 0 0 0 -3-3zm-5 19h-3v-2h3zm0-4h-3v-2h3zm0-4h-3v-2h3zm0-4h-3v-2h3zm5 12h-3v-2h3zm0-4h-3v-2h3zm0-4h-3v-2h3zm0-4h-3v-2h3zm10-2h-5v19h8v-16a3 3 0 0 0 -3-3zm0 14h-2v-2h2zm0-4h-2v-2h2zm0-4h-2v-2h2z"></path>
+                    </svg>Departemen</router-link></li>
                 </ul>
             </li>
             <li class="nav-item" style="position: absolute; bottom: 20px; width: 100%;">
