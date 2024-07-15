@@ -87,10 +87,11 @@ const toggleDropdown = () => {
                 <span>Master</span>
                 </div>
                 <ul v-if="showDropdown" class="dropdown-menu" style="margin-left: 45px; border: none;">
-                    <li><router-link to="/master/kategori" class="dropdown-item">Kategori</router-link></li>
-                    <li><router-link to="/master/satuan" class="dropdown-item">Satuan</router-link></li>
-                    <li><router-link to="/master/unit" class="dropdown-item">Unit</router-link></li>
-                    <li><router-link to="/master/jenis" class="dropdown-item">Jenis</router-link></li>
+                    <li><router-link :to="{ name: 'admin.tambahadmin' }" class="dropdown-item">Admin</router-link></li>
+                    <li><router-link :to="{ name: 'pegawai.tambahpegawai' }" class="dropdown-item">Pegawai</router-link></li>
+                    <li><router-link :to="{ name: 'ruang.tambahruang' }" class="dropdown-item">Ruang</router-link></li>
+                    <li><router-link :to="{ name: 'surat.tambahsurat' }" class="dropdown-item">Surat</router-link></li>
+                    <li><router-link :to="{ name: 'departemen.tambahdepartemen' }" class="dropdown-item">Departemen</router-link></li>
                 </ul>
             </li>
             <li class="nav-item" style="position: absolute; bottom: 20px; width: 100%;">
