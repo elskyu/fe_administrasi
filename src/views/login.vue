@@ -1,39 +1,35 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useToast } from 'vue-toastification'; // Assuming you're using Vue Toastification
 import axios from 'axios';
 import '../style/login.css'; // Import specific CSS file for the login component
 import '../style/font.css';
-
 
 import imageSrc from '../images/login_icon.svg';
 
 const name = ref('');
 const email = ref('');
 const password = ref('');
-const confirmPassword = ref('');
+const router = useRouter(); // Initialize the router
+const toast = useToast();
 
-const handleRegister = async () => {
-//   if (password.value !== confirmPassword.value) {
-//     alert('Passwords do not match');
-//     return;
-//   }
-
+const login = async () => {
   try {
-    const response = await axios.post('http://localhost:8000/api/register', {
-      name: name.value,
+    const response = await axios.post('http://localhost:8000/api/login', {
       email: email.value,
-      password: password.value
+      password: password.value,
     });
-
-    if (response.data.success) {
-      alert('Registration successful');
-      // Handle redirection to login or any other page upon successful registration
-    } else {
-      alert(response.data.message || 'Registration failed');
-    }
+    const userType = response.data.userType;
+    console.log(response.data);
+    // Handle successful login (e.g., store token)
+    // Redirect to the dashboard
+    router.push({ name: 'masuk.masuk' });
+    toast.success(`Login berhasil sebagai ${userType}`);
   } catch (error) {
-    console.error('Error during registration:', error);
-    alert('An error occurred. Please try again.');
+    console.error(error);
+    toast.error('Login gagal, periksa kembali email dan password Anda');
+    // Handle error (e.g., show error message to the user)
   }
 };
 </script>
