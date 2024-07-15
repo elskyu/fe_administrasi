@@ -28,7 +28,7 @@
     font-size: small;
     font-weight: lighter;
     margin-left: 50px;
-    color: rgb(54, 54, 54);
+    color: #3a416e;
     padding: 10px; /* Atur padding untuk ruang hover */
     transition: background-color 0.5s ease;
     border-radius: 5px;
@@ -36,7 +36,7 @@
   }
   
   .nav-link.active {
-    color: rgb(54, 54, 54);
+    color: #3a416e;
   }
   
   .nav-link:hover {
@@ -46,7 +46,7 @@
   }
 
   .nav-item {
-    color: rgb(54, 54, 54);
+    color: #3a416e;
     font-weight: 10;
   }
 
