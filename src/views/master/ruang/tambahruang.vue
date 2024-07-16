@@ -21,7 +21,7 @@ const showEditModal = ref(false);
 const addFormData = ref({
   id_ruang: '',
   nama_ruang: '',
-  cabang_id: '', // Store the cabang id for the new ruang
+  cabang: '', // Store the cabang id for the new ruang
 });
 
 // Form data for editing an existing ruang
@@ -56,7 +56,11 @@ const fetchDataCabang = async () => {
 
 const editRuang = (r) => {
   currentRuangId.value = r.id_ruang;
-  editFormData.value = { ...r, cabang_id: r.cabang.id }; // Set cabang_id based on the cabang object
+  editFormData.value = {
+    id_ruang: r.id_ruang,
+    nama_ruang: r.nama_ruang,
+    cabang: r.cabang.id_cabang // Pastikan cabang_id diambil dari r.cabang.id
+  };
   showEditModal.value = true;
 };
 
@@ -91,9 +95,15 @@ const handleSearch = () => {
 // Function to handle form submission for adding a new ruang
 const saveNewRuang = async () => {
   try {
+    // Pastikan cabang_id terisi sebelum melakukan permintaan POST
+    if (!addFormData.value.cabang) {
+      console.error('Cabang harus dipilih');
+      return;
+    }
+
     await api.post('/api/ruang', addFormData.value);
     // Reset form data
-    addFormData.value = { id_ruang: '', nama_ruang: '', cabang_id: '' };
+    addFormData.value = { id_ruang: '', nama_ruang: '', cabang: '' };
     // Close the modal
     showAddModal.value = false;
     // Refresh the ruang list
@@ -108,7 +118,7 @@ const saveEditRuang = async () => {
   try {
     await api.put(`/api/ruang/${currentRuangId.value}`, editFormData.value);
     // Reset form data
-    editFormData.value = { id_ruang: '', nama_ruang: '', cabang_id: '' };
+    editFormData.value = { id_ruang: '', nama_ruang: '', cabang: '' };
     // Close the modal
     showEditModal.value = false;
     // Refresh the ruang list
@@ -155,7 +165,7 @@ onMounted(() => {
                       <th scope="col" style="width:10%">ID RUANG</th>
                       <th scope="col" style="width:15%">NAMA RUANG</th>
                       <th scope="col" style="width:15%">CABANG</th>
-                      <th scope="col" style="width:3%">AKSI</th>
+                      <th scope="col" style="width:5%">AKSI</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -199,12 +209,13 @@ onMounted(() => {
         </div>
         <div class="form-group">
           <label for="cabang">Cabang</label>
-          <select id="cabang" v-model="addFormData.cabang_id">
-            <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-          </select>
+            <select id="cabang" v-model="addFormData.cabang">
+              <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}
+              </option>
+            </select>
         </div>
         <div class="form-actions">
-          <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveNewRuang">Simpan</button>
+          <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveNewRuang">Simpan Perubahan</button>
           <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
         </div>
       </div>
@@ -222,14 +233,14 @@ onMounted(() => {
           <label for="nama_ruang">Nama Ruang</label>
           <input type="text" id="nama_ruang" v-model="editFormData.nama_ruang" />
         </div>
-        <div class="form-group">
+        <div class="form-group select">
           <label for="cabang">Cabang</label>
-          <select id="cabang" v-model="editFormData.cabang_id">
-            <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-          </select>
+            <select id="cabang" v-model="editFormData.cabang">
+              <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+            </select>
         </div>
         <div class="form-actions">
-          <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveEditRuang">Simpan</button>
+          <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveEditRuang">Update perubahan</button>
           <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
         </div>
       </div>

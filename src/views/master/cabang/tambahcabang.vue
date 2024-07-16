@@ -182,7 +182,7 @@ onMounted(() => {
         <input type="text" id="nama_cabang" v-model="addFormData.nama_cabang" />
       </div>
       <div class="form-actions">
-        <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveNewCabang">Simpan</button>
+        <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveNewCabang">Simpan Perubahan</button>
         <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
       </div>
     </div>
@@ -201,7 +201,7 @@ onMounted(() => {
         <input type="text" id="nama_cabang" v-model="editFormData.nama_cabang" />
       </div>
       <div class="form-actions">
-        <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveEditCabang">Simpan</button>
+        <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveEditCabang">Update Perubahan</button>
         <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
       </div>
     </div>

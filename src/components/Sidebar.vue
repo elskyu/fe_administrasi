@@ -13,7 +13,7 @@ const toggleDropdown = () => {
     <div class="d-flex">
       <nav class="sidebar custom-sidebar" style="box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);">
         <ul class="navbar-nav">
-            <li class="header-sidebar" style="margin-top: 20px; margin-bottom: 20px; text-align: center;">
+            <li class="header-sidebar" style="margin-top: 10px; margin-bottom: 10px; text-align: center;">
                 <span style="font-weight: bold; font-size: 18px;">Teman Kantor</span>
             </li>
             <li class="nav-item">
