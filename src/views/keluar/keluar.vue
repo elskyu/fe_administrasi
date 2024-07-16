@@ -108,7 +108,7 @@ onMounted(() => {
       <div class="container mt-5 mb-5">
         <div class="row">
           <div class="card2">
-            <h2>SURAT MASUK</h2>
+            <h2>SURAT KELUAR</h2>
           </div>
         </div>
 
