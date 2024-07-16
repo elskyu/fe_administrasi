@@ -210,7 +210,7 @@ onMounted(() => {
                       <th scope="col" style="width:8%">NIP</th>
                       <th scope="col" style="width:10%">NAMA</th>
                       <th scope="col" style="width:15%">Email</th>
-                      <th scope="col" style="width:10%">Departement</th>
+                      <th scope="col" style="width:10%">Departemen</th>
                       <th scope="col" style="width:10%">Alamat</th>
                       <th scope="col" style="width:10%">No. HP</th>
                       <th scope="col" style="width:7%">Cabang</th>
@@ -278,7 +278,7 @@ onMounted(() => {
         </div>
         <div class="form-group-row">
           <div class="form-group" style="width: 200px;">
-            <label for="departement">Departement</label>
+            <label for="departement">Departemen</label>
             <select id="departement" v-model="addFormData.departement">
               <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{ dep.nama_departement }}</option>
             </select>
@@ -335,7 +335,7 @@ onMounted(() => {
         </div>
         <div class="form-group-row">
           <div class="form-group" style="width: 200px;">
-            <label for="departement">Departement</label>
+            <label for="departement">Departemen</label>
             <select id="departement" v-model="editFormData.departement">
               <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{ dep.nama_departement }}</option>
             </select>
