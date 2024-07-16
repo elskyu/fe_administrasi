@@ -59,7 +59,7 @@ const editRuang = (r) => {
   editFormData.value = {
     id_ruang: r.id_ruang,
     nama_ruang: r.nama_ruang,
-    cabang: r.cabang.id_cabang // Pastikan cabang_id diambil dari r.cabang.id
+    cabang: r.cabang, // Pastikan cabang_id diambil dari r.cabang.id
   };
   showEditModal.value = true;
 };
@@ -128,6 +128,12 @@ const saveEditRuang = async () => {
   }
 };
 
+// Method atau computed property untuk mendapatkan nama cabang berdasarkan ID cabang
+const getNamaCabang = (idCabang) => {
+  const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
+  return cabang ? cabang.nama_cabang : '';
+};
+
 // Run hook "onMounted"
 onMounted(() => {
   fetchDataRuang();
@@ -179,7 +185,7 @@ onMounted(() => {
                     <tr v-else v-for="(r, index) in filteredRuang" :key="index">
                       <td class="text-center">{{ r.id_ruang }}</td>
                       <td>{{ r.nama_ruang }}</td>
-                      <td>{{ r.cabang}}</td> <!-- Display cabang name -->
+                      <td>{{ getNamaCabang(r.cabang) }}</td>
                       <td class="text-center">
                         <button @click="editRuang(r)" class="btn btn-sm btn-warning rounded-sm shadow border-0" style="margin-right: 7px;">EDIT</button>
                         <button @click="deleteRuang(r.id_ruang)" class="btn btn-sm btn-danger rounded-sm shadow border-0" style="margin-right: 7px;">HAPUS</button>

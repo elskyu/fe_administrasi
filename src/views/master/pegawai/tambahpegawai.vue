@@ -1,13 +1,365 @@
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import api from '../../../api'; // Sesuaikan dengan struktur folder dan nama file API
+import '/src/style/font.css';
+import '/src/style/table.css';
+import '/src/style/surat_masuk.css';
+import '/src/style/background_color.css';
+import '/src/style/modal.css';
+
+const pegawai = ref([]);
+const cabangList = ref([]);
+const departementList = ref([]);
+const currentPegawaiId = ref(null);
+const searchQuery = ref('');
+const tempSearchQuery = ref('');
+const showAddModal = ref(false);
+const showEditModal = ref(false);
+
+const addFormData = ref({
+  id_pegawai: '',
+  nip: '',
+  nama: '',
+  email: '',
+  password: '',
+  departement: '',
+  alamat: '',
+  no_hp: '',
+  cabang: '',
+});
+
+const editFormData = ref({
+  id_pegawai: '',
+  nip: '',
+  nama: '',
+  email: '',
+  password: '',
+  departement: '',
+  alamat: '',
+  no_hp: '',
+  cabang: '',
+});
+
+const fetchDataPegawai = async () => {
+  try {
+    const response = await api.get('/api/pegawai');
+    pegawai.value = response.data.data.data; // Sesuaikan dengan struktur response API
+  } catch (error) {
+    console.error('Error fetching pegawai:', error);
+  }
+};
+
+const fetchDataCabang = async () => {
+  try {
+    const response = await api.get('/api/cabang');
+    cabangList.value = response.data.data.data; // Sesuaikan dengan struktur response API
+  } catch (error) {
+    console.error('Error fetching cabang list:', error);
+  }
+};
+
+// Function to fetch departement list from the API
+const fetchDataDepartement = async () => {
+  try {
+    const response = await api.get('/api/departement');
+    departementList.value = response.data.data.data; // Adjust based on the actual response structure
+  } catch (error) {
+    console.error('Error fetching departement list:', error);
+  }
+};
+
+const editPegawai = (p) => {
+  currentPegawaiId.value = p.id_pegawai;
+  editFormData.value = {
+    id_pegawai: p.id_pegawai,
+    nip: p.nip,
+    nama: p.nama,
+    email: p.email,
+    password: p.password,
+    departement: p.departement,
+    alamat: p.alamat,
+    no_hp: p.no_hp,
+    cabang: p.cabang, // Pastikan cabang_id diambil dari p.cabang.id_cabang
+  };
+  showEditModal.value = true;
+};
+
+const deletePegawai = async (id_pegawai) => {
+  if (confirm("Apakah anda ingin menghapus data ini?")) {
+    try {
+      await api.delete(`/api/pegawai/${id_pegawai}`);
+      pegawai.value = pegawai.value.filter(p => p.id_pegawai !== id_pegawai);
+    } catch (error) {
+      console.error('Error deleting pegawai:', error);
+    }
+  }
+};
+
+const filteredPegawai = computed(() => {
+  if (!searchQuery.value) {
+    return pegawai.value;
+  }
+  return pegawai.value.filter(p =>
+    p.nip.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    p.nama.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    p.email.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    p.departement.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    p.alamat.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    p.no_hp.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
+
+const handleSearch = () => {
+  searchQuery.value = tempSearchQuery.value;
+};
+
+const saveNewPegawai = async () => {
+  try {
+    if (!addFormData.value.cabang) {
+      console.error('Cabang harus dipilih');
+      return;
+    }
+
+    await api.post('/api/pegawai', addFormData.value);
+    addFormData.value = {
+      id_pegawai: '',
+      nip: '',
+      nama: '',
+      email: '',
+      password: '',
+      departement: '',
+      alamat: '',
+      no_hp: '',
+      cabang: '',
+    };
+    showAddModal.value = false;
+    fetchDataPegawai();
+  } catch (error) {
+    console.error('Error saving new pegawai:', error);
+  }
+};
+
+const saveEditPegawai = async () => {
+  try {
+    await api.put(`/api/pegawai/${currentPegawaiId.value}`, editFormData.value);
+    editFormData.value = {
+      id_pegawai: '',
+      nip: '',
+      nama: '',
+      email: '',
+      password: '',
+      departement: '',
+      alamat: '',
+      no_hp: '',
+      cabang: '',
+    };
+    showEditModal.value = false;
+    fetchDataPegawai();
+  } catch (error) {
+    console.error('Error saving edit pegawai:', error);
+  }
+};
+
+// fungsi nama cabang
+const getNamaCabang = (idCabang) => {
+  const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
+  return cabang ? cabang.nama_cabang : '';
+};
+
+const getNamaDepartemen = (idDepartemen) => {
+  const departement = departementList.value.find(d => d.id_departement === idDepartemen);
+  return departement ? departement.nama_departement : '';
+};
+
+
+onMounted(() => {
+  fetchDataPegawai();
+  fetchDataCabang();
+  fetchDataDepartement();
+});
+</script>
+
 <template>
-    <div class="background-container">
-      <div class="content">
-        <div class="container mt-5 mb-5">
-            <div class="row">
-                <div class="card2" style="">
-                    <h2>PEGAWAI</h2>
+  <div class="background-container">
+    <div class="content">
+      <div class="container mt-5 mb-5">
+        <div class="row">
+          <div class="card2">
+            <h2>PEGAWAI</h2>
+          </div>
+        </div>
+
+        <div class="col-md-12" style="margin-left: -10px; width: auto;">
+          <div class="card border-0">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-3" style="margin-top: 5px;">
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
                 </div>
+
+                <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
+                  <div class="d-flex justify-content-end">
+                    <button @click="handleSearch" class="btn btn-primary">FILTER</button>
+                  </div>
+                </div>
+
+                <table class="table table-bordered">
+                  <thead class="bg-dark text-white text-center">
+                    <tr>
+                      <th scope="col" style="width:8%">ID PEGAWAI</th>
+                      <th scope="col" style="width:8%">NIP</th>
+                      <th scope="col" style="width:10%">NAMA</th>
+                      <th scope="col" style="width:15%">Email</th>
+                      <th scope="col" style="width:10%">Departement</th>
+                      <th scope="col" style="width:10%">Alamat</th>
+                      <th scope="col" style="width:10%">No. HP</th>
+                      <th scope="col" style="width:7%">Cabang</th>
+                      <th scope="col" style="width:10%">AKSI</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-if="filteredPegawai.length === 0">
+                      <td colspan="9" class="text-center">
+                        <div class="alert alert-danger mb-0">
+                          Data Belum Tersedia!
+                        </div>
+                      </td>
+                    </tr>
+                    <tr v-else v-for="(p, index) in filteredPegawai" :key="index">
+                      <td class="text-center">{{ p.id_pegawai }}</td>
+                      <td>{{ p.nip }}</td>
+                      <td>{{ p.nama }}</td>
+                      <td>{{ p.email }}</td>
+                      <td>{{ getNamaDepartemen(p.departement) }}</td>
+                      <td>{{ p.alamat }}</td>
+                      <td>{{ p.no_hp }}</td>
+                      <td>{{ getNamaCabang(p.cabang) }}</td> <!-- Menampilkan nama cabang -->
+                      <td class="text-center">
+                        <button @click="editPegawai(p)" class="btn btn-sm btn-warning rounded-sm shadow border-0" style="margin-right: 7px;">EDIT</button>
+                        <button @click="deletePegawai(p.id_pegawai)" class="btn btn-sm btn-danger rounded-sm shadow border-0" style="margin-right: 7px;">HAPUS</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for adding new pegawai -->
+    <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
+      <div class="modal-content">
+        <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH PEGAWAI</h4>
+        <div class="form-group-row">
+          <div class="form-group" style="width: 175px;">
+            <label for="id_pegawai">ID Pegawai</label>
+            <input type="text" id="id_pegawai" v-model="addFormData.id_pegawai" />
+          </div>
+          <div class="form-group" style="width: 220px;">
+            <label for="nip">NIP</label>
+            <input type="text" id="nip" v-model="addFormData.nip" />
+          </div> 
+        </div>
+        <div class="form-group-row">
+            <div class="form-group" style="width: 155px;">
+                <label for="nama">Nama</label>
+                <input type="text" id="nama" v-model="addFormData.nama" />
+            </div>
+            <div class="form-group" style="width: 240px;">
+                <label for="email">Email</label>
+                <input type="email" id="email" v-model="addFormData.email" />
+            </div>
+        </div> 
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" v-model="addFormData.password" />
+        </div>
+        <div class="form-group-row">
+          <div class="form-group" style="width: 200px;">
+            <label for="departement">Departement</label>
+            <select id="departement" v-model="addFormData.departement">
+              <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{ dep.nama_departement }}</option>
+            </select>
+          </div>
+          <div class="form-group" style="width: 190px;">
+            <label for="cabang">Cabang</label>
+            <select id="cabang" v-model="addFormData.cabang">
+              <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="alamat">Alamat</label>
+          <input type="text" id="alamat" v-model="addFormData.alamat" />
+        </div>
+        <div class="form-group">
+          <label for="no_hp">No. HP</label>
+          <input type="text" id="no_hp" v-model="addFormData.no_hp" />
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveNewPegawai">Simpan Perubahan</button>
+          <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal for editing pegawai -->
+    <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
+      <div class="modal-content">
+        <h4 style="text-align: center; color: #28a745; font-weight: bolder;">EDIT PEGAWAI</h4>
+        <div class="form-group-row">
+          <div class="form-group" style="width: 175px;">
+            <label for="id_pegawai">ID Pegawai</label>
+            <input type="text" id="id_pegawai" v-model="editFormData.id_pegawai" />
+          </div>
+          <div class="form-group" style="width: 220px;">
+            <label for="nip">NIP</label>
+            <input type="text" id="nip" v-model="editFormData.nip" />
+          </div> 
+        </div>
+        <div class="form-group-row">
+            <div class="form-group" style="width: 155px;">
+                <label for="nama">Nama</label>
+                <input type="text" id="nama" v-model="editFormData.nama" />
+            </div>
+            <div class="form-group" style="width: 240px;">
+                <label for="email">Email</label>
+                <input type="email" id="email" v-model="editFormData.email" />
             </div>
         </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" v-model="editFormData.password" />
+        </div>
+        <div class="form-group-row">
+          <div class="form-group" style="width: 200px;">
+            <label for="departement">Departement</label>
+            <select id="departement" v-model="editFormData.departement">
+              <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{ dep.nama_departement }}</option>
+            </select>
+          </div>
+          <div class="form-group" style="width: 190px;">
+            <label for="cabang">Cabang</label>
+            <select id="cabang" v-model="editFormData.cabang">
+              <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="alamat">Alamat</label>
+          <input type="text" id="alamat" v-model="editFormData.alamat" />
+        </div>
+        <div class="form-group">
+          <label for="no_hp">No. HP</label>
+          <input type="text" id="no_hp" v-model="editFormData.no_hp" />
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveEditPegawai">Update Perubahan</button>
+          <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 </template>
