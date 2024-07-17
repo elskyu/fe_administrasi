@@ -1,6 +1,9 @@
-.d-flex {
-    display: flex;
-  }
+.content-area-with-sidebar {
+  margin-left: 215px; /* Adjust to match the sidebar width */
+  padding: 0px;
+  width: calc(100% - 215px); /* Adjust to match the sidebar width */
+}
+  
   
   .custom-sidebar {
     width: 210px; /* Lebar sidebar */
