@@ -35,7 +35,7 @@ const login = async () => {
       router.push({ name: 'dashboard.dashboard' }).then(() => {
         window.location.reload();
       });
-    }, 1000); // Adjust the delay as needed
+    }, 100); // Adjust the delay as needed
     
   } catch (error) {
     console.error(error);

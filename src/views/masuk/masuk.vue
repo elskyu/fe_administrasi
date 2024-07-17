@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import api from '../../api'; // Sesuaikan dengan struktur folder dan file yang benar
+import axios from 'axios';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
@@ -99,6 +100,7 @@ const getNamaCabang = (idCabang) => {
 onMounted(() => {
   fetchDataSuratMasuk();
   fetchDataCabang();
+  
 });
 </script>
 
