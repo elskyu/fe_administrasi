@@ -5,6 +5,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1;
   }
   
   .login-container {
@@ -72,6 +73,10 @@ body {
   .form-control::placeholder {
     color: #ffffff;
   }
+
+  .btn {
+    width: 535px;
+  }
   
   .btn-primary {
     background-color: rgb(254, 174, 111);
@@ -80,13 +85,13 @@ body {
     font-size: 16pt;
     font-weight: bold;
     border-radius: 0.35rem;
-    width: 535px;
     transition: background-color 0.3s ease;
     margin-top: 50px; 
   }
   
   .btn-primary:hover {
     background-color: #ffffff;
+    width: 535px;
     color: #FEAE6F;
   }
 

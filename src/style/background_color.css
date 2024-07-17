@@ -1,4 +1,4 @@
-body {
+/* body {
     background-color: #f8f9fa;
 }
 
@@ -13,9 +13,16 @@ body::before {
     background-color: #5e72e4;
     top: 0;
     height: 25%;
+    z-index: 1;
 }
 
 body::after {
     background-color: #f8f9fa;
     bottom: 0;
+    z-index: 1;
+} */
+
+body {
+    background: linear-gradient(to bottom, #5e72e4 25%, #f8f9fa 25%);
+    z-index: 0;
 }
