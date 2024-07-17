@@ -134,20 +134,10 @@ const getNamaCabang = (idCabang) => {
   return cabang ? cabang.nama_cabang : '';
 };
 
-async function fetchUserData() {
-  try {
-    const response = await api.get('/api/useradmin');
-    console.log(response.data.data.data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 // Run hook "onMounted"
 onMounted(() => {
   fetchDataRuang();
   fetchDataCabang();
-  fetchUserData();
 });
 </script>
 
