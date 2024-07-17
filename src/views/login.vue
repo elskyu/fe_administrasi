@@ -28,10 +28,11 @@ const login = async () => {
     // Redirect to the dashboard
     router.push({ name: 'dashboard.dashboard' }).then(() => {
       // Refresh the page
-      window.location.reload();
+      // window.location.reload();
+      toast.success(`Login berhasil sebagai ${userType}`);
+      localStorage.setItem('token', token); // Simpan token di localStorage
     });
-    toast.success(`Login berhasil sebagai ${userType}`);
-    localStorage.setItem('token', token); // Simpan token di localStorage
+    
   } catch (error) {
     console.error(error);
     toast.error('Login gagal, periksa kembali email dan password Anda');
@@ -42,7 +43,7 @@ const login = async () => {
 
 <template>
     <div class="login-container mt-5">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center" style="margin-left: 55px; margin-top: 25px;">
             <div class="col-md-6">              
                     <div class="card-body">
                         <div class="login-card-title text-center mb-4">
@@ -83,3 +84,14 @@ const login = async () => {
       </svg>
     </div>
 </template>
+
+<style scoped>
+
+  .login-container {
+    width: 100%;
+    padding: 2rem;
+    border-radius: 1rem;
+    animation: fadeIn 1s ease-in-out;
+  }  
+
+</style>
