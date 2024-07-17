@@ -5,7 +5,7 @@ import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
-import '/src/style/admin.css';
+import '/src/style/surat_masuk.css';
 
 // State untuk menyimpan data surat masuk
 const suratMasuk = ref([]);

@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <!-- Conditionally render the Sidebar -->
-    <Sidebar v-if="!isLoginRoute"></Sidebar>
+    <Sidebar v-if="userType === 'admin' && !isLoginRoute"></Sidebar>
+    <sidebar2 v-else-if="userType === 'pegawai' && !isLoginRoute"></sidebar2>
     
     <!-- Main content area -->
     <div :class="{'content-area-with-sidebar': !isLoginRoute}">
@@ -14,26 +15,30 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import Sidebar from './components/Sidebar.vue';
+import sidebar2 from './components/sidebar2.vue';
+import axios from 'axios';
 
 export default {
   name: 'App',
   components: {
-    Sidebar
+    Sidebar,
+    sidebar2
   },
   setup() {
     const route = useRoute();
+    const userType = computed(() => {
+      // Retrieve userType from localStorage or Vuex if needed
+      return localStorage.getItem('userType');
+    });
     const isLoginRoute = computed(() => route.name === 'login');
-
-    return { isLoginRoute };
+    return { userType, isLoginRoute };
   },
 };
 </script>
 
 <style>
-/* Global styles can go here */
-.content-area-with-sidebar {
-  margin-left: 215px; /* Adjust to match the sidebar width */
-  padding: 0px;
-  width: calc(100% - 215px); /* Adjust to match the sidebar width */
+.content-area {
+  padding: 20px;
+  /* Add styles for main content area here */
 }
 </style>

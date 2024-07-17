@@ -25,10 +25,18 @@ const login = async () => {
     
     console.log(response.data);
     // Handle successful login (e.g., store token)
-    // Redirect to the dashboard
-    router.push({ name: 'dashboard.dashboard' });
-    toast.success(`Login berhasil sebagai ${userType}`);
+    // Show success toast and then reload the page
     localStorage.setItem('token', token); // Simpan token di localStorage
+    localStorage.setItem('userType', userType);
+    
+    toast.success(`Login berhasil sebagai ${userType}`);
+    
+    setTimeout(() => {
+      router.push({ name: 'dashboard.dashboard' }).then(() => {
+        window.location.reload();
+      });
+    }, 1000); // Adjust the delay as needed
+    
   } catch (error) {
     console.error(error);
     toast.error('Login gagal, periksa kembali email dan password Anda');
@@ -39,9 +47,9 @@ const login = async () => {
 
 <template>
     <div class="login-container mt-5">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center" style="margin-left: 55px; margin-top: 25px;">
             <div class="col-md-6">              
-                    <div class="card-body">
+                    <div class="card-body-login">
                         <div class="login-card-title text-center mb-4">
                             <div class="image">
                                 <img :src="imageSrc" alt="Profile Image" />
@@ -64,7 +72,7 @@ const login = async () => {
 
                             <input type="password" placeholder="password" class="form-control" id="password" v-model="password" autocomplete="current-password" required>
                         </div>
-                            <button type="submit" class="btn btn-primary">LOGIN</button>
+                            <button type="submit" class="btn login-button" style="width: 535px;">LOGIN</button>
                         </form>
                     </div>
             </div>
@@ -80,3 +88,16 @@ const login = async () => {
       </svg>
     </div>
 </template>
+
+<style scoped>
+  
+
+  .login-container {
+    width: 100%;
+    padding: 2rem;
+    border-radius: 1rem;
+    animation: fadeIn 1s ease-in-out;
+  }  
+  
+
+</style>

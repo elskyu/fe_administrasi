@@ -6,7 +6,6 @@ body {
   background-position: center;
 }
 
-
 .content {
   margin: -33px 25px;
   position: relative;
@@ -31,6 +30,7 @@ body {
 }
 
 .card3 {
+  margin-top: -33px;
   background-color: rgb(255, 255, 255);
   padding: 20px;
   border-radius: 7px;
