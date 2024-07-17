@@ -218,7 +218,7 @@ onMounted(() => {
                 </thead>
                 <tbody>
                   <tr v-if="filteredInventaris.length === 0">
-                    <td colspan="10" class="text-center">
+                    <td colspan="11" class="text-center">
                       <div class="alert alert-danger mb-0">
                         Data Belum Tersedia!
                       </div>
