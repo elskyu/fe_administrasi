@@ -26,7 +26,7 @@ const login = async () => {
     console.log(response.data);
     // Handle successful login (e.g., store token)
     // Redirect to the dashboard
-    router.push({ name: 'masuk.masuk' });
+    router.push({ name: 'dashboard.dashboard' });
     toast.success(`Login berhasil sebagai ${userType}`);
     localStorage.setItem('token', token); // Simpan token di localStorage
   } catch (error) {
