@@ -183,8 +183,8 @@ onMounted(() => {
         <input type="text" id="nama_departement" v-model="addFormData.nama_departement" />
       </div>
       <div class="form-actions">
-        <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveNewDepartment">Simpan Perubahan</button>
-        <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewDepartment">Simpan Perubahan</button>
+        <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
       </div>
     </div>
   </div>
@@ -202,8 +202,8 @@ onMounted(() => {
         <input type="text" id="nama_departement" v-model="editFormData.nama_departement" />
       </div>
       <div class="form-actions">
-        <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveEditDepartment">Update Perubahan</button>
-        <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditDepartment">Update Perubahan</button>
+        <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
       </div>
     </div>
   </div>

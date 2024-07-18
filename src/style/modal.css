@@ -87,13 +87,13 @@
     justify-content: space-between;
   }
 
-  .btn-save {
+  .btn-modal-save {
     background-color: #28a745; /* Success button background color */
     border-color: #28a745; /* Success button border color */
     padding: 10px 30px;
   }
   
-  .btn-batal {
+  .btn-modal-batal {
     background-color: #dc3545; /* Danger button background color */
     border-color: #dc3545; /* Danger button border color */
     padding: 10px 30px;

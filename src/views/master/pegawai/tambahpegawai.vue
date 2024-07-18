@@ -299,8 +299,8 @@ onMounted(() => {
           <input type="text" id="no_hp" v-model="addFormData.no_hp" />
         </div>
         <div class="form-actions">
-          <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveNewPegawai">Simpan Perubahan</button>
-          <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
+          <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewPegawai">Simpan Perubahan</button>
+          <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
         </div>
       </div>
     </div>
@@ -356,8 +356,8 @@ onMounted(() => {
           <input type="text" id="no_hp" v-model="editFormData.no_hp" />
         </div>
         <div class="form-actions">
-          <button class="btn btn-sm btn-save rounded-sm shadow border-0" @click="saveEditPegawai">Update Perubahan</button>
-          <button class="btn btn-sm btn-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
+          <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditPegawai">Update Perubahan</button>
+          <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
         </div>
       </div>
     </div>
