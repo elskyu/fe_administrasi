@@ -22,18 +22,18 @@ const newEvent = ref({
   end: ''
 });
 
-const fetchEvents = async () => {
-  try {
-    const response = await api.get('/endpoint'); // Ganti dengan endpoint API Anda yang sebenarnya
-    events.value = response.data;
-  } catch (error) {
-    console.error('Error fetching events:', error);
-  }
-};
+// const fetchEvents = async () => {
+//   try {
+//     const response = await api.get('/endpoint'); // Ganti dengan endpoint API Anda yang sebenarnya
+//     events.value = response.data;
+//   } catch (error) {
+//     console.error('Error fetching events:', error);
+//   }
+// };
 
-onMounted(() => {
-  fetchEvents();
-});
+// onMounted(() => {
+//   fetchEvents();
+// });
 
 const createEvent = () => {
   const event = {

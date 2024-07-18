@@ -186,6 +186,11 @@ const deleteReservasi = async (id_reservasi) => {
   }
 };
 
+function convertToMinutes(time) {
+  const [hours, minutes, seconds] = time.split(':');
+  return parseInt(hours) * 60 + parseInt(minutes);
+}
+
 // Jalankan hook "onMounted"
 onMounted(() => {
   fetchDataReservasi();
@@ -248,7 +253,7 @@ onMounted(() => {
                     <td>{{ getNamaRuang(reservasi.ruang) }}</td>
                     <td>{{ reservasi.tanggal_reservasi }}</td>
                     <td>{{ reservasi.tanggal_selesai }}</td>
-                    <td>{{ reservasi.durasi }}</td>
+                    <td>{{ convertToMinutes(reservasi.durasi) + " menit" }}</td>
                     <td>{{ reservasi.pegawai }}</td>
                     <td>{{ reservasi.keterangan }}</td>
                     <td>{{ getNamaCabang(reservasi.cabang) }}</td>

@@ -7,20 +7,28 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Error404',
-  methods: {
-    redirectToLogin() {
-      
-      // Redirect to login route
-      this.$router.push({ name: 'login' }).then(() => {
+<script setup>
+import { useRouter } from 'vue-router';
+import api from '../api'; // Sesuaikan dengan path yang benar untuk instance api
+
+const router = useRouter();
+
+const redirectToLogin = async () => {
+  try {
+    // Kirim permintaan logout ke backend menggunakan instance api
+    // const response = await api.post('/api/logout');
+    // console.log('Logout response:', response); // Debugging log
+
+    // Redirect ke rute login
+    router.push({ name: 'login' }).then(() => {
       window.location.reload();
-      });
-    }
+    });
+  } catch (error) {
+    console.error('Logout failed:', error);
   }
 };
 </script>
+
 
 <style scoped>
 .error-container {
