@@ -40,7 +40,7 @@ const login = async () => {
   } catch (error) {
     console.error(error);
     toast.error('Login gagal, periksa kembali email dan password Anda');
-    // Handle error (e.g., show error message to the user)
+    // Handle error (e.g., show0error message to the user)
   }
 };
 </script>

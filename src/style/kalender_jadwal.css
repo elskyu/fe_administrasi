@@ -97,13 +97,13 @@
   z-index: 1000;
 }
 
-.modal-content {
+/* .modal-content {
   background-color: white;
   padding: 20px;
   border-radius: 8px;
   max-width: 500px;
   width: 100%;
-}
+} */
 
 .close {
   position: absolute;

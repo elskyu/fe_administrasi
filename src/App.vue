@@ -46,7 +46,7 @@ export default {
           store.dispatch('auth/clearToken');
           router.push({ name: 'error' });
         }
-      }, 10000); // Cek setiap 5 detik
+      }, 25000); // Cek setiap 5 detik
 
       onUnmounted(() => {
         clearInterval(interval);
