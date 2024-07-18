@@ -1,10 +1,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import api from '../../api';
+import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/peminjaman.css';
-import '/src/style/background_color.css';
 import '/src/style/modal.css';
 
 // State untuk menyimpan data inventaris
@@ -175,6 +175,11 @@ const getNamaPegawai = (idPegawai) => {
   return pegawai ? pegawai.nama : '';
 };
 
+function convertToMinutes(time) {
+  const [hours, minutes, seconds] = time.split(':');
+  return parseInt(hours) * 60 + parseInt(minutes);
+}
+
 // Jalankan hook "onMounted"
 onMounted(() => {
   fetchDataPegawai();
@@ -235,7 +240,7 @@ onMounted(() => {
                       <td>{{ inventaris.inventaris }}</td>
                       <td>{{ inventaris.tanggal_pinjam }}</td>
                       <td>{{ inventaris.tanggal_kembali }}</td>
-                      <td>{{ inventaris.durasi_pinjam }}</td>
+                      <td>{{ convertToMinutes(inventaris.durasi_pinjam) }}</td>
                       <td>{{ getNamaPegawai(inventaris.pegawai) }}</td>
                       <td>{{ inventaris.keterangan }}</td>
                       <td>{{ getNamaCabang(inventaris.cabang) }}</td>
