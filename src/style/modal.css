@@ -91,13 +91,28 @@
     background-color: #28a745; /* Success button background color */
     border-color: #28a745; /* Success button border color */
     padding: 10px 30px;
+    color: white;
+    border-radius: 3px;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .btn-modal-save:active {
+    transform: scale(0.95);
   }
   
   .btn-modal-batal {
     background-color: #dc3545; /* Danger button background color */
     border-color: #dc3545; /* Danger button border color */
     padding: 10px 30px;
+    color: white;
+    border-radius: 3px;
+    transition: transform 0.2s ease-in-out;
   }
+  
+  .btn-modal-batal:active {
+    transform: scale(0.95);
+  }
+  
   
   @keyframes fadeIn {
     from {

@@ -8,10 +8,10 @@ import '/src/style/peminjaman.css';
 import '/src/style/modal.css';
 
 // State untuk menyimpan data inventaris
-const inventarisList = ref([]);
+const pemakaianList = ref([]);
 const cabangList = ref([]);
 const pegawaiList = ref([]);
-const currentInventarisId = ref(null);
+const currentPemakaianId = ref(null);
 const searchQuery = ref('');
 const tempSearchQuery = ref('');
 
@@ -43,11 +43,11 @@ const editFormData = ref({
 });
 
 // Ambil data inventaris dari API
-const fetchDataInventaris = async () => {
+const fetchDataPemakaian = async () => {
   try {
     const response = await api.get('/api/pi');
     console.log(response); // Untuk inspeksi struktur respons
-    inventarisList.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+    pemakaianList.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
   } catch (error) {
     console.error('Error fetching inventaris:', error);
   }
@@ -62,37 +62,37 @@ const fetchDataCabang = async () => {
   }
 };
 
-const editInventaris = (i) => {
-  currentInventarisId.value = i.id_inventaris;
+const editPemakaian = (p) => {
+  currentPemakaianId.value = p.id_inventaris;
   editFormData.value = {
-    id_inventaris: i.id_inventaris,
-    nopol: i.nopol,
-    merek: i.merek,
-    kategori: i.kategori,
-    tahun: i.tahun,
-    pajak: i.pajak,
-    masa_pajak: i.masa_pajak,
-    harga_beli: i.harga_beli,
-    tanggal_beli: i.tanggal_beli,
-    cabang: i.cabang, // Pastikan cabang_id diambil dari p.cabang.id_cabang
+    id_inventaris: p.id_inventaris,
+    nopol: p.nopol,
+    merek: p.merek,
+    kategori: p.kategori,
+    tahun: p.tahun,
+    pajak: p.pajak,
+    masa_pajak: p.masa_pajak,
+    harga_beli: p.harga_beli,
+    tanggal_beli: p.tanggal_beli,
+    cabang: p.cabang, // Pastikan cabang_id diambil dari p.cabang.id_cabang
   };
   showEditModal.value = true;
 };
 
 // Properti computed untuk memfilter inventaris berdasarkan query pencarian
-const filteredInventaris = computed(() => {
+const filteredPemakaian = computed(() => {
   if (!searchQuery.value) {
-    return inventarisList.value;
+    return pemakaianList.value;
   }
-  return inventarisList.value.filter(inventaris =>
-    inventaris.nopol.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.merek.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.kategori.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.tahun.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.pajak.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.masa_pajak.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.harga_beli.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.tanggal_beli.toLowerCase().includes(searchQuery.value.toLowerCase())
+  return pemakaianList.value.filter(pemakaian =>
+    pemakaian.nopol.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    pemakaian.merek.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    pemakaian.kategori.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    pemakaian.tahun.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    pemakaian.pajak.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    pemakaian.masa_pajak.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    pemakaian.harga_beli.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    pemakaian.tanggal_beli.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
 
@@ -102,9 +102,9 @@ const handleSearch = () => {
 };
 
 // Fungsi untuk menyimpan data inventaris baru
-const saveNewInventaris = async () => {
+const saveNewPemakaian = async () => {
   try {
-    await api.post('/api/inventaris', addFormData.value);
+    await api.post('/api/pi', addFormData.value);
     // Reset form data
     addFormData.value = {
       id_pinjam: '',
@@ -119,15 +119,15 @@ const saveNewInventaris = async () => {
     // Tutup modal tambah
     showAddModal.value = false;
     // Muat ulang daftar inventaris
-    fetchDataInventaris();
+    fetchDataPemakaian();
   } catch (error) {
     console.error('Error saving new inventaris:', error);
   }
 };
 
-const saveEditPegawai = async () => {
+const saveEditPemakaian = async () => {
   try {
-    await api.put(`/api/inventaris/${currentInventarisId.value}`, editFormData.value);
+    await api.put(`/api/pi/${currentPemakaianId.value}`, editFormData.value);
     editFormData.value = {
       id_pinjam: '',
       inventaris: '',
@@ -139,7 +139,7 @@ const saveEditPegawai = async () => {
       cabang: '',
     };
     showEditModal.value = false;
-    fetchDataInventaris();
+    fetchDataPemakaian();
   } catch (error) {
     console.error('Error saving edit pegawai:', error);
   }
@@ -150,11 +150,11 @@ const getNamaCabang = (idCabang) => {
   return cabang ? cabang.nama_cabang : '';
 };
 
-const deleteInventaris = async (id_pinjam) => {
+const deletePemakaian = async (id_pinjam) => {
   if (confirm("Apakah anda ingin menghapus data ini?")) {
     try {
       await api.delete(`/api/pi/${id_pinjam}`);
-      inventaris.value = inventaris.value.filter(inventaris => inventaris.id_inventaris !== id_pinjam);
+      pemakaian.value = pemakaian.value.filter(pemakaian => pemakaian.id_pinjam !== id_pinjam);
     } catch (error) {
       console.error('Error deleting pegawai:', error);
     }
@@ -183,7 +183,7 @@ function convertToMinutes(time) {
 // Jalankan hook "onMounted"
 onMounted(() => {
   fetchDataPegawai();
-  fetchDataInventaris();
+  fetchDataPemakaian();
   fetchDataCabang();
 });
 </script>
@@ -203,7 +203,7 @@ onMounted(() => {
               <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                        <button @click="showModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
+                        <button @click="showAddModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
                     </div>
     
                     <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
@@ -216,37 +216,37 @@ onMounted(() => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:5%">ID PINJAM</th>
-                      <th scope="col" style="width:15%">INVENTARIS</th>
+                      <th scope="col" style="width:10%">ID PINJAM</th>
+                      <th scope="col" style="width:7%">INVENTARIS</th>
                       <th scope="col" style="width:15%">TANGGAL PINJAM</th>
-                      <th scope="col" style="width:12%">TANGGAL KEMBALI</th>
-                      <th scope="col" style="width:15%">DURASI PINJAM</th>
-                      <th scope="col" style="width:15%">PEGAWAI</th>
+                      <th scope="col" style="width:15%">TANGGAL KEMBALI</th>
+                      <th scope="col" style="width:12%">DURASI PINJAM</th>
+                      <th scope="col" style="width:7%">PEGAWAI</th>
                       <th scope="col" style="width:15%">KETERANGAN</th>
-                      <th scope="col" style="width:25%">CABANG</th>
-                      <th scope="col">AKSI</th>
+                      <th scope="col" style="width:7%">CABANG</th>
+                      <th scope="col" style="width:15%">AKSI</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="filteredInventaris.length === 0">
+                    <tr v-if="filteredPemakaian.length === 0">
                       <td colspan="11" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
                       </td>
                     </tr>
-                    <tr v-else v-for="(inventaris, index) in filteredInventaris" :key="index">
-                      <td class="text-center">{{ inventaris.id_pinjam }}</td>
-                      <td>{{ inventaris.inventaris }}</td>
-                      <td>{{ inventaris.tanggal_pinjam }}</td>
-                      <td>{{ inventaris.tanggal_kembali }}</td>
-                      <td>{{ convertToMinutes(inventaris.durasi_pinjam) + " menit" }}</td>
-                      <td>{{ getNamaPegawai(inventaris.pegawai) }}</td>
-                      <td>{{ inventaris.keterangan }}</td>
-                      <td>{{ getNamaCabang(inventaris.cabang) }}</td>
+                    <tr v-else v-for="(pemakaian, index) in filteredPemakaian" :key="index">
+                      <td class="text-center">{{ pemakaian.id_pinjam }}</td>
+                      <td>{{ pemakaian.inventaris }}</td>
+                      <td>{{ pemakaian.tanggal_pinjam }}</td>
+                      <td>{{ pemakaian.tanggal_kembali }}</td>
+                      <td>{{ convertToMinutes(pemakaian.durasi_pinjam) + " menit" }}</td>
+                      <td>{{ getNamaPegawai(pemakaian.pegawai) }}</td>
+                      <td>{{ pemakaian.keterangan }}</td>
+                      <td>{{ getNamaCabang(pemakaian.cabang) }}</td>
                       <td class="text-center">
-                          <button @click="editInventaris(inventaris)" class="btn btn-sm btn-warning rounded-sm shadow border-0" style="margin-right: 7px;">EDIT</button>
-                          <button @click="deleteInventaris(inventaris.id_pinjam)" class="btn btn-sm btn-danger rounded-sm shadow border-0" style="margin-right: 7px;">HAPUS</button>
+                          <button @click="editPemakaian(pemakaian)" class="btn btn-sm btn-warning rounded-sm shadow border-0" style="margin-right: 7px;">EDIT</button>
+                          <button @click="deletePemakaian(pemakaian.id_pinjam)" class="btn btn-sm btn-danger rounded-sm shadow border-0" style="margin-right: 7px;">HAPUS</button>
                         </td>
                     </tr>
                   </tbody>
@@ -260,50 +260,52 @@ onMounted(() => {
     </div>
 
     <!-- Simple Pop-up Modal -->
-    <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
+    <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
       <div class="modal-content">
         <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH PEMAKAIAN INVENTARIS</h4>
         <div class="form-group-row">
             <div class="form-group">
-                <label for="id" style="width: 195px;">ID Inven</label>
-                <input type="text" id="id" v-model="formData.id" />
+                <label for="id_pinjam" style="width: 195px;">ID Inven</label>
+                <input type="text" id="id_pinjam" v-model="addFormData.id_pinjam" />
             </div>
             <div class="form-group">
-                <label for="namainventaris" style="width: 195px;">Nama Inven</label>
-                <input type="text" id="namainventaris" v-model="formData.namainventaris" />
+                <label for="inventaris" style="width: 195px;">Nama Inven</label>
+                <input type="text" id="inventaris" v-model="addFormData.inventaris" />
             </div>
         </div>
         <div class="form-group-row">
             <div class="form-group">
-                <label for="namapegawai" style="width: 195px;">Nama Pegawai</label>
-                <input type="text" id="namapegawai" v-model="formData.namapegawai" />
+                <label for="pegawai" style="width: 195px;">Nama Pegawai</label>
+                <input type="text" id="pegawai" v-model="addFormData.pegawai" />
             </div>
             <div class="form-group">
-                <label for="durasi" style="width: 195px;">Durasi</label>
-                <input type="text" id="durasi" v-model="formData.durasi" />
+                <label for="durasi_pinjam" style="width: 195px;">Durasi</label>
+                <input type="time" id="durasi_pinjam" v-model="addFormData.durasi_pinjam" />
             </div>
         </div>
         <div class="form-group-row">
           <div class="form-group">
-            <label for="tanggalpinjam" style="width: 195px;">Tanggal Pinjam</label>
-            <input type="date" id="tanggalpinjam" v-model="formData.tanggalpinjam" />
+            <label for="tanggal_pinjam" style="width: 195px;">Tanggal Pinjam</label>
+            <input type="date" id="tanggal_pinjam" v-model="addFormData.tanggal_pinjam" />
           </div>
           <div class="form-group">
-            <label for="tanggalkembali" style="width: 195px;">Tanggal Kembali</label>
-            <input type="date" id="tanggalkembali" v-model="formData.tanggalkembali" />
+            <label for="tanggal_kembali" style="width: 195px;">Tanggal Kembali</label>
+            <input type="date" id="tanggal_kembali" v-model="addFormData.tanggal_kembali" />
           </div>
         </div>
         <div class="form-group">
           <label for="keterangan">Keterangan</label>
-          <input type="text" id="keterangan" v-model="formData.keterangan" />
+          <input type="text" id="keterangan" v-model="addFormData.keterangan" />
         </div>
         <div class="form-group">
-          <label for="cabang">Cabang</label>
-          <input type="text" id="cabang" v-model="formData.cabang" />
-        </div>
+           <label for="cabang">Cabang</label>
+              <select id="cabang" v-model="addFormData.cabang">
+                  <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+              </select>
+        </div>     
         <div class="form-actions">
-          <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveData">Simpan</button>
-          <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showModal = false">Batal</button>
+          <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewPemakaian">Simpan Perubahan</button>
+          <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
         </div>
       </div>
     </div>
