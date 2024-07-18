@@ -1,22 +1,23 @@
 <template>
   <div id="app">
     <!-- Conditionally render the Sidebar -->
-    <Sidebar v-if="userType === 'admin' && !isLoginRoute"></Sidebar>
-    <sidebar2 v-else-if="userType === 'pegawai' && !isLoginRoute"></sidebar2>
+    <Sidebar v-if="showSidebar && userType === 'admin'"></Sidebar>
+    <sidebar2 v-else-if="showSidebar && userType === 'pegawai'"></sidebar2>
     
     <!-- Main content area -->
-    <div :class="{'content-area-with-sidebar': !isLoginRoute}">
+    <div :class="{'content-area-with-sidebar': showSidebar}">
       <router-view></router-view>
     </div>
   </div>
 </template>
 
 <script>
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, onMounted, onUnmounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import Sidebar from './components/Sidebar.vue';
 import sidebar2 from './components/sidebar2.vue';
-import axios from 'axios';
+import { isTokenExpired } from './utils/auth';
+import store from './store';
 
 export default {
   name: 'App',
@@ -26,13 +27,34 @@ export default {
   },
   setup() {
     const route = useRoute();
+    const router = useRouter();
     const userType = computed(() => {
-      // Retrieve userType from localStorage or Vuex if needed
       return localStorage.getItem('userType');
     });
-    const isLoginRoute = computed(() => route.name === 'login');
-    return { userType, isLoginRoute };
-  },
+    const isLoginRoute = computed(() => {
+      return route.name === 'login' || route.name === 'error'; // Check if current route is login or error
+    });
+
+    const showSidebar = computed(() => {
+      return !isLoginRoute.value; // Hide sidebar on login route
+    });
+
+    onMounted(() => {
+      const interval = setInterval(() => {
+        const token = store.state.auth.token;
+        if (isTokenExpired(token)) {
+          store.dispatch('auth/clearToken');
+          router.push({ name: 'error' });
+        }
+      }, 10000); // Cek setiap 5 detik
+
+      onUnmounted(() => {
+        clearInterval(interval);
+      });
+    });
+
+    return { userType, isLoginRoute, showSidebar };
+  }
 };
 </script>
 

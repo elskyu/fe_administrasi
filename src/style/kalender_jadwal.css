@@ -1,6 +1,6 @@
 .calendar-container {
   width: 100%;
-  height: 520px; /* Adjust calendar height as needed */
+  height: 554px; /* Adjust calendar height as needed */
   overflow: scroll; /* Avoid scroll bar */
 }
 
