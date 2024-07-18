@@ -240,7 +240,7 @@ onMounted(() => {
                       <td>{{ inventaris.inventaris }}</td>
                       <td>{{ inventaris.tanggal_pinjam }}</td>
                       <td>{{ inventaris.tanggal_kembali }}</td>
-                      <td>{{ convertToMinutes(inventaris.durasi_pinjam) }}</td>
+                      <td>{{ convertToMinutes(inventaris.durasi_pinjam) + " menit" }}</td>
                       <td>{{ getNamaPegawai(inventaris.pegawai) }}</td>
                       <td>{{ inventaris.keterangan }}</td>
                       <td>{{ getNamaCabang(inventaris.cabang) }}</td>
