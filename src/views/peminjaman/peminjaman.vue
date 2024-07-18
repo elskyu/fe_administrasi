@@ -7,43 +7,179 @@ import '/src/style/peminjaman.css';
 import '/src/style/background_color.css';
 import '/src/style/modal.css';
 
-// State for storing posts
-const posts = ref([]);
-const categories = ref([]);
-const searchQuery = ref(''); // State for search query
-const tempSearchQuery = ref(''); // Temporary state for holding input value
-const visible = ref(false); // State to control dialog visibility
-const formData = ref({
-  id: '',
-  namainventaris: '',
-  namapegawai: '',
+// State untuk menyimpan data inventaris
+const inventarisList = ref([]);
+const cabangList = ref([]);
+const pegawaiList = ref([]);
+const currentInventarisId = ref(null);
+const searchQuery = ref('');
+const tempSearchQuery = ref('');
+
+// State untuk mengontrol modal tambah
+const showAddModal = ref(false);
+const showEditModal = ref(false);
+
+// Form data untuk tambah inventaris
+const addFormData = ref({
+  id_pinjam: '',
+  inventaris: '',
+  tanggal_pinjam: '',
+  tanggal_kembali: '',
   durasi: '',
-  tanggalpinjam: '',
-  tanggalkembali: '',
+  pegawai: '',
   keterangan: '',
   cabang: '',
 });
-const showModal = ref(false); // State for controlling modal visibility
 
-// Function to fetch posts from the API
-// const fetchDataPosts = async () => {
-//   try {
-//     const response = await api.get('/api/arsip');
-//     console.log(response); // Log the response to inspect its structure
-//     posts.value = response.data.data.data; // Adjust based on the actual response structure
-//   } catch (error) {
-//     console.error('Error fetching posts:', error);
-//   }
-// };
+const editFormData = ref({
+  id_pinjam: '',
+  inventaris: '',
+  tanggal_pinjam: '',
+  tanggal_kembali: '',
+  durasi: '',
+  pegawai: '',
+  keterangan: '',
+  cabang: '',
+});
 
-// Computed property to filter posts based on search query
-const filteredPosts = computed(() => {
-  if (!searchQuery.value) {
-    return posts.value;
+// Ambil data inventaris dari API
+const fetchDataInventaris = async () => {
+  try {
+    const response = await api.get('/api/pi');
+    console.log(response); // Untuk inspeksi struktur respons
+    inventarisList.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+  } catch (error) {
+    console.error('Error fetching inventaris:', error);
   }
-  return posts.value.filter(post => 
-    post.judul.toLowerCase().includes(searchQuery.value.toLowerCase())
+};
+
+const fetchDataCabang = async () => {
+  try {
+    const response = await api.get('/api/cabang');
+    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+  } catch (error) {
+    console.error('Error fetching cabang list:', error);
+  }
+};
+
+const editInventaris = (i) => {
+  currentInventarisId.value = i.id_inventaris;
+  editFormData.value = {
+    id_inventaris: i.id_inventaris,
+    nopol: i.nopol,
+    merek: i.merek,
+    kategori: i.kategori,
+    tahun: i.tahun,
+    pajak: i.pajak,
+    masa_pajak: i.masa_pajak,
+    harga_beli: i.harga_beli,
+    tanggal_beli: i.tanggal_beli,
+    cabang: i.cabang, // Pastikan cabang_id diambil dari p.cabang.id_cabang
+  };
+  showEditModal.value = true;
+};
+
+// Properti computed untuk memfilter inventaris berdasarkan query pencarian
+const filteredInventaris = computed(() => {
+  if (!searchQuery.value) {
+    return inventarisList.value;
+  }
+  return inventarisList.value.filter(inventaris =>
+    inventaris.nopol.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    inventaris.merek.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    inventaris.kategori.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    inventaris.tahun.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    inventaris.pajak.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    inventaris.masa_pajak.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    inventaris.harga_beli.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    inventaris.tanggal_beli.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
+});
+
+// Metode untuk menangani klik tombol pencarian
+const handleSearch = () => {
+  searchQuery.value = tempSearchQuery.value;
+};
+
+// Fungsi untuk menyimpan data inventaris baru
+const saveNewInventaris = async () => {
+  try {
+    await api.post('/api/inventaris', addFormData.value);
+    // Reset form data
+    addFormData.value = {
+      id_pinjam: '',
+      inventaris: '',
+      tanggal_pinjam: '',
+      tanggal_kembali: '',
+      durasi: '',
+      pegawai: '',
+      keterangan: '',
+      cabang: '',
+    };
+    // Tutup modal tambah
+    showAddModal.value = false;
+    // Muat ulang daftar inventaris
+    fetchDataInventaris();
+  } catch (error) {
+    console.error('Error saving new inventaris:', error);
+  }
+};
+
+const saveEditPegawai = async () => {
+  try {
+    await api.put(`/api/inventaris/${currentInventarisId.value}`, editFormData.value);
+    editFormData.value = {
+      id_pinjam: '',
+      inventaris: '',
+      tanggal_pinjam: '',
+      tanggal_kembali: '',
+      durasi: '',
+      pegawai: '',
+      keterangan: '',
+      cabang: '',
+    };
+    showEditModal.value = false;
+    fetchDataInventaris();
+  } catch (error) {
+    console.error('Error saving edit pegawai:', error);
+  }
+};
+
+const getNamaCabang = (idCabang) => {
+  const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
+  return cabang ? cabang.nama_cabang : '';
+};
+
+const deleteInventaris = async (id_pinjam) => {
+  if (confirm("Apakah anda ingin menghapus data ini?")) {
+    try {
+      await api.delete(`/api/pi/${id_pinjam}`);
+      inventaris.value = inventaris.value.filter(inventaris => inventaris.id_inventaris !== id_pinjam);
+    } catch (error) {
+      console.error('Error deleting pegawai:', error);
+    }
+  }
+};
+
+const fetchDataPegawai = async () => {
+  try {
+    const response = await api.get('/api/pegawai');
+    pegawaiList.value = response.data.data.data; // Adjust based on the actual response structure
+  } catch (error) {
+    console.error('Error fetching pegawai list:', error);
+  }
+};
+
+const getNamaPegawai = (idPegawai) => {
+  const pegawai = pegawaiList.value.find(p => p.id_pegawai === idPegawai);
+  return pegawai ? pegawai.nama : '';
+};
+
+// Jalankan hook "onMounted"
+onMounted(() => {
+  fetchDataPegawai();
+  fetchDataInventaris();
+  fetchDataCabang();
 });
 </script>
 
@@ -75,32 +211,38 @@ const filteredPosts = computed(() => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:5%">ID</th>
-                      <th scope="col" style="width:15%">NAMA INVENTARIS</th>
-                      <th scope="col" style="width:15%">NAMA PEGAWAI</th>
-                      <th scope="col" style="width:12%">DURASI</th>
+                      <th scope="col" style="width:5%">ID PINJAM</th>
+                      <th scope="col" style="width:15%">INVENTARIS</th>
                       <th scope="col" style="width:15%">TANGGAL PINJAM</th>
-                      <th scope="col" style="width:15%">TANGGAL KEMBALI</th>
+                      <th scope="col" style="width:12%">TANGGAL KEMBALI</th>
+                      <th scope="col" style="width:15%">DURASI PINJAM</th>
+                      <th scope="col" style="width:15%">PEGAWAI</th>
                       <th scope="col" style="width:15%">KETERANGAN</th>
                       <th scope="col" style="width:25%">CABANG</th>
+                      <th scope="col">AKSI</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="filteredPosts.length === 0">
-                      <td colspan="8" class="text-center">
+                    <tr v-if="filteredInventaris.length === 0">
+                      <td colspan="11" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
                       </td>
                     </tr>
-                    <tr v-else v-for="(post, index) in filteredPosts" :key="index">
-                      <td class="text-center">{{ post.nomor_surat }}</td>
-                      <td>{{ post.nama_kategori }}</td>
-                      <td>{{ post.judul }}</td>
-                      <td>{{ post.created_at }}</td>
+                    <tr v-else v-for="(inventaris, index) in filteredInventaris" :key="index">
+                      <td class="text-center">{{ inventaris.id_pinjam }}</td>
+                      <td>{{ inventaris.inventaris }}</td>
+                      <td>{{ inventaris.tanggal_pinjam }}</td>
+                      <td>{{ inventaris.tanggal_kembali }}</td>
+                      <td>{{ inventaris.durasi_pinjam }}</td>
+                      <td>{{ getNamaPegawai(inventaris.pegawai) }}</td>
+                      <td>{{ inventaris.keterangan }}</td>
+                      <td>{{ getNamaCabang(inventaris.cabang) }}</td>
                       <td class="text-center">
-                        <router-link :to="{ name: '', params: { id: post.nomor_surat } }" class="btn btn-sm btn-primary rounded-sm shadow border-0 me-2">LIHAT</router-link>
-                      </td>
+                          <button @click="editInventaris(inventaris)" class="btn btn-sm btn-warning rounded-sm shadow border-0" style="margin-right: 7px;">EDIT</button>
+                          <button @click="deleteInventaris(inventaris.id_pinjam)" class="btn btn-sm btn-danger rounded-sm shadow border-0" style="margin-right: 7px;">HAPUS</button>
+                        </td>
                     </tr>
                   </tbody>
                 </table>
