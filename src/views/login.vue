@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useToast } from 'vue-toastification'; // Assuming you're using Vue Toastification
+import { useToast } from 'vue-toastification';
 import axios from 'axios';
-import '../style/login.css'; // Import specific CSS file for the login component
+import '../style/login.css';
 import '../style/font.css';
 
 import imageSrc from '../images/login_icon.svg';
@@ -11,7 +11,7 @@ import imageSrc from '../images/login_icon.svg';
 const name = ref('');
 const email = ref('');
 const password = ref('');
-const router = useRouter(); // Initialize the router
+const router = useRouter();
 const toast = useToast();
 
 const login = async () => {
