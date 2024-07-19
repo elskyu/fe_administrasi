@@ -1,5 +1,5 @@
   body {
-    background-color: rgb(2, 131, 145);
+    background-color: #5e72e4;
   }
 
   .card {
@@ -45,12 +45,12 @@
     margin-bottom: 1rem;
     margin-top: 1rem;
     padding-left: 40px;
-    background-color: rgb(2, 131, 145);
+    background-color: #5e72e4;
     color: #ffffff;
   }
 
   .form-control:focus {
-    background-color: rgba(2, 131, 145, 0.8);
+    background-color: #5e72e4;
     color: #ffffff;
   }
 

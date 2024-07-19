@@ -124,26 +124,28 @@ defineExpose({
     <!-- Create Event Modal -->
     <div v-if="showModal" class="modal">
       <div class="modal-content">
-        <span class="close" @click="showModal = false">&times;</span>
-        <h2>Create Event</h2>
+        <h2 style="text-align: center;">Create Event</h2>
         <form @submit.prevent="createEvent" class="form-container">
-          <div class="form-group-dashboard">
+          <div class="form-group">
             <label for="title">Title:</label>
             <input type="text" id="title" v-model="newEvent.title" required>
           </div>
           
-          <div class="form-group-dashboard">
+          <div class="form-group">
             <label for="start">Start:</label>
             <input type="datetime-local" id="start" v-model="newEvent.start" required>
           </div>
           
-          <div class="form-group-dashboard">
+          <div class="form-group">
             <label for="end">End:</label>
             <input type="datetime-local" id="end" v-model="newEvent.end" required>
           </div>
           
-          <div class="form-group-dashboard">
-            <button type="submit" class="btn btn-primary">Create</button>
+          <div class="form-group">
+            <div class="form-group-row">
+              <button type="submit" class="btn-modal-save">Tambah Agenda</button>
+              <button @click="showModal = false" class="btn-modal-batal">Batal</button>
+            </div>
           </div>
         </form>
       </div>

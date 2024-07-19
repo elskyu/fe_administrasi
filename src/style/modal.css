@@ -96,6 +96,14 @@
     border-radius: 3px;
     transition: transform 0.2s ease-in-out;
   }
+
+  .btn-modal-save:hover {
+    background-color: #1b8f36; /* Success button background color */
+    padding: 10px 30px;
+    color: #ffffff;
+    border-radius: 3px;
+    transition: transform 0.2s ease-in-out;
+  }
   
   .btn-modal-save:active {
     transform: scale(0.95);
@@ -106,6 +114,14 @@
     border-color: #dc3545; /* Danger button border color */
     padding: 10px 30px;
     color: white;
+    border-radius: 3px;
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .btn-modal-batal:hover {
+    background-color: #a02431; /* Success button background color */
+    padding: 10px 30px;
+    color: #ffffff;
     border-radius: 3px;
     transition: transform 0.2s ease-in-out;
   }

@@ -47,7 +47,7 @@ const login = async () => {
 
 <template>
     <div class="login-container mt-5">
-        <div class="row justify-content-center" style="margin-left: 55px; margin-top: 25px;">
+        <div class="row justify-content-center" style="margin-left: 75px; margin-top: 25px;">
             <div class="col-md-6">              
                     <div class="card-body-login">
                         <div class="login-card-title text-center mb-4">
@@ -77,7 +77,7 @@ const login = async () => {
                     </div>
             </div>
         </div>
-        <svg class="background-svg" width="501" height="433" viewBox="0 0 501 433" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="background-svg" width="451" height="383" viewBox="0 0 501 433" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M167.764 53.3929C79.2472 61.7489 19.0394 -4.05405 0 -38L564 -35.7152V433H501.007C305.957 408.193 338.792 309.293 379.59 262.944C403.417 230.412 446.5 152.032 428.222 98.763C405.375 32.1767 278.41 42.948 167.764 53.3929Z"/>
       </svg>
       <svg class="background-svg2" width="195" height="195" viewBox="0 0 195 195" fill="none" xmlns="http://www.w3.org/2000/svg">
