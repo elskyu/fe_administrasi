@@ -32,11 +32,11 @@ export default {
       return localStorage.getItem('userType');
     });
     const isLoginRoute = computed(() => {
-      return route.name === 'login' || route.name === 'error'; // Check if current route is login or error
+      return route.name === 'login' || route.name === 'error';
     });
 
     const showSidebar = computed(() => {
-      return !isLoginRoute.value; // Hide sidebar on login route
+      return !isLoginRoute.value;
     });
 
     onMounted(() => {
@@ -46,7 +46,7 @@ export default {
           store.dispatch('auth/clearToken');
           router.push({ name: 'error' });
         }
-      }, 25000); // Cek setiap 5 detik
+      }, 25000);
 
       onUnmounted(() => {
         clearInterval(interval);
@@ -61,6 +61,5 @@ export default {
 <style>
 .content-area {
   padding: 20px;
-  /* Add styles for main content area here */
 }
 </style>

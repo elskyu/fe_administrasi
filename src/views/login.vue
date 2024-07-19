@@ -21,12 +21,11 @@ const login = async () => {
       password: password.value,
     });
     const userType = response.data.userType;
-    const token = response.data.token; // Sesuaikan dengan respon API Anda
+    const token = response.data.token;
     
     console.log(response.data);
-    // Handle successful login (e.g., store token)
-    // Show success toast and then reload the page
-    localStorage.setItem('token', token); // Simpan token di localStorage
+
+    localStorage.setItem('token', token)
     localStorage.setItem('userType', userType);
     
     toast.success(`Login berhasil sebagai ${userType}`);
@@ -35,12 +34,11 @@ const login = async () => {
       router.push({ name: 'dashboard.dashboard' }).then(() => {
         window.location.reload();
       });
-    }, 1500); // Adjust the delay as needed
+    }, 1500);
     
   } catch (error) {
     console.error(error);
     toast.error('Login gagal, periksa kembali email dan password Anda');
-    // Handle error (e.g., show0error message to the user)
   }
 };
 </script>

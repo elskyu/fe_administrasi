@@ -9,17 +9,12 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import api from '../api'; // Sesuaikan dengan path yang benar untuk instance api
+import api from '../api';
 
 const router = useRouter();
 
 const redirectToLogin = async () => {
   try {
-    // Kirim permintaan logout ke backend menggunakan instance api
-    // const response = await api.post('/api/logout');
-    // console.log('Logout response:', response); // Debugging log
-
-    // Redirect ke rute login
     router.push({ name: 'login' }).then(() => {
       window.location.reload();
     });
