@@ -127,22 +127,22 @@ defineExpose({
         <span class="close" @click="showModal = false">&times;</span>
         <h2>Create Event</h2>
         <form @submit.prevent="createEvent" class="form-container">
-          <div class="form-group">
+          <div class="form-group-dashboard">
             <label for="title">Title:</label>
             <input type="text" id="title" v-model="newEvent.title" required>
           </div>
           
-          <div class="form-group">
+          <div class="form-group-dashboard">
             <label for="start">Start:</label>
             <input type="datetime-local" id="start" v-model="newEvent.start" required>
           </div>
           
-          <div class="form-group">
+          <div class="form-group-dashboard">
             <label for="end">End:</label>
             <input type="datetime-local" id="end" v-model="newEvent.end" required>
           </div>
           
-          <div class="form-group">
+          <div class="form-group-dashboard">
             <button type="submit" class="btn btn-primary">Create</button>
           </div>
         </form>
@@ -183,19 +183,19 @@ defineExpose({
         <span class="close" @click="editModal.show = false">&times;</span>
         <h2>Edit Event</h2>
         <form @submit.prevent="updateEvent">
-          <div class="form-group">
+          <div class="form-group-dashboard">
             <label for="edit-title">Title:</label>
             <input type="text" id="edit-title" v-model="editModal.event.title" required>
           </div>
-          <div class="form-group">
+          <div class="form-group-dashboard">
             <label for="edit-start">Start:</label>
             <input type="datetime-local" id="edit-start" v-model="editModal.event.start" required>
           </div>
-          <div class="form-group">
+          <div class="form-group-dashboard">
             <label for="edit-end">End:</label>
             <input type="datetime-local" id="edit-end" v-model="editModal.event.end" required>
           </div>
-          <div class="form-group">
+          <div class="form-group-dashboard">
             <button type="submit" class="btn btn-primary">Save</button>
           </div>
         </form>

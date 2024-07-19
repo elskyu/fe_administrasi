@@ -1,4 +1,5 @@
 <script setup>
+import axios from 'axios';
 import '../style/sidebar.css';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -10,12 +11,28 @@ const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
   console.log('Dropdown state:', showDropdown.value); // Debugging log
 };
-const logoutAndReload = () => {
+
+const logoutAndReload = async () => {
+  try {
+    // Adjust the URL as needed
+    const response = await axios.post('http://localhost:8000/api/logout', {}, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}` // Adjust if using another method of storing tokens
+      }
+    });
+    if (response.data.success) {
       router.push({ name: 'login' }).then(() => {
         window.location.reload();
       });
-    };
+    } else {
+      console.error('Logout failed:', response.data.message);
+    }
+  } catch (error) {
+    console.error('An error occurred during logout:', error);
+  }
+};
 </script>
+
 
 <template>
     <div class="d-flex">
