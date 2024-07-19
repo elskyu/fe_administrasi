@@ -10,6 +10,7 @@ import '/src/style/modal.css';
 // State untuk menyimpan data inventaris
 const pemakaianList = ref([]);
 const cabangList = ref([]);
+const inventarisList = ref([]);
 const pegawaiList = ref([]);
 const currentPemakaianId = ref(null);
 const searchQuery = ref('');
@@ -62,18 +63,25 @@ const fetchDataCabang = async () => {
   }
 };
 
+const fetchDataInventaris = async () => {
+  try {
+    const response = await api.get('/api/inventaris');
+    inventarisList.value = response.data.data.data; // Adjust based on the actual response structure
+  } catch (error) {
+    console.error('Error fetching cabang list:', error);
+  }
+};
+
 const editPemakaian = (p) => {
-  currentPemakaianId.value = p.id_inventaris;
+  currentPemakaianId.value = p.id_pinjam;
   editFormData.value = {
-    id_inventaris: p.id_inventaris,
-    nopol: p.nopol,
-    merek: p.merek,
-    kategori: p.kategori,
-    tahun: p.tahun,
-    pajak: p.pajak,
-    masa_pajak: p.masa_pajak,
-    harga_beli: p.harga_beli,
-    tanggal_beli: p.tanggal_beli,
+    id_pinjam: p.id_pinjam,
+    inventaris: p.inventaris,
+    tanggal_pinjam: p.tanggal_pinjam,
+    tanggal_kembali: p.tanggal_kembali,
+    durasi_pinjam: p.durasi_pinjam,
+    pegawai: p.pegawai,
+    keterangan: p.keterangan,
     cabang: p.cabang, // Pastikan cabang_id diambil dari p.cabang.id_cabang
   };
   showEditModal.value = true;
@@ -185,6 +193,7 @@ onMounted(() => {
   fetchDataPegawai();
   fetchDataPemakaian();
   fetchDataCabang();
+  fetchDataInventaris();
 });
 </script>
 
@@ -270,7 +279,10 @@ onMounted(() => {
             </div>
             <div class="form-group">
                 <label for="inventaris" style="width: 195px;">Nama Inven</label>
-                <input type="text" id="inventaris" v-model="addFormData.inventaris" />
+                <!-- <input type="text" id="inventaris" v-model="addFormData.inventaris" /> -->
+                <select id="inventaris" v-model="addFormData.inventaris">
+                  <option v-for="i in inventarisList" :value="i.id_inventaris" :key="i.id_inventaris">{{ i.merek }}</option>
+              </select>
             </div>
         </div>
         <div class="form-group-row">
@@ -306,6 +318,60 @@ onMounted(() => {
         <div class="form-actions">
           <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewPemakaian">Simpan Perubahan</button>
           <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Simple Pop-up Modal -->
+    <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
+      <div class="modal-content">
+        <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH PEMAKAIAN INVENTARIS</h4>
+        <div class="form-group-row">
+            <div class="form-group">
+                <label for="id_pinjam" style="width: 195px;">ID Inven</label>
+                <input type="text" id="id_pinjam" v-model="editFormData.id_pinjam" />
+            </div>
+            <div class="form-group">
+                <label for="inventaris" style="width: 195px;">Nama Inven</label>
+                <!-- <input type="text" id="inventaris" v-model="editFormData.inventaris" /> -->
+                <select id="inventaris" v-model="editFormData.inventaris">
+                  <option v-for="i in inventarisList" :value="i.id_inventaris" :key="i.id_inventaris">{{ i.merek }}</option>
+              </select>
+            </div>
+        </div>
+        <div class="form-group-row">
+            <div class="form-group">
+                <label for="pegawai" style="width: 195px;">Nama Pegawai</label>
+                <input type="text" id="pegawai" v-model="editFormData.pegawai" />
+            </div>
+            <div class="form-group">
+                <label for="durasi_pinjam" style="width: 195px;">Durasi</label>
+                <input type="time" id="durasi_pinjam" v-model="editFormData.durasi_pinjam" />
+            </div>
+        </div>
+        <div class="form-group-row">
+          <div class="form-group">
+            <label for="tanggal_pinjam" style="width: 195px;">Tanggal Pinjam</label>
+            <input type="date" id="tanggal_pinjam" v-model="editFormData.tanggal_pinjam" />
+          </div>
+          <div class="form-group">
+            <label for="tanggal_kembali" style="width: 195px;">Tanggal Kembali</label>
+            <input type="date" id="tanggal_kembali" v-model="editFormData.tanggal_kembali" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="keterangan">Keterangan</label>
+          <input type="text" id="keterangan" v-model="editFormData.keterangan" />
+        </div>
+        <div class="form-group">
+           <label for="cabang">Cabang</label>
+              <select id="cabang" v-model="editFormData.cabang">
+                  <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+              </select>
+        </div>     
+        <div class="form-actions">
+          <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditPemakaian">Simpan Perubahan</button>
+          <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
         </div>
       </div>
     </div>
