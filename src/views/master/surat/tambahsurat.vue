@@ -201,7 +201,7 @@ onMounted(() => {
         <input type="text" id="jenis_surat" v-model="editFormData.jenis_surat" />
       </div>
       <div class="form-actions">
-        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditSurat">Update Perubahans</button>
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditSurat">Update Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
       </div>
     </div>
