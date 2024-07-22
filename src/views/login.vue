@@ -6,19 +6,12 @@ import { useToast } from 'vue-toastification';
 import axios from 'axios';
 import '../style/login.css';
 import '../style/font.css';
-
 import imageSrc from '../images/login_icon.svg';
 
-const name = ref('');
 const email = ref('');
 const password = ref('');
 const router = useRouter();
 const toast = useToast();
-
-// onMounted(() => {
-//   localStorage.removeItem('token');
-//   localStorage.removeItem('userType');
-// });
 
 const login = async () => {
   try {
@@ -28,14 +21,10 @@ const login = async () => {
     });
     const userType = response.data.userType;
     const token = response.data.token;
-    
     console.log(response.data);
-
     localStorage.setItem('token', token)
     localStorage.setItem('userType', userType);
-    
     toast.success(`Login berhasil sebagai ${userType}`);
-    
     setTimeout(() => {
       router.push({ name: 'dashboard.dashboard' }).then(() => {
         window.location.reload();
