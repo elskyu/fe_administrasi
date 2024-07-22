@@ -89,18 +89,20 @@ const editPemakaian = (p) => {
 
 // Properti computed untuk memfilter inventaris berdasarkan query pencarian
 const filteredPemakaian = computed(() => {
-  if (!searchQuery.value) {
+  const query = searchQuery.value.toLowerCase();
+  if (!query) {
     return pemakaianList.value;
   }
   return pemakaianList.value.filter(pemakaian =>
-    pemakaian.nopol.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    pemakaian.merek.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    pemakaian.kategori.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    pemakaian.tahun.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    pemakaian.pajak.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    pemakaian.masa_pajak.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    pemakaian.harga_beli.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    pemakaian.tanggal_beli.toLowerCase().includes(searchQuery.value.toLowerCase())
+    pemakaian.nopol.toLowerCase().includes(query) ||
+    pemakaian.merek.toLowerCase().includes(query) ||
+    pemakaian.kategori.toLowerCase().includes(query) ||
+    pemakaian.tahun.toLowerCase().includes(query) ||
+    pemakaian.pajak.toLowerCase().includes(query) ||
+    pemakaian.keterangan.toLowerCase().includes(query) ||
+    pemakaian.harga_beli.toLowerCase().includes(query) ||
+    pemakaian.tanggal_beli.toLowerCase().includes(query) ||
+    getNamaCabang(pemakaian.cabang).toLowerCase().includes(query)
   );
 });
 
@@ -216,10 +218,10 @@ onMounted(() => {
                     </div>
     
                     <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
-                        <!-- Search Bar -->
                         <div class="d-flex justify-content-end">
-                            <button @click="handleSearch" class="btn btn-primary">FILTER</button>
-                        </div>
+                          <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat" style="margin-right: 10px; width: 300px;">
+                            <button   class="btn btn-primary">FILTER</button>
+                    </div>
                 </div>
                 
                 <table class="table table-bordered">

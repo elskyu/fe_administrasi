@@ -8,12 +8,9 @@ import '/src/style/modal.css';
 import '/src/style/admin.css';
 
 // State untuk menyimpan data surat masuk
-const suratMasuk = ref([]);
+const suratKeluar = ref([]);
 const cabangList = ref([]);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
-
-// State untuk mengontrol modal tambah dan edit
 const showAddModal = ref(false);
 
 // Form data untuk tambah surat masuk
@@ -28,11 +25,11 @@ const addFormData = ref({
 });
 
 // Ambil data surat masuk dari API
-const fetchDataSuratMasuk = async () => {
+const fetchDataSuratKeluar = async () => {
   try {
     const response = await api.get('/api/sk');
     console.log(response); // Untuk inspeksi struktur respons
-    suratMasuk.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+    suratKeluar.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
   } catch (error) {
     console.error('Error fetching surat masuk:', error);
   }
@@ -49,20 +46,18 @@ const fetchDataCabang = async () => {
 
 
 // Properti computed untuk memfilter surat masuk berdasarkan query pencarian
-const filteredSuratMasuk = computed(() => {
-  if (!searchQuery.value) {
-    return suratMasuk.value;
+const filteredSuratKeluar = computed(() => {
+  const query = searchQuery.value.toLowerCase();
+  if (!query) {
+    return suratKeluar.value;
   }
-  return suratMasuk.value.filter(s =>
-    s.nomor_surat.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    s.perihal.toLowerCase().includes(searchQuery.value.toLowerCase())
+  return suratKeluar.value.filter(s =>
+    s.nomor_surat.toLowerCase().includes(query) ||
+    s.perihal.toLowerCase().includes(query) ||
+    s.tujuan_surat.toLowerCase().includes(query) ||
+    getNamaCabang(s.cabang).toLowerCase().includes(query)
   );
 });
-
-// Metode untuk menangani klik tombol pencarian
-const handleSearch = () => {
-  searchQuery.value = tempSearchQuery.value;
-};
 
 // Fungsi untuk menyimpan data surat masuk baru
 const saveNewSuratMasuk = async () => {
@@ -81,22 +76,20 @@ const saveNewSuratMasuk = async () => {
     // Tutup modal tambah
     showAddModal.value = false;
     // Muat ulang daftar surat masuk
-    fetchDataSuratMasuk();
+    fetchDataSuratKeluar();
   } catch (error) {
     console.error('Error saving new surat masuk:', error);
   }
 };
-
 
 const getNamaCabang = (idCabang) => {
   const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
   return cabang ? cabang.nama_cabang : '';
 };
 
-
 // Jalankan hook "onMounted"
 onMounted(() => {
-  fetchDataSuratMasuk();
+  fetchDataSuratKeluar();
   fetchDataCabang();
 });
 </script>
@@ -122,7 +115,8 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
+                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat" style="margin-right: 10px; width: 300px;">
+                    <button class="btn btn-primary ml-2">FILTER</button>
                   </div>
                 </div>
               
@@ -140,14 +134,14 @@ onMounted(() => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="filteredSuratMasuk.length === 0">
+                  <tr v-if="filteredSuratKeluar.length === 0">
                     <td colspan="8" class="text-center">
                       <div class="alert alert-danger mb-0">
                         Data Belum Tersedia!
                       </div>
                     </td>
                   </tr>
-                  <tr v-else v-for="(s, index) in filteredSuratMasuk" :key="index">
+                  <tr v-else v-for="(s, index) in filteredSuratKeluar" :key="index">
                     <td class="text-center">{{ s.id_surat_keluar }}</td>
                     <td class="text-center">{{ s.nomor_surat }}</td>
                     <td>{{ s.tanggal_surat }}</td>
@@ -169,7 +163,7 @@ onMounted(() => {
   <!-- Modal untuk menambah surat masuk baru -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">TAMBAH SURAT MASUK</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">TAMBAH SURAT KELUAR</h4>
       <div class="form-group">
         <label for="id_surat_keluar">ID Surat Keluar</label>
         <input type="text" id="id_surat_keluar" v-model="addFormData.id_surat_keluar" />

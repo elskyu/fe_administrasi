@@ -53,8 +53,6 @@ const editAdmin = (admin) => {
   showEditModal.value = true;
 };
 
-
-
 // Function to delete an admin
 const deleteAdmin = async (id_admin) => {
   if (confirm("Apakah anda ingin menghapus data ini?")) {

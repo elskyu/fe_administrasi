@@ -79,11 +79,14 @@ const deleteRuang = async (id_ruang) => {
 
 // Computed property to filter ruang based on search query
 const filteredRuang = computed(() => {
-  if (!searchQuery.value) {
+  const query = searchQuery.value.toLowerCase();
+  if (!query) {
     return ruang.value;
   }
   return ruang.value.filter(r => 
-    r.nama_ruang.toLowerCase().includes(searchQuery.value.toLowerCase())
+    r.nama_ruang.toLowerCase().includes(query) ||
+    r.id_ruang.toLowerCase().includes(query) ||
+    getNamaCabang(r.cabang).toLowerCase().includes(query)
   );
 });
 
@@ -161,7 +164,8 @@ onMounted(() => {
   
                   <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                     <div class="d-flex justify-content-end">
-                      <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat" style="margin-right: 10px; width: 300px;">
+                      <button class="btn btn-primary ml-2">FILTER</button>
                     </div>
                   </div>
                 

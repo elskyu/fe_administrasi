@@ -96,16 +96,18 @@ const deletePegawai = async (id_pegawai) => {
 };
 
 const filteredPegawai = computed(() => {
-  if (!searchQuery.value) {
+  const query = searchQuery.value.toLowerCase();
+  if (!query) {
     return pegawai.value;
   }
   return pegawai.value.filter(p =>
-    p.nip.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    p.nama.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    p.email.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    p.departement.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    p.alamat.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    p.no_hp.toLowerCase().includes(searchQuery.value.toLowerCase())
+    p.nip.toLowerCase().includes(query) ||
+    p.nama.toLowerCase().includes(query) ||
+    p.email.toLowerCase().includes(query) ||
+    p.departement.toLowerCase().includes(query) ||
+    p.alamat.toLowerCase().includes(query) ||
+    p.no_hp.toLowerCase().includes(query) ||
+    getNamaCabang(p.cabang).toLowerCase().includes(query)
   );
 });
 
@@ -199,6 +201,7 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
+                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat" style="margin-right: 10px; width: 300px;">
                     <button @click="handleSearch" class="btn btn-primary">FILTER</button>
                   </div>
                 </div>

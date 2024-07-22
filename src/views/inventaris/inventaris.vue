@@ -18,6 +18,9 @@ const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
+// State untuk kontrol visibility dropdown menu
+const showDropdown = ref(false);
+
 // Form data untuk tambah inventaris
 const addFormData = ref({
   id_inventaris: '',
@@ -84,25 +87,23 @@ const editInventaris = (i) => {
 
 // Properti computed untuk memfilter inventaris berdasarkan query pencarian
 const filteredInventaris = computed(() => {
-  if (!searchQuery.value) {
+  const query = searchQuery.value.toLowerCase();
+  if (!query) {
     return inventarisList.value;
   }
   return inventarisList.value.filter(inventaris =>
-    inventaris.nopol.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.merek.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.kategori.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.tahun.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.pajak.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.masa_pajak.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.harga_beli.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    inventaris.tanggal_beli.toLowerCase().includes(searchQuery.value.toLowerCase())
+    inventaris.nopol.toLowerCase().includes(query) ||
+    inventaris.merek.toLowerCase().includes(query) ||
+    inventaris.kategori.toLowerCase().includes(query) ||
+    inventaris.tahun.toLowerCase().includes(query) ||
+    inventaris.pajak.toLowerCase().includes(query) ||
+    inventaris.masa_pajak.toLowerCase().includes(query) ||
+    inventaris.harga_beli.toLowerCase().includes(query) ||
+    inventaris.tanggal_beli.toLowerCase().includes(query) ||
+    getNamaCabang(inventaris.cabang).toLowerCase().includes(query)
   );
 });
 
-// Metode untuk menangani klik tombol pencarian
-const handleSearch = () => {
-  searchQuery.value = tempSearchQuery.value;
-};
 
 // Fungsi untuk menyimpan data inventaris baru
 const saveNewInventaris = async () => {
@@ -195,7 +196,8 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
+                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari inventaris" style="margin-right: 10px; width: 300px;">
+                    <button class="btn btn-primary ml-2">FILTER</button>
                   </div>
                 </div>
               

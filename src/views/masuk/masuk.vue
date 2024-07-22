@@ -51,19 +51,17 @@ const fetchDataCabang = async () => {
 
 // Properti computed untuk memfilter surat masuk berdasarkan query pencarian
 const filteredSuratMasuk = computed(() => {
-  if (!searchQuery.value) {
+  const query = searchQuery.value.toLowerCase();
+  if (!query) {
     return suratMasuk.value;
   }
   return suratMasuk.value.filter(s =>
-    s.nomor_surat.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    s.perihal.toLowerCase().includes(searchQuery.value.toLowerCase())
+    s.nomor_surat.toLowerCase().includes(query) ||
+    s.perihal.toLowerCase().includes(query) ||
+    s.asal_surat.toLowerCase().includes(query) ||
+    getNamaCabang(s.cabang).toLowerCase().includes(query)
   );
 });
-
-// Metode untuk menangani klik tombol pencarian
-const handleSearch = () => {
-  searchQuery.value = tempSearchQuery.value;
-};
 
 // Fungsi untuk menyimpan data surat masuk baru
 const saveNewSuratMasuk = async () => {
@@ -88,19 +86,15 @@ const saveNewSuratMasuk = async () => {
   }
 };
 
-
 const getNamaCabang = (idCabang) => {
   const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
   return cabang ? cabang.nama_cabang : '';
 };
 
-
-
 // Jalankan hook "onMounted"
 onMounted(() => {
   fetchDataSuratMasuk();
   fetchDataCabang();
-  
 });
 </script>
 
@@ -125,6 +119,7 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
+                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat" style="margin-right: 10px; width: 300px;">
                     <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
                   </div>
                 </div>

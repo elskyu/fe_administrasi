@@ -98,16 +98,18 @@ const editReservasi = (r) => {
 
 // Properti computed untuk memfilter reservasi berdasarkan query pencarian
 const filteredReservasi = computed(() => {
-  if (!searchQuery.value) {
+  const query = searchQuery.value.toLowerCase();
+  if (!query) {
     return reservasiList.value;
   }
   return reservasiList.value.filter(reservasi =>
-    reservasi.ruang.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    reservasi.tanggal_reservasi.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    reservasi.tanggal_selesai.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    reservasi.durasi.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    reservasi.pegawai.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    reservasi.keterangan.toLowerCase().includes(searchQuery.value.toLowerCase())
+    getNamaRuang(reservasi.ruang).toLowerCase().includes(query) ||
+    reservasi.tanggal_reservasi.toLowerCase().includes(query) ||
+    reservasi.tanggal_selesai.toLowerCase().includes(query) ||
+    reservasi.durasi.toLowerCase().includes(query) ||
+    reservasi.pegawai.toLowerCase().includes(query) ||
+    reservasi.keterangan.toLowerCase().includes(query) ||
+    getNamaCabang(reservasi.cabang).toLowerCase().includes(query)
   );
 });
 
@@ -227,6 +229,7 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
+                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari buku" style="margin-right: 10px; width: 300px;">
                     <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
                   </div>
                 </div>

@@ -62,11 +62,13 @@ const deleteSurat = async (kode_surat) => {
 
 // Computed property to filter surat based on search query
 const filteredSurat = computed(() => {
-  if (!searchQuery.value) {
+  const query = searchQuery.value.toLowerCase();
+  if (!query) {
     return surat.value;
   }
   return surat.value.filter(s => 
-    s.jenis_surat.toLowerCase().includes(searchQuery.value.toLowerCase())
+    s.jenis_surat.toLowerCase().includes(query) ||
+    s.kode_surat.toLowerCase().includes(query)
   );
 });
 
@@ -131,7 +133,8 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
+                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat" style="margin-right: 10px; width: 300px;">
+                    <button class="btn btn-primary ml-2">FILTER</button>
                   </div>
                 </div>
               
