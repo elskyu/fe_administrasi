@@ -68,18 +68,16 @@ const deleteAdmin = async (id_admin) => {
 
 // Computed property to filter admins based on search query
 const filteredAdmins = computed(() => {
-  if (!searchQuery.value) {
+  const query = searchQuery.value.toLowerCase();
+  if (!query) {
     return admins.value;
   }
   return admins.value.filter(admin => 
-    admin.nama.toLowerCase().includes(searchQuery.value.toLowerCase())
+    admin.nama.toLowerCase().includes(query) ||
+    admin.email.toLowerCase().includes(query)
   );
 });
 
-// Method to handle the search button click
-const handleSearch = () => {
-  searchQuery.value = tempSearchQuery.value;
-};
 
 // Function to handle form submission for adding a new admin
 const saveNewAdmin = async () => {
@@ -151,7 +149,8 @@ onMounted(() => {
   
                   <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                     <div class="d-flex justify-content-end">
-                      <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari admin" style="margin-right: 10px; width: 300px;">
+                      <button class="btn btn-primary ml-2">FILTER</button>
                     </div>
                   </div>
                 

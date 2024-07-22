@@ -62,18 +62,14 @@ const deleteDepartment = async (id_departement) => {
 
 // Computed property to filter departments based on search query
 const filteredDepartments = computed(() => {
-  if (!searchQuery.value) {
+  const query = searchQuery.value.toLowerCase();
+  if (!query) {
     return departments.value;
   }
   return departments.value.filter(department => 
-    department.nama_departement.toLowerCase().includes(searchQuery.value.toLowerCase())
+    department.nama_departement.toLowerCase().includes(query)
   );
 });
-
-// Method to handle the search button click
-const handleSearch = () => {
-  searchQuery.value = tempSearchQuery.value;
-};
 
 // Function to handle form submission for adding a new department
 const saveNewDepartment = async () => {
@@ -131,6 +127,7 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
+                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari departemen" style="margin-right: 10px; width: 300px;">
                     <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
                   </div>
                 </div>
