@@ -41,7 +41,7 @@ export default {
 
     onMounted(() => {
       const interval = setInterval(() => {
-        const token = store.state.auth.token;
+        const token = localStorage.getItem('token');
         if (isTokenExpired(token)) {
           store.dispatch('auth/clearToken');
           router.push({ name: 'error' });

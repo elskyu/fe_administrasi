@@ -14,9 +14,12 @@ import api from '../api';
 const router = useRouter();
 
 const redirectToLogin = async () => {
+  
   try {
     router.push({ name: 'login' }).then(() => {
       window.location.reload();
+      localStorage.removeItem('token');
+      localStorage.removeItem('userType');
     });
   } catch (error) {
     console.error('Logout failed:', error);

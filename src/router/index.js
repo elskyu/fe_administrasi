@@ -90,7 +90,7 @@ const router = createRouter({
 
 // Navigational Guard Global
 router.beforeEach((to, from, next) => {
-  const token = store.state.auth.token;
+  const token = localStorage.getItem('token');
 
   if (to.name !== 'login' && to.name !== 'error' && isTokenExpired(token)) {
     next({ name: 'error' });
