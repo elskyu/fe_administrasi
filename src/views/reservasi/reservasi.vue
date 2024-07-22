@@ -229,7 +229,7 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari buku" style="margin-right: 10px; width: 300px;">
+                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari reservasi" style="margin-right: 10px; width: 300px;">
                     <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
                   </div>
                 </div>
