@@ -35,3 +35,7 @@
   .table tbody tr:hover {
     background-color: #e9ecef; /* Background color on hover */
   }
+
+  .dropdown-toggle {
+    position: relative;
+  }

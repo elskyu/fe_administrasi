@@ -48,7 +48,7 @@
     background-color: #5e72e4;
     color: #ffffff;
   }
-
+ 
   .form-control:focus {
     background-color: #5e72e4;
     color: #ffffff;
@@ -101,4 +101,15 @@
     z-index: -1;
   }
   
-  
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 30px #5e72e4 inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+}

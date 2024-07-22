@@ -127,20 +127,19 @@ defineExpose({
         <h2 style="text-align: center;">Create Event</h2>
         <form @submit.prevent="createEvent" class="form-container">
           <div class="form-group">
-            <label for="title">Title:</label>
+            <label for="title">Agenda</label>
             <input type="text" id="title" v-model="newEvent.title" required>
           </div>
           
           <div class="form-group">
-            <label for="start">Start:</label>
+            <label for="start">Mulai</label>
             <input type="datetime-local" id="start" v-model="newEvent.start" required>
           </div>
           
           <div class="form-group">
-            <label for="end">End:</label>
+            <label for="end">Selesai</label>
             <input type="datetime-local" id="end" v-model="newEvent.end" required>
-          </div>
-          
+          </div>      
           <div class="form-group">
             <div class="form-group-row">
               <button type="submit" class="btn-modal-save">Tambah Agenda</button>
@@ -154,8 +153,8 @@ defineExpose({
     <!-- View Events Modal -->
     <div v-if="viewModal" class="modal">
       <div class="modal-content">
-        <span class="close" @click="viewModal = false">&times;</span>
-        <h2>All Events</h2>
+        <span class="close" @click="viewModal = false" style="padding: 3px 10px; background-color: red; border-radius: 2px; color: white;">&times;</span>
+        <h2 style="text-align: center;">All Events</h2>
         <div class="event-list">
           <div v-for="event in events" :key="event.id" class="event-item">
             <div>
@@ -182,23 +181,25 @@ defineExpose({
     <!-- Edit Event Modal -->
     <div v-if="editModal.show" class="modal">
       <div class="modal-content">
-        <span class="close" @click="editModal.show = false">&times;</span>
-        <h2>Edit Event</h2>
+        <h2 style="text-align: center;">Edit Event</h2>
         <form @submit.prevent="updateEvent">
-          <div class="form-group-dashboard">
+          <div class="form-group">
             <label for="edit-title">Title:</label>
             <input type="text" id="edit-title" v-model="editModal.event.title" required>
           </div>
-          <div class="form-group-dashboard">
+          <div class="form-group">
             <label for="edit-start">Start:</label>
             <input type="datetime-local" id="edit-start" v-model="editModal.event.start" required>
           </div>
-          <div class="form-group-dashboard">
+          <div class="form-group">
             <label for="edit-end">End:</label>
             <input type="datetime-local" id="edit-end" v-model="editModal.event.end" required>
           </div>
-          <div class="form-group-dashboard">
-            <button type="submit" class="btn btn-primary">Save</button>
+          <div class="form-group">
+            <div class="form-group-row">
+              <button type="submit" class="btn-modal-save">Update Perubahan</button>
+              <button @click="editModal.show = false" class="btn-modal-batal">Batal</button>
+            </div>
           </div>
         </form>
       </div>
