@@ -7,22 +7,17 @@ import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 
-// State for storing cabang
 const cabang = ref([]);
-const searchQuery = ref(''); // State for search query
-const tempSearchQuery = ref(''); // Temporary state for holding input value
-
-// State to control modals visibility
+const searchQuery = ref('');
+const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
-// Form data for adding a new cabang
 const addFormData = ref({
   id_cabang: '',
   nama_cabang: '',
 });
 
-// Form data for editing an existing cabang
 const editFormData = ref({
   id_cabang: '',
   nama_cabang: '',
@@ -30,12 +25,11 @@ const editFormData = ref({
 
 const currentCabangId = ref(null);
 
-// Function to fetch cabang from the API
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    console.log(response); // Log the response to inspect its structure
-    cabang.value = response.data.data.data; // Adjust based on the actual response structure
+    console.log(response);
+    cabang.value = response.data.data;
   } catch (error) {
     console.error('Error fetching cabang:', error);
   }
@@ -47,20 +41,18 @@ const editCabang = (c) => {
   showEditModal.value = true;
 };
 
-// Function to delete a cabang
 const deleteCabang = async (id_cabang) => {
   if (confirm("Apakah anda ingin menghapus data ini?")) {
     try {
       await api.delete(`/api/cabang/${id_cabang}`);
-      // Remove the deleted cabang from the cabang array
       cabang.value = cabang.value.filter(c => c.id_cabang !== id_cabang);
+      generateNewCabangId();
     } catch (error) {
       console.error('Error deleting cabang:', error);
     }
   }
 };
 
-// Computed property to filter cabang based on search query
 const filteredCabang = computed(() => {
   if (!searchQuery.value) {
     return cabang.value;
@@ -70,44 +62,66 @@ const filteredCabang = computed(() => {
   );
 });
 
-// Method to handle the search button click
 const handleSearch = () => {
   searchQuery.value = tempSearchQuery.value;
 };
 
-// Function to handle form submission for adding a new cabang
 const saveNewCabang = async () => {
   try {
     await api.post('/api/cabang', addFormData.value);
-    // Reset form data
     addFormData.value = { id_cabang: '', nama_cabang: '' };
-    // Close the modal
     showAddModal.value = false;
-    // Refresh the cabang list
     fetchDataCabang();
+    generateNewCabangId();
   } catch (error) {
     console.error('Error saving new cabang:', error);
   }
 };
 
-// Function to handle form submission for editing a cabang
 const saveEditCabang = async () => {
   try {
     await api.put(`/api/cabang/${currentCabangId.value}`, editFormData.value);
-    // Reset form data
     editFormData.value = { id_cabang: '', nama_cabang: '' };
-    // Close the modal
     showEditModal.value = false;
-    // Refresh the cabang list
     fetchDataCabang();
+    generateNewCabangId();
   } catch (error) {
     console.error('Error saving edit cabang:', error);
   }
 };
 
-// Run hook "onMounted"
+const generateNewCabangId = async () => {
+  try {
+    const response = await api.get('/api/cabang');
+    const cabangList = response.data.data;
+
+    if (cabangList.length === 0) {
+      addFormData.value.id_cabang = "CAB001";
+    } else {
+      const existingIds = cabangList.map(c => parseInt(c.id_cabang.slice(3)));
+      existingIds.sort((a, b) => a - b);
+
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+
+      addFormData.value.id_cabang = `CAB${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new cabang ID:', error);
+  }
+};
+
 onMounted(() => {
   fetchDataCabang();
+  generateNewCabangId();
 });
 </script>
 
