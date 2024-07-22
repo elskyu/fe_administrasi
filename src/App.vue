@@ -42,10 +42,15 @@ export default {
     onMounted(() => {
       const interval = setInterval(() => {
         const token = localStorage.getItem('token');
-        if (isTokenExpired(token)) {
+        if (!isLoginRoute.value){
+          if (isTokenExpired(token)) {
           store.dispatch('auth/clearToken');
           router.push({ name: 'error' });
+        }else{
+          // tidak apa-apa
         }
+        }
+        
       }, 25000);
 
       onUnmounted(() => {
