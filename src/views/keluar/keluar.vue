@@ -1,51 +1,62 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../api'; // Sesuaikan dengan struktur folder dan file yang benar
+import api from '../../api';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 
-// State untuk menyimpan data surat masuk
+// State untuk menyimpan data surat keluar
 const suratKeluar = ref([]);
 const cabangList = ref([]);
+const kodeSuratList = ref([]);
 const searchQuery = ref('');
 const showAddModal = ref(false);
 
-// Form data untuk tambah surat masuk
+// Form data untuk tambah surat keluar
 const addFormData = ref({
-  id_surat_keluar: '', // Tambahkan id_surat_masuk di sini
+  id_surat_keluar: '',
   nomor_surat: '',
   tanggal_surat: '',
   tanggal_kirim: '',
   tujuan_surat: '',
   perihal: '',
   cabang: '',
+  kode_surat: '', // Tambahkan kode_surat di sini
 });
 
-// Ambil data surat masuk dari API
+// Ambil data surat keluar dari API
 const fetchDataSuratKeluar = async () => {
   try {
     const response = await api.get('/api/sk');
-    console.log(response); // Untuk inspeksi struktur respons
-    suratKeluar.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+    suratKeluar.value = response.data.data.data;
   } catch (error) {
-    console.error('Error fetching surat masuk:', error);
+    console.error('Error fetching surat keluar:', error);
   }
 };
 
+// Ambil data cabang dari API
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
 };
 
+// Ambil data kode surat dari API
+const fetchDataKodeSurat = async () => {
+  try {
+    const response = await api.get('/api/surat');
+    kodeSuratList.value = response.data.data.data;
+  } catch (error) {
+    console.error('Error fetching kode surat list:', error);
+  }
+};
 
-// Properti computed untuk memfilter surat masuk berdasarkan query pencarian
+// Properti computed untuk memfilter surat keluar berdasarkan query pencarian
 const filteredSuratKeluar = computed(() => {
   const query = searchQuery.value.toLowerCase();
   if (!query) {
@@ -59,41 +70,66 @@ const filteredSuratKeluar = computed(() => {
   );
 });
 
-// Fungsi untuk menyimpan data surat masuk baru
-const saveNewSuratMasuk = async () => {
+// Fungsi untuk menyimpan data surat keluar baru
+const saveNewSuratKeluar = async () => {
   try {
+    addFormData.value.nomor_surat = await generateNewNomorSurat();
     await api.post('/api/sk', addFormData.value);
     // Reset form data
     addFormData.value = {
-      id_surat_keluar: '', // Reset id_surat_masuk
+      id_surat_keluar: '',
       nomor_surat: '',
       tanggal_surat: '',
       tanggal_kirim: '',
       tujuan_surat: '',
       perihal: '',
       cabang: '',
+      kode_surat: '',
     };
     // Tutup modal tambah
     showAddModal.value = false;
-    // Muat ulang daftar surat masuk
+    // Muat ulang daftar surat keluar
     fetchDataSuratKeluar();
   } catch (error) {
-    console.error('Error saving new surat masuk:', error);
+    console.error('Error saving new surat keluar:', error);
   }
 };
 
+// Fungsi untuk mendapatkan nama cabang
 const getNamaCabang = (idCabang) => {
   const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
   return cabang ? cabang.nama_cabang : '';
+};
+
+// Fungsi untuk menghasilkan nomor surat baru
+const generateNewNomorSurat = async () => {
+  const monthNames = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+  const currentMonth = monthNames[new Date().getMonth()];
+  const currentYear = new Date().getFullYear();
+
+  const selectedKodeSurat = addFormData.value.kode_surat;
+  const selectedCabang = addFormData.value.cabang;
+
+  const response = await api.get(`/api/sk?cabang=${selectedCabang}&kode_surat=${selectedKodeSurat}`);
+  const suratList = response.data.data.data;
+
+  let newNumber = 1;
+  if (suratList.length > 0) {
+    const existingNumbers = suratList.map(s => parseInt(s.nomor_surat.split('.')[1]));
+    newNumber = Math.max(...existingNumbers) + 1;
+  }
+
+  const formattedNumber = String(newNumber).padStart(3, '0');
+  return `${selectedKodeSurat}.${formattedNumber}/HEXA/${currentMonth}/${currentYear}`;
 };
 
 // Jalankan hook "onMounted"
 onMounted(() => {
   fetchDataSuratKeluar();
   fetchDataCabang();
+  fetchDataKodeSurat();
 });
 </script>
-
 
 <template>
   <div class="background-container">
@@ -119,39 +155,38 @@ onMounted(() => {
                     <button class="btn btn-primary ml-2">FILTER</button>
                   </div>
                 </div>
-              
-              
-              <table class="table table-bordered">
-                <thead class="bg-dark text-white text-center">
-                  <tr>
-                    <th scope="col" style="width:13%">ID SURAT KELUAR</th>
-                    <th scope="col" style="width:13%">NOMOR SURAT</th>
-                    <th scope="col" style="width:13%">TANGGAL SURAT</th>
-                    <th scope="col" style="width:13%">TANGGAL KIRIM</th>
-                    <th scope="col" style="width:15%">TUJUAN SURAT</th>
-                    <th scope="col" style="width:15%">PERIHAL</th>
-                    <th scope="col" style="width:20%">CABANG</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-if="filteredSuratKeluar.length === 0">
-                    <td colspan="8" class="text-center">
-                      <div class="alert alert-danger mb-0">
-                        Data Belum Tersedia!
-                      </div>
-                    </td>
-                  </tr>
-                  <tr v-else v-for="(s, index) in filteredSuratKeluar" :key="index">
-                    <td class="text-center">{{ s.id_surat_keluar }}</td>
-                    <td class="text-center">{{ s.nomor_surat }}</td>
-                    <td>{{ s.tanggal_surat }}</td>
-                    <td>{{ s.tanggal_kirim }}</td>
-                    <td>{{ s.tujuan_surat }}</td>
-                    <td>{{ s.perihal }}</td>
-                    <td>{{ getNamaCabang(s.cabang) }}</td>
-                  </tr>
-                </tbody>
-              </table>
+
+                <table class="table table-bordered">
+                  <thead class="bg-dark text-white text-center">
+                    <tr>
+                      <th scope="col" style="width:13%">ID SURAT KELUAR</th>
+                      <th scope="col" style="width:13%">NOMOR SURAT</th>
+                      <th scope="col" style="width:13%">TANGGAL SURAT</th>
+                      <th scope="col" style="width:13%">TANGGAL KIRIM</th>
+                      <th scope="col" style="width:15%">TUJUAN SURAT</th>
+                      <th scope="col" style="width:15%">PERIHAL</th>
+                      <th scope="col" style="width:20%">CABANG</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-if="filteredSuratKeluar.length === 0">
+                      <td colspan="8" class="text-center">
+                        <div class="alert alert-danger mb-0">
+                          Data Belum Tersedia!
+                        </div>
+                      </td>
+                    </tr>
+                    <tr v-else v-for="(s, index) in filteredSuratKeluar" :key="index">
+                      <td class="text-center">{{ s.id_surat_keluar }}</td>
+                      <td class="text-center">{{ s.nomor_surat }}</td>
+                      <td>{{ s.tanggal_surat }}</td>
+                      <td>{{ s.tanggal_kirim }}</td>
+                      <td>{{ s.tujuan_surat }}</td>
+                      <td>{{ s.perihal }}</td>
+                      <td>{{ getNamaCabang(s.cabang) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -160,7 +195,7 @@ onMounted(() => {
     </div>
   </div>
 
-  <!-- Modal untuk menambah surat masuk baru -->
+  <!-- Modal untuk menambah surat keluar baru -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
       <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">TAMBAH SURAT KELUAR</h4>
@@ -196,11 +231,16 @@ onMounted(() => {
           <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
         </select>
       </div>
+      <div class="form-group">
+        <label for="kode_surat">Kode Surat</label>
+        <select id="kode_surat" v-model="addFormData.kode_surat">
+          <option v-for="k in kodeSuratList" :value="k.kode_surat" :key="k.kode_surat">{{ k.jenis_surat }}</option>
+        </select>
+      </div>
       <div class="form-actions">
-        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewSuratMasuk">Simpan Perubahan</button>
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewSuratKeluar">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
       </div>
     </div>
   </div>
 </template>
-
