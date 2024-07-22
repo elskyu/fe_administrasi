@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted } from 'vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
@@ -13,6 +14,11 @@ const email = ref('');
 const password = ref('');
 const router = useRouter();
 const toast = useToast();
+
+// onMounted(() => {
+//   localStorage.removeItem('token');
+//   localStorage.removeItem('userType');
+// });
 
 const login = async () => {
   try {
