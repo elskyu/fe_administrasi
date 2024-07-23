@@ -7,14 +7,13 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/surat_masuk.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
 // State untuk menyimpan data surat masuk
 const suratMasuk = ref([]);
 const cabangList = ref([]);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
-
-// State untuk mengontrol modal tambah dan edit
+const cabangFilter = ref('');
 const showAddModal = ref(false);
 
 // Form data untuk tambah surat masuk
@@ -52,15 +51,24 @@ const fetchDataCabang = async () => {
 // Properti computed untuk memfilter surat masuk berdasarkan query pencarian
 const filteredSuratMasuk = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return suratMasuk.value;
+  const cabang = cabangFilter.value;
+
+  let filtered = suratMasuk.value;
+  
+  if (query) {
+    filtered = filtered.filter(s =>
+      s.nomor_surat.toLowerCase().includes(query) ||
+      s.perihal.toLowerCase().includes(query) ||
+      s.asal_surat.toLowerCase().includes(query) ||
+      getNamaCabang(s.cabang).toLowerCase().includes(query)
+    );
   }
-  return suratMasuk.value.filter(s =>
-    s.nomor_surat.toLowerCase().includes(query) ||
-    s.perihal.toLowerCase().includes(query) ||
-    s.asal_surat.toLowerCase().includes(query) ||
-    getNamaCabang(s.cabang).toLowerCase().includes(query)
-  );
+
+  if (cabang) {
+    filtered = filtered.filter(s => s.cabang === cabang);
+  }
+
+  return filtered;
 });
 
 // Fungsi untuk menyimpan data surat masuk baru
@@ -119,8 +127,14 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat" style="margin-right: 10px; width: 300px;">
-                    <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
+                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                      <option value="">Semua Cabang</option>
+                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                    </select>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari inventaris" style="width: 100%; padding-right: 40px;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
                   </div>
                 </div>
               

@@ -6,6 +6,7 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
 // State untuk menyimpan data reservasi
 const reservasiList = ref([]);
@@ -15,6 +16,8 @@ const pegawaiList = ref([]);
 const currentReservasiId = ref(null);
 const searchQuery = ref('');
 const tempSearchQuery = ref('');
+const cabangFilter = ref('');
+const ruangFilter = ref('');
 
 // State untuk mengontrol modal tambah
 const showAddModal = ref(false);
@@ -99,18 +102,31 @@ const editReservasi = (r) => {
 // Properti computed untuk memfilter reservasi berdasarkan query pencarian
 const filteredReservasi = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return reservasiList.value;
+  const cabang = cabangFilter.value;
+  const ruang = ruangFilter.value;
+
+  let filtered = reservasiList.value;
+  if (query) {  
+    filtered = filtered.filter(reservasi =>
+      getNamaRuang(reservasi.ruang).toLowerCase().includes(query) ||
+      reservasi.tanggal_reservasi.toLowerCase().includes(query) ||
+      reservasi.tanggal_selesai.toLowerCase().includes(query) ||
+      reservasi.durasi.toLowerCase().includes(query) ||
+      reservasi.pegawai.toLowerCase().includes(query) ||
+      reservasi.keterangan.toLowerCase().includes(query) ||
+      getNamaCabang(reservasi.cabang).toLowerCase().includes(query)
+    );
   }
-  return reservasiList.value.filter(reservasi =>
-    getNamaRuang(reservasi.ruang).toLowerCase().includes(query) ||
-    reservasi.tanggal_reservasi.toLowerCase().includes(query) ||
-    reservasi.tanggal_selesai.toLowerCase().includes(query) ||
-    reservasi.durasi.toLowerCase().includes(query) ||
-    reservasi.pegawai.toLowerCase().includes(query) ||
-    reservasi.keterangan.toLowerCase().includes(query) ||
-    getNamaCabang(reservasi.cabang).toLowerCase().includes(query)
-  );
+
+  if (cabang) {
+    filtered = filtered.filter(reservasi => reservasi.cabang === cabang);
+  }
+
+  if (ruang) {
+    filtered = filtered.filter(reservasi => reservasi.ruang === ruang);
+  }
+
+  return filtered;
 });
 
 // Metode untuk menangani klik tombol pencarian
@@ -229,8 +245,18 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari reservasi" style="margin-right: 10px; width: 300px;">
-                    <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
+                    <select id="ruangFilter" v-model="ruangFilter" class="form-cari" style="margin-right: 10px; width: 175px;">
+                      <option value="">Semua Ruang</option>
+                      <option v-for="r in ruangList" :value="r.id_ruang" :key="r.id_ruang">{{ r.nama_ruang }}</option>
+                    </select>
+                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                      <option value="">Semua Cabang</option>
+                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                    </select>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari inventaris" style="width: 100%; padding-right: 40px;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
                   </div>
                 </div>
               

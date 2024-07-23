@@ -6,20 +6,16 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
 // State untuk menyimpan data inventaris
 const inventarisList = ref([]);
 const cabangList = ref([]);
 const currentInventarisId = ref(null);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
-
-// State untuk mengontrol modal tambah
+const cabangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
-
-// State untuk kontrol visibility dropdown menu
-const showDropdown = ref(false);
 
 // Form data untuk tambah inventaris
 const addFormData = ref({
@@ -88,22 +84,30 @@ const editInventaris = (i) => {
 // Properti computed untuk memfilter inventaris berdasarkan query pencarian
 const filteredInventaris = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return inventarisList.value;
-  }
-  return inventarisList.value.filter(inventaris =>
-    inventaris.nopol.toLowerCase().includes(query) ||
-    inventaris.merek.toLowerCase().includes(query) ||
-    inventaris.kategori.toLowerCase().includes(query) ||
-    inventaris.tahun.toLowerCase().includes(query) ||
-    inventaris.pajak.toLowerCase().includes(query) ||
-    inventaris.masa_pajak.toLowerCase().includes(query) ||
-    inventaris.harga_beli.toLowerCase().includes(query) ||
-    inventaris.tanggal_beli.toLowerCase().includes(query) ||
-    getNamaCabang(inventaris.cabang).toLowerCase().includes(query)
-  );
-});
+  const cabang = cabangFilter.value;
 
+  let filtered = inventarisList.value;
+
+  if (query) {
+    filtered = filtered.filter(inventaris =>
+      inventaris.nopol.toLowerCase().includes(query) ||
+      inventaris.merek.toLowerCase().includes(query) ||
+      inventaris.kategori.toLowerCase().includes(query) ||
+      inventaris.tahun.toLowerCase().includes(query) ||
+      inventaris.pajak.toLowerCase().includes(query) ||
+      inventaris.masa_pajak.toLowerCase().includes(query) ||
+      inventaris.harga_beli.toLowerCase().includes(query) ||
+      inventaris.tanggal_beli.toLowerCase().includes(query) ||
+      getNamaCabang(inventaris.cabang).toLowerCase().includes(query)
+    );
+  }
+
+  if (cabang) {
+    filtered = filtered.filter(inventaris => inventaris.cabang === cabang);
+  }
+
+  return filtered;
+});
 
 // Fungsi untuk menyimpan data inventaris baru
 const saveNewInventaris = async () => {
@@ -196,11 +200,16 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari inventaris" style="margin-right: 10px; width: 300px;">
-                    <button class="btn btn-primary ml-2">FILTER</button>
+                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                      <option value="">Semua Cabang</option>
+                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                    </select>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari inventaris" style="width: 100%; padding-right: 40px;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
                   </div>
                 </div>
-              
               
               <table class="table table-bordered">
                 <thead class="bg-dark text-white text-center">
