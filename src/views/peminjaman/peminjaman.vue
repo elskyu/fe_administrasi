@@ -8,7 +8,6 @@ import '/src/style/peminjaman.css';
 import '/src/style/modal.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 
-// State untuk menyimpan data inventaris
 const pemakaianList = ref([]);
 const cabangList = ref([]);
 const inventarisList = ref([]);
@@ -19,7 +18,6 @@ const cabangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
-// Form data untuk tambah inventaris
 const addFormData = ref({
   id_pinjam: '',
   inventaris: '',
@@ -42,12 +40,11 @@ const editFormData = ref({
   cabang: '',
 });
 
-// Ambil data inventaris dari API
 const fetchDataPemakaian = async () => {
   try {
     const response = await api.get('/api/pi');
-    console.log(response); // Untuk inspeksi struktur respons
-    pemakaianList.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+    console.log(response);
+    pemakaianList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching inventaris:', error);
   }
@@ -56,7 +53,7 @@ const fetchDataPemakaian = async () => {
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -65,7 +62,7 @@ const fetchDataCabang = async () => {
 const fetchDataInventaris = async () => {
   try {
     const response = await api.get('/api/inventaris');
-    inventarisList.value = response.data.data.data; // Adjust based on the actual response structure
+    inventarisList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -81,12 +78,11 @@ const editPemakaian = (p) => {
     durasi_pinjam: p.durasi_pinjam,
     pegawai: p.pegawai,
     keterangan: p.keterangan,
-    cabang: p.cabang, // Pastikan cabang_id diambil dari p.cabang.id_cabang
+    cabang: p.cabang,
   };
   showEditModal.value = true;
 };
 
-// Properti computed untuk memfilter inventaris berdasarkan query pencarian
 const filteredPemakaian = computed(() => {
   const query = searchQuery.value.toLowerCase();
   const cabang = cabangFilter.value;
@@ -114,16 +110,13 @@ const filteredPemakaian = computed(() => {
   return filtered;
 });
 
-// Metode untuk menangani klik tombol pencarian
 const handleSearch = () => {
   searchQuery.value = tempSearchQuery.value;
 };
 
-// Fungsi untuk menyimpan data inventaris baru
 const saveNewPemakaian = async () => {
   try {
     await api.post('/api/pi', addFormData.value);
-    // Reset form data
     addFormData.value = {
       id_pinjam: '',
       inventaris: '',
@@ -134,10 +127,9 @@ const saveNewPemakaian = async () => {
       keterangan: '',
       cabang: '',
     };
-    // Tutup modal tambah
     showAddModal.value = false;
-    // Muat ulang daftar inventaris
     fetchDataPemakaian();
+    generateNewPiId();
   } catch (error) {
     console.error('Error saving new inventaris:', error);
   }
@@ -158,6 +150,7 @@ const saveEditPemakaian = async () => {
     };
     showEditModal.value = false;
     fetchDataPemakaian();
+    generateNewPiId();
   } catch (error) {
     console.error('Error saving edit pegawai:', error);
   }
@@ -173,6 +166,8 @@ const deletePemakaian = async (id_pinjam) => {
     try {
       await api.delete(`/api/pi/${id_pinjam}`);
       pemakaian.value = pemakaian.value.filter(pemakaian => pemakaian.id_pinjam !== id_pinjam);
+      fetchDataPemakaian();
+      generateNewPiId();
     } catch (error) {
       console.error('Error deleting pegawai:', error);
     }
@@ -182,7 +177,7 @@ const deletePemakaian = async (id_pinjam) => {
 const fetchDataPegawai = async () => {
   try {
     const response = await api.get('/api/pegawai');
-    pegawaiList.value = response.data.data.data; // Adjust based on the actual response structure
+    pegawaiList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching pegawai list:', error);
   }
@@ -198,8 +193,37 @@ function convertToMinutes(time) {
   return parseInt(hours) * 60 + parseInt(minutes);
 }
 
-// Jalankan hook "onMounted"
+const generateNewPiId = async () => {
+  try {
+    const response = await api.get('/api/piall');
+    const pemakaianList = response.data.data;
+
+    if (pemakaianList.length === 0) {
+      addFormData.value.id_pinjam = "PI001";
+    } else {
+      const existingIds = pemakaianList.map(pi => parseInt(pi.id_pinjam.slice(3)));
+      existingIds.sort((a, b) => a - b);
+
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+
+      addFormData.value.id_pinjam = `PI${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Peminjaman ID:', error);
+  }
+};
+
 onMounted(() => {
+  generateNewPiId();
   fetchDataPegawai();
   fetchDataPemakaian();
   fetchDataCabang();

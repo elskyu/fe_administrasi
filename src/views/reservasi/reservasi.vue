@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../api'; // Sesuaikan dengan struktur folder dan file yang benar
+import api from '../../api';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
@@ -8,7 +8,6 @@ import '/src/style/modal.css';
 import '/src/style/admin.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 
-// State untuk menyimpan data reservasi
 const reservasiList = ref([]);
 const cabangList = ref([]);
 const ruangList = ref([]);
@@ -18,12 +17,9 @@ const searchQuery = ref('');
 const tempSearchQuery = ref('');
 const cabangFilter = ref('');
 const ruangFilter = ref('');
-
-// State untuk mengontrol modal tambah
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
-// Form data untuk tambah reservasi
 const addFormData = ref({
   id_reservasi: '',
   ruang: '',
@@ -46,12 +42,11 @@ const editFormData = ref({
   cabang: '',
 });
 
-// Ambil data reservasi dari API
 const fetchDataReservasi = async () => {
   try {
     const response = await api.get('/api/rr');
-    console.log(response); // Untuk inspeksi struktur respons
-    reservasiList.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+    console.log(response);
+    reservasiList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching reservasi:', error);
   }
@@ -60,7 +55,7 @@ const fetchDataReservasi = async () => {
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -69,7 +64,7 @@ const fetchDataCabang = async () => {
 const fetchDataRuang = async () => {
   try {
     const response = await api.get('/api/ruang');
-    ruangList.value = response.data.data.data; // Adjust based on the actual response structure
+    ruangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -78,7 +73,7 @@ const fetchDataRuang = async () => {
 const fetchDataPegawai = async () => {
   try {
     const response = await api.get('/api/pegawai');
-    pegawaiList.value = response.data.data.data; // Sesuaikan dengan struktur response API
+    pegawaiList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching pegawai:', error);
   }
@@ -94,12 +89,11 @@ const editReservasi = (r) => {
     durasi: r.durasi,
     pegawai: r.pegawai,
     keterangan: r.keterangan,
-    cabang: r.cabang, // Pastikan cabang_id diambil dari p.cabang.id_cabang
+    cabang: r.cabang,
   };
   showEditModal.value = true;
 };
 
-// Properti computed untuk memfilter reservasi berdasarkan query pencarian
 const filteredReservasi = computed(() => {
   const query = searchQuery.value.toLowerCase();
   const cabang = cabangFilter.value;
@@ -129,16 +123,13 @@ const filteredReservasi = computed(() => {
   return filtered;
 });
 
-// Metode untuk menangani klik tombol pencarian
 const handleSearch = () => {
   searchQuery.value = tempSearchQuery.value;
 };
 
-// Fungsi untuk menyimpan data reservasi baru
 const saveNewReservasi = async () => {
   try {
     await api.post('/api/rr', addFormData.value);
-    // Reset form data
     addFormData.value = {
       id_reservasi: '',
       ruang: '',
@@ -149,10 +140,9 @@ const saveNewReservasi = async () => {
       keterangan: '',
       cabang: '',
     };
-    // Tutup modal tambah
     showAddModal.value = false;
-    // Muat ulang daftar reservasi
     fetchDataReservasi();
+    generateNewRrId();
   } catch (error) {
     console.error('Error saving new reservasi:', error);
   }
@@ -173,6 +163,7 @@ const saveEditReservasi = async () => {
     };
     showEditModal.value = false;
     fetchDataReservasi();
+    generateNewRrId();
   } catch (error) {
     console.error('Error saving edit reservasi:', error);
   }
@@ -198,6 +189,8 @@ const deleteReservasi = async (id_reservasi) => {
     try {
       await api.delete(`/api/rr/${id_reservasi}`);
       reservasiList.value = reservasiList.value.filter(reservasi => reservasi.id_reservasi !== id_reservasi);
+      generateNewRrId();
+      fetchDataReservasi();
     } catch (error) {
       console.error('Error deleting reservasi:', error);
     }
@@ -215,8 +208,37 @@ function convertMinutesToTime(minutes) {
   return `${String(hours).padStart(2, '0')}:${String(remainingMinutes).padStart(2, '0')}:00`;
 }
 
-// Jalankan hook "onMounted"
+const generateNewRrId = async () => {
+  try {
+    const response = await api.get('/api/rrall');
+    const reservasiList = response.data.data;
+
+    if (reservasiList.length === 0) {
+      addFormData.value.id_reservasi = "RSV001";
+    } else {
+      const existingIds = reservasiList.map(rr => parseInt(rr.id_reservasi.slice(3)));
+      existingIds.sort((a, b) => a - b);
+
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+
+      addFormData.value.id_reservasi = `RSV${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Reservasi ID:', error);
+  }
+};
+
 onMounted(() => {
+  generateNewRrId();
   fetchDataReservasi();
   fetchDataCabang();
   fetchDataRuang();

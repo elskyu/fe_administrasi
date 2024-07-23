@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../api'; // Sesuaikan dengan struktur folder dan file yang benar
+import api from '../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
@@ -9,16 +9,14 @@ import '/src/style/modal.css';
 import '/src/style/surat_masuk.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 
-// State untuk menyimpan data surat masuk
 const suratMasuk = ref([]);
 const cabangList = ref([]);
 const searchQuery = ref('');
 const cabangFilter = ref('');
 const showAddModal = ref(false);
 
-// Form data untuk tambah surat masuk
 const addFormData = ref({
-  id_surat_masuk: '', // Tambahkan id_surat_masuk di sini
+  id_surat_masuk: '',
   nomor_surat: '',
   tanggal_surat: '',
   tanggal_terima: '',
@@ -27,12 +25,11 @@ const addFormData = ref({
   cabang: '',
 });
 
-// Ambil data surat masuk dari API
 const fetchDataSuratMasuk = async () => {
   try {
     const response = await api.get('/api/sm');
-    console.log(response); // Untuk inspeksi struktur respons
-    suratMasuk.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+    console.log(response);
+    suratMasuk.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching surat masuk:', error);
   }
@@ -41,14 +38,12 @@ const fetchDataSuratMasuk = async () => {
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
 };
 
-
-// Properti computed untuk memfilter surat masuk berdasarkan query pencarian
 const filteredSuratMasuk = computed(() => {
   const query = searchQuery.value.toLowerCase();
   const cabang = cabangFilter.value;
@@ -71,13 +66,11 @@ const filteredSuratMasuk = computed(() => {
   return filtered;
 });
 
-// Fungsi untuk menyimpan data surat masuk baru
 const saveNewSuratMasuk = async () => {
   try {
     await api.post('/api/sm', addFormData.value);
-    // Reset form data
     addFormData.value = {
-      id_surat_masuk: '', // Reset id_surat_masuk
+      id_surat_masuk: '',
       nomor_surat: '',
       tanggal_surat: '',
       tanggal_terima: '',
@@ -85,10 +78,9 @@ const saveNewSuratMasuk = async () => {
       perihal: '',
       cabang: '',
     };
-    // Tutup modal tambah
     showAddModal.value = false;
-    // Muat ulang daftar surat masuk
     fetchDataSuratMasuk();
+    generateNewSmId();
   } catch (error) {
     console.error('Error saving new surat masuk:', error);
   }
@@ -99,8 +91,37 @@ const getNamaCabang = (idCabang) => {
   return cabang ? cabang.nama_cabang : '';
 };
 
-// Jalankan hook "onMounted"
+const generateNewSmId = async () => {
+  try {
+    const response = await api.get('/api/small');
+    const suratMasuk = response.data.data;
+
+    if (suratMasuk.length === 0) {
+      addFormData.value.id_surat_masuk = "SM001";
+    } else {
+      const existingIds = suratMasuk.map(sm => parseInt(sm.id_surat_masuk.slice(3)));
+      existingIds.sort((a, b) => a - b);
+
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+
+      addFormData.value.id_surat_masuk = `SM${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Surat Masuk ID:', error);
+  }
+};
+
 onMounted(() => {
+  generateNewSmId();
   fetchDataSuratMasuk();
   fetchDataCabang();
 });

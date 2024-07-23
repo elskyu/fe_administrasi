@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../api'; // Sesuaikan dengan struktur folder dan file yang benar
+import api from '../../api';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
@@ -8,7 +8,6 @@ import '/src/style/modal.css';
 import '/src/style/admin.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 
-// State untuk menyimpan data inventaris
 const inventarisList = ref([]);
 const cabangList = ref([]);
 const currentInventarisId = ref(null);
@@ -17,7 +16,6 @@ const cabangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
-// Form data untuk tambah inventaris
 const addFormData = ref({
   id_inventaris: '',
   nopol: '',
@@ -44,12 +42,11 @@ const editFormData = ref({
   cabang: '',
 });
 
-// Ambil data inventaris dari API
 const fetchDataInventaris = async () => {
   try {
     const response = await api.get('/api/inventaris');
-    console.log(response); // Untuk inspeksi struktur respons
-    inventarisList.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+    console.log(response);
+    inventarisList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching inventaris:', error);
   }
@@ -58,7 +55,7 @@ const fetchDataInventaris = async () => {
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -76,12 +73,11 @@ const editInventaris = (i) => {
     masa_pajak: i.masa_pajak,
     harga_beli: i.harga_beli,
     tanggal_beli: i.tanggal_beli,
-    cabang: i.cabang, // Pastikan cabang_id diambil dari p.cabang.id_cabang
+    cabang: i.cabang,
   };
   showEditModal.value = true;
 };
 
-// Properti computed untuk memfilter inventaris berdasarkan query pencarian
 const filteredInventaris = computed(() => {
   const query = searchQuery.value.toLowerCase();
   const cabang = cabangFilter.value;
@@ -109,11 +105,9 @@ const filteredInventaris = computed(() => {
   return filtered;
 });
 
-// Fungsi untuk menyimpan data inventaris baru
 const saveNewInventaris = async () => {
   try {
     await api.post('/api/inventaris', addFormData.value);
-    // Reset form data
     addFormData.value = {
       id_inventaris: '',
       nopol: '',
@@ -126,10 +120,9 @@ const saveNewInventaris = async () => {
       tanggal_beli: '',
       cabang: '',
     };
-    // Tutup modal tambah
     showAddModal.value = false;
-    // Muat ulang daftar inventaris
     fetchDataInventaris();
+    generateNewInvId();
   } catch (error) {
     console.error('Error saving new inventaris:', error);
   }
@@ -152,6 +145,7 @@ const saveEditPegawai = async () => {
     };
     showEditModal.value = false;
     fetchDataInventaris();
+    generateNewInvId();
   } catch (error) {
     console.error('Error saving edit pegawai:', error);
   }
@@ -167,14 +161,46 @@ const deleteInventaris = async (id_inventaris) => {
     try {
       await api.delete(`/api/inventaris/${id_inventaris}`);
       inventaris.value = inventaris.value.filter(inventaris => inventaris.id_inventaris !== id_inventaris);
+      generateNewInvId();
+      fetchDataInventaris();
     } catch (error) {
       console.error('Error deleting pegawai:', error);
     }
   }
 };
 
-// Jalankan hook "onMounted"
+const generateNewInvId = async () => {
+  try {
+    const response = await api.get('/api/inventarisall');
+    const inventarisList = response.data.data;
+
+    if (inventarisList.length === 0) {
+      addFormData.value.id_surat_masuk = "INV001";
+    } else {
+      const existingIds = inventarisList.map(inv => parseInt(inv.id_inventaris.slice(3)));
+      existingIds.sort((a, b) => a - b);
+
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+
+      addFormData.value.id_inventaris = `INV${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Inventaris ID:', error);
+  }
+};
+
 onMounted(() => {
+  generateNewInvId();
+  generateNewInvId();
   fetchDataInventaris();
   fetchDataCabang();
 });
