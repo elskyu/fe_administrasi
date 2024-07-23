@@ -14,7 +14,7 @@
       <p>Sesi Anda Telah Berakhir Mohon Login Kembali</p>
       <div class="buttons-con">
         <div class="action-link-wrap">
-          <button @click="redirectToLogin" class="btn btn-md btn-success border-0">Login</button>
+          <button @click="redirectToLogin" class="btn btn-md btn-primary buttons-con">Login</button>
         </div>
       </div>
     </div>
@@ -23,7 +23,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import api from '../api';
+import '/src/style/font.css';
 
 const router = useRouter();
 
