@@ -38,7 +38,7 @@ body {
 }
 
 h2 {
-  color: rgb(254, 174, 111); 
+  color: #44d569; 
   font-weight: 900;
   margin-bottom: 10px;
 }
@@ -72,8 +72,8 @@ p {
 }
 
 .btn-success {
-  background-color: #24ff00; /* Success button background color */
-  border-color: #24ff00; /* Success button border color */
+  background-color: #28a745; /* Success button background color */
+  border-color: #28a745; /* Success button border color */
   padding-left: 30px;
   padding-right: 30px;
   margin-left: -13px;
