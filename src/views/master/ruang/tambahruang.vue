@@ -6,6 +6,7 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
 const ruang = ref([]);
 const cabangList = ref([]);
@@ -13,6 +14,7 @@ const searchQuery = ref('');
 const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
+const cabangFilter = ref('');
 
 const addFormData = ref({
   id_ruang: '',
@@ -72,14 +74,23 @@ const deleteRuang = async (id_ruang) => {
 
 const filteredRuang = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return ruang.value;
+  const cabang = cabangFilter.value;
+
+  let filtered = ruang.value;
+
+  if (query) {
+    filtered = filtered.filter(r => 
+      r.nama_ruang.toLowerCase().includes(query) ||
+      r.id_ruang.toLowerCase().includes(query) ||
+      getNamaCabang(r.cabang).toLowerCase().includes(query)
+    );
   }
-  return ruang.value.filter(r => 
-    r.nama_ruang.toLowerCase().includes(query) ||
-    r.id_ruang.toLowerCase().includes(query) ||
-    getNamaCabang(r.cabang).toLowerCase().includes(query)
-  );
+
+  if (cabang) {
+    filtered = filtered.filter(s => s.cabang === cabang);
+  }
+
+  return filtered;
 });
 
 const handleSearch = () => {
@@ -173,8 +184,14 @@ onMounted(() => {
   
                   <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                     <div class="d-flex justify-content-end">
-                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari ruang" style="margin-right: 10px; width: 300px;">
-                      <button class="btn btn-primary ml-2">FILTER</button>
+                      <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                        <option value="">Semua Cabang</option>
+                        <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                      </select>
+                      <div class="search-container" style="margin-right: -10px; width: 275px;">
+                        <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari ruang" style="width: 100%; padding-right: 40px;" />
+                        <SearchIcon class="search-icon" />
+                      </div>
                     </div>
                   </div>
                 

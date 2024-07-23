@@ -6,6 +6,7 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
 const surat = ref([]);
 const searchQuery = ref('');
@@ -114,8 +115,10 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat" style="margin-right: 10px; width: 300px;">
-                    <button class="btn btn-primary ml-2">FILTER</button>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat" style="width: 100%; padding-right: 40px;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
                   </div>
                 </div>
               
