@@ -114,8 +114,8 @@ const generateNewNomorSurat = async () => {
 
 const generateNewSkId = async () => {
   try {
-    const response = await api.get('/api/sk');
-    const suratKeluar = response.data.data.data;
+    const response = await api.get('/api/skall');
+    const suratKeluar = response.data.data;
 
     if (suratKeluar.length === 0) {
       addFormData.value.id_surat_keluar = "SK001";

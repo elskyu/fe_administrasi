@@ -121,8 +121,8 @@ const getNamaCabang = (idCabang) => {
 
 const generateNewRuangId = async () => {
   try {
-    const response = await api.get('/api/ruang');
-    const ruang = response.data.data.data;
+    const response = await api.get('/api/ruangall');
+    const ruang = response.data.data;
 
     if (ruang.length === 0) {
       addFormData.value.id_ruang = "R001";

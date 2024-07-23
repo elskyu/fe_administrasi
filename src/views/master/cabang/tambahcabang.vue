@@ -47,6 +47,7 @@ const deleteCabang = async (id_cabang) => {
       await api.delete(`/api/cabang/${id_cabang}`);
       cabang.value = cabang.value.filter(c => c.id_cabang !== id_cabang);
       generateNewCabangId();
+      fetchDataCabang();
     } catch (error) {
       console.error('Error deleting cabang:', error);
     }
@@ -93,7 +94,7 @@ const saveEditCabang = async () => {
 
 const generateNewCabangId = async () => {
   try {
-    const response = await api.get('/api/cabang');
+    const response = await api.get('/api/cabangall');
     const cabangList = response.data.data;
 
     if (cabangList.length === 0) {

@@ -98,8 +98,8 @@ const saveEditAdmin = async () => {
 
 const generateNewAdminId = async () => {
   try {
-    const response = await api.get('/api/admin');
-    const admins = response.data.data.data;
+    const response = await api.get('/api/adminall');
+    const admins = response.data.data;
 
     if (admins.length === 0) {
       addFormData.value.id_admin = "ADM001";

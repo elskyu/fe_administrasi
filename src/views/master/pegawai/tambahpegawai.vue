@@ -177,8 +177,8 @@ const getNamaDepartemen = (idDepartemen) => {
 
 const generateNewPegawaiId = async () => {
   try {
-    const response = await api.get('/api/pegawai');
-    const pegawai = response.data.data.data;
+    const response = await api.get('/api/pegawaiall');
+    const pegawai = response.data.data;
 
     if (pegawai.length === 0) {
       addFormData.value.id_pegawai = "PEG001";

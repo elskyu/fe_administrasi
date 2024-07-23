@@ -90,8 +90,8 @@ const saveEditDepartment = async () => {
 
 const generateNewDepartementId = async () => {
   try {
-    const response = await api.get('/api/departement');
-    const departements = response.data.data.data;
+    const response = await api.get('/api/departementall');
+    const departements = response.data.data;
 
     if (departements.length === 0) {
       addFormData.value.id_departement = "DEPT001";
