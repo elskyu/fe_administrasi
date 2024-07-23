@@ -13,11 +13,9 @@ const pegawaiList = ref([]);
 const cabangList = ref([]);
 const departementList = ref([]);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
 const cabangFilter = ref('');
 const departemenFilter = ref('');
 const showAddModal = ref(false);
-const showDropdown = ref(false);
 
 const addFormData = ref({
   id_tamu: '',
@@ -209,90 +207,103 @@ onMounted(() => {
                 </div>
 
                 <table class="table table-bordered">
-                  <thead class="bg-dark text-white text-center">
-                    <tr>
-                      <th scope="col" style="width: 7%;">ID TAMU</th>
-                      <th scope="col" style="width: 16%;">TANGGAL KUNJUNGAN</th>
-                      <th scope="col" style="width: 5%;">NAMA</th>
-                      <th scope="col" style="width: 5%;">JABATAN</th>
-                      <th scope="col" style="width: 7%;">NO HP</th>
-                      <th scope="col" style="width: 18%;">DEPARTEMEN DIKUNJUNGI</th>
-                      <th scope="col" style="width: 15%;">ORANG DIKUNJUNGI</th>
-                      <th scope="col" style="width: 15%;">KEPERLUAN</th>
-                      <th scope="col" style="width: 7%;">CABANG</th>
-                    </tr>
-                  </thead>
-                  <tbody class="text-center">
-                    <tr v-for="tamu in filteredBukuTamu" :key="tamu.id_tamu">
-                      <td>{{ tamu.id_tamu }}</td>
-                      <td>{{ tamu.tanggal_kunjungan }}</td>
-                      <td>{{ tamu.nama }}</td>
-                      <td>{{ tamu.jabatan }}</td>
-                      <td>{{ tamu.no_hp }}</td>
-                      <td>{{ getNamaDepartemen(tamu.departement_dikunjungi) }}</td>
-                      <td>{{ getNamaPegawai(tamu.org_dikunjungi) }}</td>
-                      <td>{{ tamu.keperluan }}</td>
-                      <td>{{ getNamaCabang(tamu.cabang) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
+                <thead class="bg-dark text-white text-center">
+                  <tr>
+                    <th scope="col" style="width: 7%;">ID TAMU</th>
+                    <th scope="col" style="width: 16%;">TANGGAL KUNJUNGAN</th>
+                    <th scope="col" style="width: 5%;">NAMA</th>
+                    <th scope="col" style="width: 5%;">JABATAN</th>
+                    <th scope="col" style="width: 7%;">NO HP</th>
+                    <th scope="col" style="width: 18%;">DEPARTEMEN DIKUNJUNGI</th>
+                    <th scope="col" style="width: 15%;">ORANG DIKUNJUNGI</th>
+                    <th scope="col" style="width: 15%;">KEPERLUAN</th>
+                    <th scope="col" style="width: 7%;">CABANG</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-if="filteredBukuTamu.length === 0">
+                    <td colspan="9" class="text-center">
+                      <div class="alert alert-danger mb-0">
+                        Data Belum Tersedia!
+                      </div>
+                    </td>
+                  </tr>
+                  <tr v-else v-for="(tamu, index) in filteredBukuTamu" :key="index">
+                    <td class="text-center">{{ tamu.id_tamu }}</td>
+                    <td>{{ tamu.tanggal_kunjungan }}</td>
+                    <td>{{ tamu.nama }}</td>
+                    <td>{{ tamu.jabatan }}</td>
+                    <td>{{ tamu.no_hp }}</td>
+                    <td>{{ getNamaDepartemen(tamu.departement_dikunjungi) }}</td>
+                    <td>{{ getNamaPegawai(tamu.org_dikunjungi) }}</td>
+                    <td>{{ tamu.keperluan }}</td>
+                    <td>{{ getNamaCabang(tamu.cabang) }}</td>
+                  </tr>
+                </tbody>
+              </table>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <div v-if="showAddModal" class="modal-overlay">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Tambah Tamu</h5>
-                <button type="button" class="close" @click="showAddModal = false">&times;</button>
-              </div>
-              <div class="modal-body">
-                <form @submit.prevent="saveNewTamu">
-                  <div class="form-group">
-                    <label for="id_tamu">ID Tamu:</label>
-                    <input type="text" id="id_tamu" v-model="addFormData.id_tamu" class="form-control" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="tanggal_kunjungan">Tanggal Kunjungan:</label>
-                    <input type="date" id="tanggal_kunjungan" v-model="addFormData.tanggal_kunjungan" class="form-control" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="nama">Nama:</label>
-                    <input type="text" id="nama" v-model="addFormData.nama" class="form-control" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="jabatan">Jabatan:</label>
-                    <input type="text" id="jabatan" v-model="addFormData.jabatan" class="form-control" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="no_hp">No HP:</label>
-                    <input type="text" id="no_hp" v-model="addFormData.no_hp" class="form-control" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="departement_dikunjungi">Departemen Dikunjungi:</label>
-                    <input type="text" id="departement_dikunjungi" v-model="addFormData.departement_dikunjungi" class="form-control" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="org_dikunjungi">Orang Dikunjungi:</label>
-                    <input type="text" id="org_dikunjungi" v-model="addFormData.org_dikunjungi" class="form-control" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="keperluan">Keperluan:</label>
-                    <input type="text" id="keperluan" v-model="addFormData.keperluan" class="form-control" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="cabang">Cabang:</label>
-                    <input type="text" id="cabang" v-model="addFormData.cabang" class="form-control" required />
-                  </div>
-                  <button type="submit" class="btn btn-primary">Simpan</button>
-                </form>
-              </div>
-            </div>
-          </div>
+  <!-- Modal untuk menambah tamu baru -->
+  <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
+    <div class="modal-content">
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">TAMBAH TAMU</h4>
+      <div class="form-group-row">
+        <div class="form-group" style="width: 195px;">
+          <label for="id_tamu">ID Tamu</label>
+          <input type="text" id="id_tamu" v-model="addFormData.id_tamu" />
         </div>
-
+        <div class="form-group" style="width: 195px;">
+          <label for="nama">Nama</label>
+          <input type="text" id="nama" v-model="addFormData.nama" />
+        </div>
+      </div>
+      <div class="form-group-row">
+        <div class="form-group" style="width: 195px;">
+          <label for="tanggal_kunjungan">Tanggal Kunjungan</label>
+          <input type="date" id="tanggal_kunjungan" v-model="addFormData.tanggal_kunjungan" />
+        </div>
+        <div class="form-group" style="width: 195px;">
+          <label for="cabang">Cabang</label>
+          <select id="cabang" v-model="addFormData.cabang">
+            <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="width: 400px;">
+        <label for="departement_dikunjungi">Departemen Dikunjungi</label>
+          <select id="departement_dikunjungi" v-model="addFormData.departement_dikunjungi">
+            <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{ dep.nama_departement }}</option>
+          </select>
+      </div>
+      <div class="form-group-row">
+        <div class="form-group" style="width: 195px;">
+          <label for="jabatan">Jabatan</label>
+          <input type="text" id="jabatan" v-model="addFormData.jabatan" />
+        </div>
+        <div class="form-group" style="width: 195px;">
+          <label for="no_hp">No HP</label>
+          <input type="text" id="no_hp" v-model="addFormData.no_hp" />
+        </div>
+      </div>     
+      
+      <div class="form-group">
+        <label for="org_dikunjungi">Orang Dikunjungi</label>
+        <input type="text" id="org_dikunjungi" v-model="addFormData.org_dikunjungi" />
+      </div>
+      <div class="form-group">
+        <label for="keperluan">Keperluan</label>
+        <input type="text" id="keperluan" v-model="addFormData.keperluan" />
+      </div>
+      
+      <div class="form-actions">
+        <button class="btn-modal-save rounded-sm shadow border-0" @click="saveNewTamu">Simpan Perubahan</button>
+        <button class="btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
       </div>
     </div>
   </div>

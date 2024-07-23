@@ -6,6 +6,7 @@ import '/src/style/table.css';
 import '/src/style/surat_masuk.css';
 import '/src/style/background_color.css';
 import '/src/style/modal.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
 const pegawai = ref([]);
 const cabangList = ref([]);
@@ -13,6 +14,8 @@ const departementList = ref([]);
 const currentPegawaiId = ref(null);
 const searchQuery = ref('');
 const tempSearchQuery = ref('');
+const cabangFilter = ref('');
+const departemenFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
@@ -98,18 +101,32 @@ const deletePegawai = async (id_pegawai) => {
 
 const filteredPegawai = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return pegawai.value;
+  const cabang = cabangFilter.value;
+  const departemen = departemenFilter.value;
+
+  let filtered = pegawai.value;
+
+  if (query) {
+    filtered = filtered.filter(p =>
+      p.nip.toLowerCase().includes(query) ||
+      p.nama.toLowerCase().includes(query) ||
+      p.email.toLowerCase().includes(query) ||
+      p.departement.toLowerCase().includes(query) ||
+      p.alamat.toLowerCase().includes(query) ||
+      p.no_hp.toLowerCase().includes(query) ||
+      getNamaCabang(p.cabang).toLowerCase().includes(query)
+    );
   }
-  return pegawai.value.filter(p =>
-    p.nip.toLowerCase().includes(query) ||
-    p.nama.toLowerCase().includes(query) ||
-    p.email.toLowerCase().includes(query) ||
-    p.departement.toLowerCase().includes(query) ||
-    p.alamat.toLowerCase().includes(query) ||
-    p.no_hp.toLowerCase().includes(query) ||
-    getNamaCabang(p.cabang).toLowerCase().includes(query)
-  );
+
+  if (cabang) {
+    filtered = filtered.filter(tamu => tamu.cabang === cabang);
+  }
+
+  if (departemen) {
+    filtered = filtered.filter(tamu => tamu.departement_dikunjungi === departemen);
+  }
+
+  return filtered;
 });
 
 const handleSearch = () => {
@@ -230,8 +247,18 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari pegawai" style="margin-right: 10px; width: 300px;">
-                    <button @click="handleSearch" class="btn btn-primary">FILTER</button>
+                    <select id="departemenFilter" v-model="departemenFilter" class="form-cari" style="margin-right: 10px; width: 190px;">
+                      <option value="">Semua Departemen</option>
+                      <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{ dep.nama_departement }}</option>
+                    </select>
+                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                      <option value="">Semua Cabang</option>
+                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                    </select>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari pegawai" style="width: 100%; padding-right: 40px;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
                   </div>
                 </div>
 
