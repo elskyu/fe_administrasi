@@ -79,6 +79,8 @@ const saveNewSuratKeluar = async () => {
       kode_surat: '',
     };
     fetchDataSuratKeluar();
+    showAddModal.value = false;
+    generateNewSkId();
   } catch (error) {
     console.error('Error saving new surat keluar:', error);
   }
@@ -110,7 +112,37 @@ const generateNewNomorSurat = async () => {
   return `${selectedKodeSurat}.${formattedNumber}/HEXA/${currentMonth}/${currentYear}`;
 };
 
+const generateNewSkId = async () => {
+  try {
+    const response = await api.get('/api/sk');
+    const suratKeluar = response.data.data.data;
+
+    if (suratKeluar.length === 0) {
+      addFormData.value.id_surat_keluar = "SK001";
+    } else {
+      const existingIds = suratKeluar.map(sk => parseInt(sk.id_surat_keluar.slice(3)));
+      existingIds.sort((a, b) => a - b);
+
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+
+      addFormData.value.id_surat_keluar = `SK${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Surat Keluar ID:', error);
+  }
+};
+
 onMounted(() => {
+  generateNewSkId();
   fetchDataSuratKeluar();
   fetchDataCabang();
   fetchDataKodeSurat();
@@ -190,8 +222,10 @@ onMounted(() => {
         <input type="text" id="id_surat_keluar" v-model="addFormData.id_surat_keluar" />
       </div>
       <div class="form-group">
-        <label for="nomor_surat">Nomor Surat</label>
-        <input type="text" id="nomor_surat" v-model="addFormData.nomor_surat" />
+        <label for="kode_surat">Jenis Surat</label>
+        <select id="kode_surat" v-model="addFormData.kode_surat">
+          <option v-for="k in kodeSuratList" :value="k.kode_surat" :key="k.kode_surat">{{ k.jenis_surat }}</option>
+        </select>
       </div>
       <div class="form-group-row">
         <div class="form-group">
@@ -215,12 +249,6 @@ onMounted(() => {
         <label for="cabang">Cabang</label>
         <select id="cabang" v-model="addFormData.cabang">
           <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="kode_surat">Kode Surat</label>
-        <select id="kode_surat" v-model="addFormData.kode_surat">
-          <option v-for="k in kodeSuratList" :value="k.kode_surat" :key="k.kode_surat">{{ k.jenis_surat }}</option>
         </select>
       </div>
       <div class="form-actions">
