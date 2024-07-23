@@ -6,6 +6,7 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/peminjaman.css';
 import '/src/style/modal.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
 // State untuk menyimpan data inventaris
 const pemakaianList = ref([]);
@@ -14,9 +15,7 @@ const inventarisList = ref([]);
 const pegawaiList = ref([]);
 const currentPemakaianId = ref(null);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
-
-// State untuk mengontrol modal tambah
+const cabangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
@@ -90,20 +89,29 @@ const editPemakaian = (p) => {
 // Properti computed untuk memfilter inventaris berdasarkan query pencarian
 const filteredPemakaian = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return pemakaianList.value;
+  const cabang = cabangFilter.value;
+
+  let filtered = pemakaianList.value;
+
+  if (query) {
+    filtered = filtered.filter(pemakaian =>
+      pemakaian.nopol.toLowerCase().includes(query) ||
+      pemakaian.merek.toLowerCase().includes(query) ||
+      pemakaian.kategori.toLowerCase().includes(query) ||
+      pemakaian.tahun.toLowerCase().includes(query) ||
+      pemakaian.pajak.toLowerCase().includes(query) ||
+      pemakaian.keterangan.toLowerCase().includes(query) ||
+      pemakaian.harga_beli.toLowerCase().includes(query) ||
+      pemakaian.tanggal_beli.toLowerCase().includes(query) ||
+      getNamaCabang(pemakaian.cabang).toLowerCase().includes(query)
+    );
   }
-  return pemakaianList.value.filter(pemakaian =>
-    pemakaian.nopol.toLowerCase().includes(query) ||
-    pemakaian.merek.toLowerCase().includes(query) ||
-    pemakaian.kategori.toLowerCase().includes(query) ||
-    pemakaian.tahun.toLowerCase().includes(query) ||
-    pemakaian.pajak.toLowerCase().includes(query) ||
-    pemakaian.keterangan.toLowerCase().includes(query) ||
-    pemakaian.harga_beli.toLowerCase().includes(query) ||
-    pemakaian.tanggal_beli.toLowerCase().includes(query) ||
-    getNamaCabang(pemakaian.cabang).toLowerCase().includes(query)
-  );
+
+  if (cabang) {
+    filtered = filtered.filter(inventaris => inventaris.cabang === cabang);
+  }
+
+  return filtered;
 });
 
 // Metode untuk menangani klik tombol pencarian
@@ -218,11 +226,17 @@ onMounted(() => {
                     </div>
     
                     <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
-                        <div class="d-flex justify-content-end">
-                          <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari pemakaian" style="margin-right: 10px; width: 300px;">
-                            <button   class="btn btn-primary">FILTER</button>
+                      <div class="d-flex justify-content-end">
+                        <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                          <option value="">Semua Cabang</option>
+                          <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                        </select>
+                        <div class="search-container" style="margin-right: -10px; width: 275px;">
+                          <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari pemakaian" style="width: 100%; padding-right: 40px;" />
+                          <SearchIcon class="search-icon" />
+                        </div>
+                      </div>
                     </div>
-                </div>
                 
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
