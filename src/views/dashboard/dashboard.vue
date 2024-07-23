@@ -114,7 +114,7 @@ defineExpose({
             :events="events"
             @event-click="viewEvent"
             @event-change="changeEvent"
-            default-view="week"
+            default-view="month"
             style="width: 100%; height: 520px;"
           />
         </div>
@@ -129,6 +129,11 @@ defineExpose({
           <div class="form-group">
             <label for="title">Agenda</label>
             <input type="text" id="title" v-model="newEvent.title" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="department">Department</label>
+            <input type="text" id="department" v-model="newEvent.department" required>
           </div>
           
           <div class="form-group">
@@ -162,6 +167,10 @@ defineExpose({
               <p>{{ event.title }}</p>
             </div>
             <div>
+              <label>Department:</label>
+              <p>{{ event.department }}</p>
+            </div>
+            <div>
               <label>Start:</label>
               <p>{{ new Date(event.start).toLocaleString() }}</p>
             </div>
@@ -186,6 +195,10 @@ defineExpose({
           <div class="form-group">
             <label for="edit-title">Title:</label>
             <input type="text" id="edit-title" v-model="editModal.event.title" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-department">Department:</label>
+            <input type="text" id="edit-department" v-model="editModal.event.department" required>
           </div>
           <div class="form-group">
             <label for="edit-start">Start:</label>

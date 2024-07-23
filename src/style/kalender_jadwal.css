@@ -10,7 +10,8 @@
 }
 
 .vuecal__cell {
-  border: 1px solid #e0e0e0;
+  border: 1px solid #070707;
+  outline: auto;
 }
 
 .vuecal__header {
@@ -19,7 +20,7 @@
 }
 
 .vuecal__weekdays, .vuecal__weekdays__day {
-  background-color: #f5f5f5;
+  background-color: #323131;
 }
 
 .vuecal__week__cell {
@@ -35,7 +36,7 @@
 
 .vuecal__cell--today {
   background-color: #e3f2fd;
-  border-color: #90caf9;
+  border-color: #0b0b0b;
 }
 
 .vuecal__cell--past {
@@ -44,8 +45,8 @@
 }
 
 .vuecal__time-cell {
-  background-color: #f5f5f5;
-  color: #616161;
+  background-color: #e5b15d62;
+  color: #000000;
 }  
 
 .calendar-header {
@@ -155,25 +156,25 @@ button {
 }
 
 button:hover {
-  background-color: #000000;
+  background-color: #9794943f;
   color: white;
 }
 
 .event-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .event-item {
+  margin-bottom: 15px;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 
 .event-actions {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
   margin-top: 10px;
 }
 
