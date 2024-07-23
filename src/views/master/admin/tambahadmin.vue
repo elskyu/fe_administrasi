@@ -1,22 +1,18 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../../api'; // Impor dari folder api yang berisi index.js
+import api from '../../../api';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 
-// State for storing admins
 const admins = ref([]);
-const searchQuery = ref(''); // State for search query
-const tempSearchQuery = ref(''); // Temporary state for holding input value
-
-// State to control modals visibility
+const searchQuery = ref('');
+const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
-// Form data for adding a new admin
 const addFormData = ref({
   id_admin: '',
   nama: '',
@@ -25,7 +21,6 @@ const addFormData = ref({
   password: '',
 });
 
-// Form data for editing an existing admin
 const editFormData = ref({
   id_admin: '',
   nama: '',
@@ -36,12 +31,11 @@ const editFormData = ref({
 
 const currentAdminId = ref(null);
 
-// Function to fetch admins from the API
 const fetchDataAdmins = async () => {
   try {
     const response = await api.get('/api/admin');
-    console.log(response); // Log the response to inspect its structure
-    admins.value = response.data.data.data; // Adjust based on the actual response structure
+    console.log(response);
+    admins.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching admins:', error);
   }
@@ -49,24 +43,23 @@ const fetchDataAdmins = async () => {
 
 const editAdmin = (admin) => {
   currentAdminId.value = admin.id_admin;
-  editFormData.value = { ...admin}; // Jangan isi password untuk keamanan
+  editFormData.value = { ...admin};
   showEditModal.value = true;
 };
 
-// Function to delete an admin
 const deleteAdmin = async (id_admin) => {
   if (confirm("Apakah anda ingin menghapus data ini?")) {
     try {
       await api.delete(`/api/admin/${id_admin}`);
-      // Remove the deleted admin from the admins array
       admins.value = admins.value.filter(admin => admin.id_admin !== id_admin);
+      generateNewAdminId();
+      fetchDataAdmins();
     } catch (error) {
       console.error('Error deleting admin:', error);
     }
   }
 };
 
-// Computed property to filter admins based on search query
 const filteredAdmins = computed(() => {
   const query = searchQuery.value.toLowerCase();
   if (!query) {
@@ -79,51 +72,59 @@ const filteredAdmins = computed(() => {
 });
 
 
-// Function to handle form submission for adding a new admin
 const saveNewAdmin = async () => {
   try {
     await api.post('/api/admin', addFormData.value);
-    // Reset form data
     addFormData.value = { id_admin: '', nama: '', no_hp: '', email: '', password: '' };
-    // Close the modal
     showAddModal.value = false;
-    // Refresh the admin list
     fetchDataAdmins();
+    generateNewAdminId();
   } catch (error) {
     console.error('Error saving new admin:', error);
   }
 };
 
-// Function to handle form submission for editing an admin
 const saveEditAdmin = async () => {
   try {
     await api.put(`/api/admin/${currentAdminId.value}`, editFormData.value);
-    // Reset form data
     editFormData.value = null;
-    // Close the modal
     showEditModal.value = false;
-    // Refresh the admin list
     fetchDataAdmins();
+    generateNewAdminId();
   } catch (error) {
     console.error('Error saving edit admin:', error);
   }
 };
 
-const updateAdmin = async () => {
+const generateNewAdminId = async () => {
   try {
-    await api.put(`/api/admin/${currentAdminId.value}`, editFormData.value);
-    // Reset state
-    currentAdminId.value = null;
-    showEditModal.value = false;
-    // Refresh daftar admin
-    fetchDataAdmins();
+    const response = await api.get('/api/admin');
+    const admins = response.data.data.data;
+
+    if (admins.length === 0) {
+      addFormData.value.id_admin = "ADM001";
+    } else {
+      const existingIds = admins.map(a => parseInt(a.id_admin.slice(3)));
+      existingIds.sort((a, b) => a - b);
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+      addFormData.value.id_admin = `ADM${String(newId).padStart(3, '0')}`;
+    }
   } catch (error) {
-    console.error('Error updating data:', error);
+    console.error('Error generating new Admin ID:', error);
   }
 };
 
-// Run hook "onMounted"
 onMounted(() => {
+  generateNewAdminId();
   fetchDataAdmins();
 });
 </script>

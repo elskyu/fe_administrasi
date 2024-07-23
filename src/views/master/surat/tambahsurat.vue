@@ -1,28 +1,23 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../../api'; // Impor dari folder api yang berisi index.js
+import api from '../../../api';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 
-// State for storing surat
 const surat = ref([]);
-const searchQuery = ref(''); // State for search query
-const tempSearchQuery = ref(''); // Temporary state for holding input value
-
-// State to control modals visibility
+const searchQuery = ref('');
+const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
-// Form data for adding a new surat
 const addFormData = ref({
   kode_surat: '',
   jenis_surat: '',
 });
 
-// Form data for editing an existing surat
 const editFormData = ref({
   kode_surat: '',
   jenis_surat: '',
@@ -30,12 +25,11 @@ const editFormData = ref({
 
 const currentSuratId = ref(null);
 
-// Function to fetch surat from the API
 const fetchDataSurat = async () => {
   try {
     const response = await api.get('/api/surat');
-    console.log(response); // Log the response to inspect its structure
-    surat.value = response.data.data.data; // Adjust based on the actual response structure
+    console.log(response);
+    surat.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching surat:', error);
   }
@@ -47,12 +41,10 @@ const editSurat = (s) => {
   showEditModal.value = true;
 };
 
-// Function to delete a surat
 const deleteSurat = async (kode_surat) => {
   if (confirm("Apakah anda ingin menghapus data ini?")) {
     try {
       await api.delete(`/api/surat/${kode_surat}`);
-      // Remove the deleted surat from the surat array
       surat.value = surat.value.filter(s => s.kode_surat !== kode_surat);
     } catch (error) {
       console.error('Error deleting surat:', error);
@@ -60,7 +52,6 @@ const deleteSurat = async (kode_surat) => {
   }
 };
 
-// Computed property to filter surat based on search query
 const filteredSurat = computed(() => {
   const query = searchQuery.value.toLowerCase();
   if (!query) {
@@ -72,42 +63,32 @@ const filteredSurat = computed(() => {
   );
 });
 
-// Method to handle the search button click
 const handleSearch = () => {
   searchQuery.value = tempSearchQuery.value;
 };
 
-// Function to handle form submission for adding a new surat
 const saveNewSurat = async () => {
   try {
     await api.post('/api/surat', addFormData.value);
-    // Reset form data
     addFormData.value = { kode_surat: '', jenis_surat: '' };
-    // Close the modal
     showAddModal.value = false;
-    // Refresh the surat list
     fetchDataSurat();
   } catch (error) {
     console.error('Error saving new surat:', error);
   }
 };
 
-// Function to handle form submission for editing a surat
 const saveEditSurat = async () => {
   try {
     await api.put(`/api/surat/${currentSuratId.value}`, editFormData.value);
-    // Reset form data
     editFormData.value = { kode_surat: '', jenis_surat: '' };
-    // Close the modal
     showEditModal.value = false;
-    // Refresh the surat list
     fetchDataSurat();
   } catch (error) {
     console.error('Error saving edit surat:', error);
   }
 };
 
-// Run hook "onMounted"
 onMounted(() => {
   fetchDataSurat();
 });
