@@ -7,14 +7,12 @@ import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 
-// State untuk menyimpan data surat keluar
 const suratKeluar = ref([]);
 const cabangList = ref([]);
 const kodeSuratList = ref([]);
 const searchQuery = ref('');
 const showAddModal = ref(false);
 
-// Form data untuk tambah surat keluar
 const addFormData = ref({
   id_surat_keluar: '',
   nomor_surat: '',
@@ -23,10 +21,9 @@ const addFormData = ref({
   tujuan_surat: '',
   perihal: '',
   cabang: '',
-  kode_surat: '', // Tambahkan kode_surat di sini
+  kode_surat: '',
 });
 
-// Ambil data surat keluar dari API
 const fetchDataSuratKeluar = async () => {
   try {
     const response = await api.get('/api/sk');
@@ -36,7 +33,6 @@ const fetchDataSuratKeluar = async () => {
   }
 };
 
-// Ambil data cabang dari API
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
@@ -46,7 +42,6 @@ const fetchDataCabang = async () => {
   }
 };
 
-// Ambil data kode surat dari API
 const fetchDataKodeSurat = async () => {
   try {
     const response = await api.get('/api/surat');
@@ -56,7 +51,6 @@ const fetchDataKodeSurat = async () => {
   }
 };
 
-// Properti computed untuk memfilter surat keluar berdasarkan query pencarian
 const filteredSuratKeluar = computed(() => {
   const query = searchQuery.value.toLowerCase();
   if (!query) {
@@ -70,12 +64,10 @@ const filteredSuratKeluar = computed(() => {
   );
 });
 
-// Fungsi untuk menyimpan data surat keluar baru
 const saveNewSuratKeluar = async () => {
   try {
     addFormData.value.nomor_surat = await generateNewNomorSurat();
     await api.post('/api/sk', addFormData.value);
-    // Reset form data
     addFormData.value = {
       id_surat_keluar: '',
       nomor_surat: '',
@@ -86,22 +78,17 @@ const saveNewSuratKeluar = async () => {
       cabang: '',
       kode_surat: '',
     };
-    // Tutup modal tambah
-    showAddModal.value = false;
-    // Muat ulang daftar surat keluar
     fetchDataSuratKeluar();
   } catch (error) {
     console.error('Error saving new surat keluar:', error);
   }
 };
 
-// Fungsi untuk mendapatkan nama cabang
 const getNamaCabang = (idCabang) => {
   const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
   return cabang ? cabang.nama_cabang : '';
 };
 
-// Fungsi untuk menghasilkan nomor surat baru
 const generateNewNomorSurat = async () => {
   const monthNames = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
   const currentMonth = monthNames[new Date().getMonth()];
@@ -123,7 +110,6 @@ const generateNewNomorSurat = async () => {
   return `${selectedKodeSurat}.${formattedNumber}/HEXA/${currentMonth}/${currentYear}`;
 };
 
-// Jalankan hook "onMounted"
 onMounted(() => {
   fetchDataSuratKeluar();
   fetchDataCabang();
