@@ -254,7 +254,7 @@ onMounted(() => {
                       <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
                     </select>
                     <div class="search-container" style="margin-right: -10px; width: 275px;">
-                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari inventaris" style="width: 100%; padding-right: 40px;" />
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari reservasi" style="width: 100%; padding-right: 40px;" />
                       <SearchIcon class="search-icon" />
                     </div>
                   </div>
