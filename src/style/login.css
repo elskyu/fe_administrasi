@@ -28,7 +28,7 @@ body {
   }
   
   .col-left {
-    background: #44d569;
+    background: rgba(68, 213, 105, 0.2);
     flex: 1.8;
     height: 100%;
   }
