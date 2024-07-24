@@ -29,7 +29,7 @@ body {
   
   .col-left {
     background: #44d569;
-    flex: 2;
+    flex: 1.8;
     height: 100%;
   }
   
@@ -58,7 +58,7 @@ body {
   
   .login-form {
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
   }
   
   .login-form h2 {

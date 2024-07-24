@@ -49,14 +49,15 @@ const login = async () => {
           <h2>Login</h2>
           <form @submit.prevent="login">
             <p>
-              <label>Email<span>*</span></label>
-              <input type="email" placeholder="Username or Email" v-model="email" required>
+              <label style="font-weight: bolder;">Email<span>*</span></label>
+              <input type="email" placeholder="Masukkan Email" v-model="email" required>
             </p>
             <p>
-              <label>Password<span>*</span></label>
-              <input type="password" placeholder="Password" v-model="password" required>
+              <label style="font-weight: bolder;">Password<span>*</span></label>
+              <input type="password" placeholder="Masukkan Password" v-model="password" required>
             </p>
             <p>
+              <label class=""><span></span></label>
               <input type="submit" value="Log In">
             </p>
           </form>
