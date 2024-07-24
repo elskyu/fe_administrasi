@@ -59,6 +59,7 @@ body {
   .login-form {
     width: 100%;
     max-width: 500px;
+    min-width: 350px;
   }
   
   .login-form h2 {
@@ -133,4 +134,19 @@ body {
   .login-form button:hover, .login-form input[type=submit]:hover {
     color: #ffffff;
     background-color: #44d569;
+  }
+
+  @media (max-width: 768px) {
+    .col-left {
+      display: none;
+    }
+  
+    .col-right {
+      flex: 1;
+    }
+  
+    .login-form {
+      max-width: 100%;
+      min-width: 0; 
+    }
   }
