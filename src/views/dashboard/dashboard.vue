@@ -188,11 +188,14 @@ onMounted(() => {
             <button @click="showModal = true" class="btn btn-primary">Create Event</button>
             <button @click="viewAllEvents" class="btn btn-secondary">View Events</button>
           </div>
+          
           <VueCal
+            :time="false" 
+            active-view="month" 
+            :disable-views="['years', 'week', 'day']"
             :events="events"
             @event-click="viewEvent"
             @event-change="changeEvent"
-            default-view="month"
             style="width: 100%; height: 520px;"
           />
         </div>
