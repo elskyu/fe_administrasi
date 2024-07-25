@@ -9,6 +9,8 @@ import '/src/style/modal.css';
 import '/src/style/surat_masuk.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 
+const userName = ref(''); // Default name
+
 const suratMasuk = ref([]);
 const cabangList = ref([]);
 const searchQuery = ref('');
@@ -24,6 +26,32 @@ const addFormData = ref({
   perihal: '',
   cabang: '',
 });
+
+const fetchUserName = async () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const response = await axios.get('http://localhost:8000/api/useradmin', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log("nama : ",response.data); // Tambahkan log ini
+      const user = response.data;
+      if (user && user.nama) {
+        userName.value = user.nama;
+      } else {
+        console.error('Nama pengguna tidak ditemukan dalam respons');
+      }
+    } catch (error) {
+      console.error('Gagal mengambil data pengguna:', error);
+      // Tangani error, misalnya dengan mengarahkan ke halaman login jika token tidak valid
+    }
+  } else {
+    console.error('Token tidak ditemukan');
+    // Tangani kasus di mana token tidak ditemukan
+  }
+};
 
 const fetchDataSuratMasuk = async () => {
   try {
@@ -124,6 +152,7 @@ onMounted(() => {
   generateNewSmId();
   fetchDataSuratMasuk();
   fetchDataCabang();
+  fetchUserName();
 });
 </script>
 
@@ -132,9 +161,12 @@ onMounted(() => {
   <div class="background-container">
     <div class="content">
       <div class="container mt-5 mb-5">
-        <div class="row">
-          <div class="card2">
+        <div class="flex-container" style="display: flex; justify-content: space-between;">
+          <div class="card2" style="flex: 0 0 81%; margin-right: 10px; margin-left: -10px;">
             <h2>SURAT MASUK</h2>
+          </div>
+          <div class="card-nama" style="flex: 0 0 20%;">
+            <h4>Hello {{ userName }}</h4>
           </div>
         </div>
 
