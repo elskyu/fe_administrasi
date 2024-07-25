@@ -39,7 +39,7 @@ const logoutAndReload = async () => {
       <nav class="sidebar custom-sidebar" style="box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);">
         <ul class="navbar-nav">
             <li class="header-sidebar" style="margin-top: 10px; margin-bottom: 10px; text-align: center;">
-                <span style="font-weight: bold; font-size: 18px;">Teman Kantor</span>
+                <img src="@/images/temankantor.svg" alt="Teman Kantor" style="max-width: 150px; max-height: 75px;">
             </li>
             <li class="nav-item">
                 <router-link :to="{ name: 'dashboard.dashboard' }" class="nav-link active" style="margin-left: 15px; margin-right: 15px;">

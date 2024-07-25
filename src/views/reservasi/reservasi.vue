@@ -1,13 +1,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../api'; // Sesuaikan dengan struktur folder dan file yang benar
+import api from '../../api';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
-// State untuk menyimpan data reservasi
 const reservasiList = ref([]);
 const cabangList = ref([]);
 const ruangList = ref([]);
@@ -15,12 +15,11 @@ const pegawaiList = ref([]);
 const currentReservasiId = ref(null);
 const searchQuery = ref('');
 const tempSearchQuery = ref('');
-
-// State untuk mengontrol modal tambah
+const cabangFilter = ref('');
+const ruangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
-// Form data untuk tambah reservasi
 const addFormData = ref({
   id_reservasi: '',
   ruang: '',
@@ -43,12 +42,11 @@ const editFormData = ref({
   cabang: '',
 });
 
-// Ambil data reservasi dari API
 const fetchDataReservasi = async () => {
   try {
     const response = await api.get('/api/rr');
-    console.log(response); // Untuk inspeksi struktur respons
-    reservasiList.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+    console.log(response);
+    reservasiList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching reservasi:', error);
   }
@@ -57,7 +55,7 @@ const fetchDataReservasi = async () => {
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -66,7 +64,7 @@ const fetchDataCabang = async () => {
 const fetchDataRuang = async () => {
   try {
     const response = await api.get('/api/ruang');
-    ruangList.value = response.data.data.data; // Adjust based on the actual response structure
+    ruangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -75,7 +73,7 @@ const fetchDataRuang = async () => {
 const fetchDataPegawai = async () => {
   try {
     const response = await api.get('/api/pegawai');
-    pegawaiList.value = response.data.data.data; // Sesuaikan dengan struktur response API
+    pegawaiList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching pegawai:', error);
   }
@@ -91,38 +89,47 @@ const editReservasi = (r) => {
     durasi: r.durasi,
     pegawai: r.pegawai,
     keterangan: r.keterangan,
-    cabang: r.cabang, // Pastikan cabang_id diambil dari p.cabang.id_cabang
+    cabang: r.cabang,
   };
   showEditModal.value = true;
 };
 
-// Properti computed untuk memfilter reservasi berdasarkan query pencarian
 const filteredReservasi = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return reservasiList.value;
+  const cabang = cabangFilter.value;
+  const ruang = ruangFilter.value;
+
+  let filtered = reservasiList.value;
+  if (query) {  
+    filtered = filtered.filter(reservasi =>
+      getNamaRuang(reservasi.ruang).toLowerCase().includes(query) ||
+      reservasi.tanggal_reservasi.toLowerCase().includes(query) ||
+      reservasi.tanggal_selesai.toLowerCase().includes(query) ||
+      reservasi.durasi.toLowerCase().includes(query) ||
+      reservasi.pegawai.toLowerCase().includes(query) ||
+      reservasi.keterangan.toLowerCase().includes(query) ||
+      getNamaCabang(reservasi.cabang).toLowerCase().includes(query)
+    );
   }
-  return reservasiList.value.filter(reservasi =>
-    getNamaRuang(reservasi.ruang).toLowerCase().includes(query) ||
-    reservasi.tanggal_reservasi.toLowerCase().includes(query) ||
-    reservasi.tanggal_selesai.toLowerCase().includes(query) ||
-    reservasi.durasi.toLowerCase().includes(query) ||
-    reservasi.pegawai.toLowerCase().includes(query) ||
-    reservasi.keterangan.toLowerCase().includes(query) ||
-    getNamaCabang(reservasi.cabang).toLowerCase().includes(query)
-  );
+
+  if (cabang) {
+    filtered = filtered.filter(reservasi => reservasi.cabang === cabang);
+  }
+
+  if (ruang) {
+    filtered = filtered.filter(reservasi => reservasi.ruang === ruang);
+  }
+
+  return filtered;
 });
 
-// Metode untuk menangani klik tombol pencarian
 const handleSearch = () => {
   searchQuery.value = tempSearchQuery.value;
 };
 
-// Fungsi untuk menyimpan data reservasi baru
 const saveNewReservasi = async () => {
   try {
     await api.post('/api/rr', addFormData.value);
-    // Reset form data
     addFormData.value = {
       id_reservasi: '',
       ruang: '',
@@ -133,10 +140,9 @@ const saveNewReservasi = async () => {
       keterangan: '',
       cabang: '',
     };
-    // Tutup modal tambah
     showAddModal.value = false;
-    // Muat ulang daftar reservasi
     fetchDataReservasi();
+    generateNewRrId();
   } catch (error) {
     console.error('Error saving new reservasi:', error);
   }
@@ -157,6 +163,7 @@ const saveEditReservasi = async () => {
     };
     showEditModal.value = false;
     fetchDataReservasi();
+    generateNewRrId();
   } catch (error) {
     console.error('Error saving edit reservasi:', error);
   }
@@ -182,6 +189,8 @@ const deleteReservasi = async (id_reservasi) => {
     try {
       await api.delete(`/api/rr/${id_reservasi}`);
       reservasiList.value = reservasiList.value.filter(reservasi => reservasi.id_reservasi !== id_reservasi);
+      generateNewRrId();
+      fetchDataReservasi();
     } catch (error) {
       console.error('Error deleting reservasi:', error);
     }
@@ -199,8 +208,37 @@ function convertMinutesToTime(minutes) {
   return `${String(hours).padStart(2, '0')}:${String(remainingMinutes).padStart(2, '0')}:00`;
 }
 
-// Jalankan hook "onMounted"
+const generateNewRrId = async () => {
+  try {
+    const response = await api.get('/api/rrall');
+    const reservasiList = response.data.data;
+
+    if (reservasiList.length === 0) {
+      addFormData.value.id_reservasi = "RSV001";
+    } else {
+      const existingIds = reservasiList.map(rr => parseInt(rr.id_reservasi.slice(3)));
+      existingIds.sort((a, b) => a - b);
+
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+
+      addFormData.value.id_reservasi = `RSV${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Reservasi ID:', error);
+  }
+};
+
 onMounted(() => {
+  generateNewRrId();
   fetchDataReservasi();
   fetchDataCabang();
   fetchDataRuang();
@@ -229,8 +267,18 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari reservasi" style="margin-right: 10px; width: 300px;">
-                    <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
+                    <select id="ruangFilter" v-model="ruangFilter" class="form-cari" style="margin-right: 10px; width: 175px;">
+                      <option value="">Semua Ruang</option>
+                      <option v-for="r in ruangList" :value="r.id_ruang" :key="r.id_ruang">{{ r.nama_ruang }}</option>
+                    </select>
+                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                      <option value="">Semua Cabang</option>
+                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                    </select>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari reservasi" style="width: 100%; padding-right: 40px;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
                   </div>
                 </div>
               

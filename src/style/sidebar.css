@@ -1,9 +1,8 @@
-.content-area-with-sidebar {
-  margin-left: 215px; /* Adjust to match the sidebar width */
-  padding: 0px;
-  width: calc(100% - 215px); /* Adjust to match the sidebar width */
-}
-  
+  .content-area-with-sidebar {
+    margin-left: 215px; /* Adjust to match the sidebar width */
+    padding: 0px;
+    width: calc(100% - 215px); /* Adjust to match the sidebar width */
+  }
   
   .custom-sidebar {
     width: 210px; /* Lebar sidebar */
@@ -90,7 +89,7 @@
     padding: 10px 20px;
     display: block;
     text-decoration: none;
-    font-size: small; /* Ukuran huruf */
+    font-size: small;
     font-weight: lighter; 
     color: #3a416e;;
   }
@@ -102,3 +101,49 @@
     color:#5e72e4;
     display: block;
   }
+
+
+  /* Responsive */
+  @media (max-width: 860px) {
+    .icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .custom-sidebar {
+      height: 100%;
+      max-height: 95.5vh; 
+      width: 70px;
+      left: 0;
+    }
+  
+    header, #btn, #cancel {
+      display: none;
+    }
+  
+    span {
+      position: absolute;
+      margin-left: 23px;
+      opacity: 0;
+      visibility: hidden;
+    }
+  
+    .sidebar a {
+      height: 60px;
+    }
+  
+    .sidebar a i {
+      margin-left: -10px;
+    }
+  
+    a:hover {
+      width: 200px;
+      background: inherit;
+    }
+  
+    .sidebar a:hover span {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+  

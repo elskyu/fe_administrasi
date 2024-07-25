@@ -46,6 +46,7 @@ export default {
           if (isTokenExpired(token)) {
           store.dispatch('auth/clearToken');
           router.push({ name: 'error' });
+          window.location.reload();
         }else{
           // tidak apa-apa
         }

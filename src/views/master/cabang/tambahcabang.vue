@@ -6,6 +6,7 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
 const cabang = ref([]);
 const searchQuery = ref('');
@@ -47,6 +48,7 @@ const deleteCabang = async (id_cabang) => {
       await api.delete(`/api/cabang/${id_cabang}`);
       cabang.value = cabang.value.filter(c => c.id_cabang !== id_cabang);
       generateNewCabangId();
+      fetchDataCabang();
     } catch (error) {
       console.error('Error deleting cabang:', error);
     }
@@ -93,7 +95,7 @@ const saveEditCabang = async () => {
 
 const generateNewCabangId = async () => {
   try {
-    const response = await api.get('/api/cabang');
+    const response = await api.get('/api/cabangall');
     const cabangList = response.data.data;
 
     if (cabangList.length === 0) {
@@ -146,8 +148,10 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari cabang" style="margin-right: 10px; width: 300px;">
-                    <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari cabang" style="width: 100%; padding-right: 40px;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
                   </div>
                 </div>
               

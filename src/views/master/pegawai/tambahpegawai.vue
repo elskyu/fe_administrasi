@@ -1,11 +1,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../../api'; // Sesuaikan dengan struktur folder dan nama file API
+import api from '../../../api';
+import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/surat_masuk.css';
-import '/src/style/background_color.css';
 import '/src/style/modal.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
 const pegawai = ref([]);
 const cabangList = ref([]);
@@ -13,6 +14,8 @@ const departementList = ref([]);
 const currentPegawaiId = ref(null);
 const searchQuery = ref('');
 const tempSearchQuery = ref('');
+const cabangFilter = ref('');
+const departemenFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
@@ -43,7 +46,7 @@ const editFormData = ref({
 const fetchDataPegawai = async () => {
   try {
     const response = await api.get('/api/pegawai');
-    pegawai.value = response.data.data.data; // Sesuaikan dengan struktur response API
+    pegawai.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching pegawai:', error);
   }
@@ -52,17 +55,16 @@ const fetchDataPegawai = async () => {
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    cabangList.value = response.data.data.data; // Sesuaikan dengan struktur response API
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
 };
 
-// Function to fetch departement list from the API
 const fetchDataDepartement = async () => {
   try {
     const response = await api.get('/api/departement');
-    departementList.value = response.data.data.data; // Adjust based on the actual response structure
+    departementList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching departement list:', error);
   }
@@ -79,7 +81,7 @@ const editPegawai = (p) => {
     departement: p.departement,
     alamat: p.alamat,
     no_hp: p.no_hp,
-    cabang: p.cabang, // Pastikan cabang_id diambil dari p.cabang.id_cabang
+    cabang: p.cabang,
   };
   showEditModal.value = true;
 };
@@ -89,6 +91,8 @@ const deletePegawai = async (id_pegawai) => {
     try {
       await api.delete(`/api/pegawai/${id_pegawai}`);
       pegawai.value = pegawai.value.filter(p => p.id_pegawai !== id_pegawai);
+      generateNewPegawaiId();
+      fetchDataPegawai();
     } catch (error) {
       console.error('Error deleting pegawai:', error);
     }
@@ -97,18 +101,32 @@ const deletePegawai = async (id_pegawai) => {
 
 const filteredPegawai = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return pegawai.value;
+  const cabang = cabangFilter.value;
+  const departemen = departemenFilter.value;
+
+  let filtered = pegawai.value;
+
+  if (query) {
+    filtered = filtered.filter(p =>
+      p.nip.toLowerCase().includes(query) ||
+      p.nama.toLowerCase().includes(query) ||
+      p.email.toLowerCase().includes(query) ||
+      p.departement.toLowerCase().includes(query) ||
+      p.alamat.toLowerCase().includes(query) ||
+      p.no_hp.toLowerCase().includes(query) ||
+      getNamaCabang(p.cabang).toLowerCase().includes(query)
+    );
   }
-  return pegawai.value.filter(p =>
-    p.nip.toLowerCase().includes(query) ||
-    p.nama.toLowerCase().includes(query) ||
-    p.email.toLowerCase().includes(query) ||
-    p.departement.toLowerCase().includes(query) ||
-    p.alamat.toLowerCase().includes(query) ||
-    p.no_hp.toLowerCase().includes(query) ||
-    getNamaCabang(p.cabang).toLowerCase().includes(query)
-  );
+
+  if (cabang) {
+    filtered = filtered.filter(tamu => tamu.cabang === cabang);
+  }
+
+  if (departemen) {
+    filtered = filtered.filter(tamu => tamu.departement_dikunjungi === departemen);
+  }
+
+  return filtered;
 });
 
 const handleSearch = () => {
@@ -136,6 +154,7 @@ const saveNewPegawai = async () => {
     };
     showAddModal.value = false;
     fetchDataPegawai();
+    generateNewPegawaiId();
   } catch (error) {
     console.error('Error saving new pegawai:', error);
   }
@@ -157,12 +176,12 @@ const saveEditPegawai = async () => {
     };
     showEditModal.value = false;
     fetchDataPegawai();
+    generateNewPegawaiId();
   } catch (error) {
     console.error('Error saving edit pegawai:', error);
   }
 };
 
-// fungsi nama cabang
 const getNamaCabang = (idCabang) => {
   const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
   return cabang ? cabang.nama_cabang : '';
@@ -173,8 +192,35 @@ const getNamaDepartemen = (idDepartemen) => {
   return departement ? departement.nama_departement : '';
 };
 
+const generateNewPegawaiId = async () => {
+  try {
+    const response = await api.get('/api/pegawaiall');
+    const pegawai = response.data.data;
+
+    if (pegawai.length === 0) {
+      addFormData.value.id_pegawai = "PEG001";
+    } else {
+      const existingIds = pegawai.map(p => parseInt(p.id_pegawai.slice(3)));
+      existingIds.sort((a, b) => a - b);
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+      addFormData.value.id_pegawai = `PEG${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Pegawai ID:', error);
+  }
+};
 
 onMounted(() => {
+  generateNewPegawaiId();
   fetchDataPegawai();
   fetchDataCabang();
   fetchDataDepartement();
@@ -201,8 +247,18 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari pegawai" style="margin-right: 10px; width: 300px;">
-                    <button @click="handleSearch" class="btn btn-primary">FILTER</button>
+                    <select id="departemenFilter" v-model="departemenFilter" class="form-cari" style="margin-right: 10px; width: 190px;">
+                      <option value="">Semua Departemen</option>
+                      <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{ dep.nama_departement }}</option>
+                    </select>
+                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                      <option value="">Semua Cabang</option>
+                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                    </select>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari pegawai" style="width: 100%; padding-right: 40px;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
                   </div>
                 </div>
 

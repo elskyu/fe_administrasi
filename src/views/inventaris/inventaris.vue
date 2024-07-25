@@ -1,27 +1,21 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../api'; // Sesuaikan dengan struktur folder dan file yang benar
+import api from '../../api';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
-// State untuk menyimpan data inventaris
 const inventarisList = ref([]);
 const cabangList = ref([]);
 const currentInventarisId = ref(null);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
-
-// State untuk mengontrol modal tambah
+const cabangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
-// State untuk kontrol visibility dropdown menu
-const showDropdown = ref(false);
-
-// Form data untuk tambah inventaris
 const addFormData = ref({
   id_inventaris: '',
   nopol: '',
@@ -48,12 +42,11 @@ const editFormData = ref({
   cabang: '',
 });
 
-// Ambil data inventaris dari API
 const fetchDataInventaris = async () => {
   try {
     const response = await api.get('/api/inventaris');
-    console.log(response); // Untuk inspeksi struktur respons
-    inventarisList.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+    console.log(response);
+    inventarisList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching inventaris:', error);
   }
@@ -62,7 +55,7 @@ const fetchDataInventaris = async () => {
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -80,36 +73,41 @@ const editInventaris = (i) => {
     masa_pajak: i.masa_pajak,
     harga_beli: i.harga_beli,
     tanggal_beli: i.tanggal_beli,
-    cabang: i.cabang, // Pastikan cabang_id diambil dari p.cabang.id_cabang
+    cabang: i.cabang,
   };
   showEditModal.value = true;
 };
 
-// Properti computed untuk memfilter inventaris berdasarkan query pencarian
 const filteredInventaris = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return inventarisList.value;
+  const cabang = cabangFilter.value;
+
+  let filtered = inventarisList.value;
+
+  if (query) {
+    filtered = filtered.filter(inventaris =>
+      inventaris.nopol.toLowerCase().includes(query) ||
+      inventaris.merek.toLowerCase().includes(query) ||
+      inventaris.kategori.toLowerCase().includes(query) ||
+      inventaris.tahun.toLowerCase().includes(query) ||
+      inventaris.pajak.toLowerCase().includes(query) ||
+      inventaris.masa_pajak.toLowerCase().includes(query) ||
+      inventaris.harga_beli.toLowerCase().includes(query) ||
+      inventaris.tanggal_beli.toLowerCase().includes(query) ||
+      getNamaCabang(inventaris.cabang).toLowerCase().includes(query)
+    );
   }
-  return inventarisList.value.filter(inventaris =>
-    inventaris.nopol.toLowerCase().includes(query) ||
-    inventaris.merek.toLowerCase().includes(query) ||
-    inventaris.kategori.toLowerCase().includes(query) ||
-    inventaris.tahun.toLowerCase().includes(query) ||
-    inventaris.pajak.toLowerCase().includes(query) ||
-    inventaris.masa_pajak.toLowerCase().includes(query) ||
-    inventaris.harga_beli.toLowerCase().includes(query) ||
-    inventaris.tanggal_beli.toLowerCase().includes(query) ||
-    getNamaCabang(inventaris.cabang).toLowerCase().includes(query)
-  );
+
+  if (cabang) {
+    filtered = filtered.filter(inventaris => inventaris.cabang === cabang);
+  }
+
+  return filtered;
 });
 
-
-// Fungsi untuk menyimpan data inventaris baru
 const saveNewInventaris = async () => {
   try {
     await api.post('/api/inventaris', addFormData.value);
-    // Reset form data
     addFormData.value = {
       id_inventaris: '',
       nopol: '',
@@ -122,10 +120,9 @@ const saveNewInventaris = async () => {
       tanggal_beli: '',
       cabang: '',
     };
-    // Tutup modal tambah
     showAddModal.value = false;
-    // Muat ulang daftar inventaris
     fetchDataInventaris();
+    generateNewInvId();
   } catch (error) {
     console.error('Error saving new inventaris:', error);
   }
@@ -148,6 +145,7 @@ const saveEditPegawai = async () => {
     };
     showEditModal.value = false;
     fetchDataInventaris();
+    generateNewInvId();
   } catch (error) {
     console.error('Error saving edit pegawai:', error);
   }
@@ -163,14 +161,46 @@ const deleteInventaris = async (id_inventaris) => {
     try {
       await api.delete(`/api/inventaris/${id_inventaris}`);
       inventaris.value = inventaris.value.filter(inventaris => inventaris.id_inventaris !== id_inventaris);
+      generateNewInvId();
+      fetchDataInventaris();
     } catch (error) {
       console.error('Error deleting pegawai:', error);
     }
   }
 };
 
-// Jalankan hook "onMounted"
+const generateNewInvId = async () => {
+  try {
+    const response = await api.get('/api/inventarisall');
+    const inventarisList = response.data.data;
+
+    if (inventarisList.length === 0) {
+      addFormData.value.id_surat_masuk = "INV001";
+    } else {
+      const existingIds = inventarisList.map(inv => parseInt(inv.id_inventaris.slice(3)));
+      existingIds.sort((a, b) => a - b);
+
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+
+      addFormData.value.id_inventaris = `INV${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Inventaris ID:', error);
+  }
+};
+
 onMounted(() => {
+  generateNewInvId();
+  generateNewInvId();
   fetchDataInventaris();
   fetchDataCabang();
 });
@@ -196,11 +226,16 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari inventaris" style="margin-right: 10px; width: 300px;">
-                    <button class="btn btn-primary ml-2">FILTER</button>
+                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                      <option value="">Semua Cabang</option>
+                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                    </select>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari inventaris" style="width: 100%; padding-right: 40px;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
                   </div>
                 </div>
-              
               
               <table class="table table-bordered">
                 <thead class="bg-dark text-white text-center">

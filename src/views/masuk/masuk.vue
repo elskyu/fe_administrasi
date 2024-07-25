@@ -1,25 +1,24 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../api'; // Sesuaikan dengan struktur folder dan file yang benar
+import api from '../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/surat_masuk.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
-// State untuk menyimpan data surat masuk
+const userName = ref(''); // Default name
+
 const suratMasuk = ref([]);
 const cabangList = ref([]);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
-
-// State untuk mengontrol modal tambah dan edit
+const cabangFilter = ref('');
 const showAddModal = ref(false);
 
-// Form data untuk tambah surat masuk
 const addFormData = ref({
-  id_surat_masuk: '', // Tambahkan id_surat_masuk di sini
+  id_surat_masuk: '',
   nomor_surat: '',
   tanggal_surat: '',
   tanggal_terima: '',
@@ -28,12 +27,37 @@ const addFormData = ref({
   cabang: '',
 });
 
-// Ambil data surat masuk dari API
+const fetchUserName = async () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const response = await axios.get('http://localhost:8000/api/useradmin', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log("nama : ",response.data); // Tambahkan log ini
+      const user = response.data;
+      if (user && user.nama) {
+        userName.value = user.nama;
+      } else {
+        console.error('Nama pengguna tidak ditemukan dalam respons');
+      }
+    } catch (error) {
+      console.error('Gagal mengambil data pengguna:', error);
+      // Tangani error, misalnya dengan mengarahkan ke halaman login jika token tidak valid
+    }
+  } else {
+    console.error('Token tidak ditemukan');
+    // Tangani kasus di mana token tidak ditemukan
+  }
+};
+
 const fetchDataSuratMasuk = async () => {
   try {
     const response = await api.get('/api/sm');
-    console.log(response); // Untuk inspeksi struktur respons
-    suratMasuk.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+    console.log(response);
+    suratMasuk.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching surat masuk:', error);
   }
@@ -42,34 +66,39 @@ const fetchDataSuratMasuk = async () => {
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
 };
 
-
-// Properti computed untuk memfilter surat masuk berdasarkan query pencarian
 const filteredSuratMasuk = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return suratMasuk.value;
+  const cabang = cabangFilter.value;
+
+  let filtered = suratMasuk.value;
+  
+  if (query) {
+    filtered = filtered.filter(s =>
+      s.nomor_surat.toLowerCase().includes(query) ||
+      s.perihal.toLowerCase().includes(query) ||
+      s.asal_surat.toLowerCase().includes(query) ||
+      getNamaCabang(s.cabang).toLowerCase().includes(query)
+    );
   }
-  return suratMasuk.value.filter(s =>
-    s.nomor_surat.toLowerCase().includes(query) ||
-    s.perihal.toLowerCase().includes(query) ||
-    s.asal_surat.toLowerCase().includes(query) ||
-    getNamaCabang(s.cabang).toLowerCase().includes(query)
-  );
+
+  if (cabang) {
+    filtered = filtered.filter(s => s.cabang === cabang);
+  }
+
+  return filtered;
 });
 
-// Fungsi untuk menyimpan data surat masuk baru
 const saveNewSuratMasuk = async () => {
   try {
     await api.post('/api/sm', addFormData.value);
-    // Reset form data
     addFormData.value = {
-      id_surat_masuk: '', // Reset id_surat_masuk
+      id_surat_masuk: '',
       nomor_surat: '',
       tanggal_surat: '',
       tanggal_terima: '',
@@ -77,10 +106,9 @@ const saveNewSuratMasuk = async () => {
       perihal: '',
       cabang: '',
     };
-    // Tutup modal tambah
     showAddModal.value = false;
-    // Muat ulang daftar surat masuk
     fetchDataSuratMasuk();
+    generateNewSmId();
   } catch (error) {
     console.error('Error saving new surat masuk:', error);
   }
@@ -91,10 +119,40 @@ const getNamaCabang = (idCabang) => {
   return cabang ? cabang.nama_cabang : '';
 };
 
-// Jalankan hook "onMounted"
+const generateNewSmId = async () => {
+  try {
+    const response = await api.get('/api/small');
+    const suratMasuk = response.data.data;
+
+    if (suratMasuk.length === 0) {
+      addFormData.value.id_surat_masuk = "SM001";
+    } else {
+      const existingIds = suratMasuk.map(sm => parseInt(sm.id_surat_masuk.slice(3)));
+      existingIds.sort((a, b) => a - b);
+
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+
+      addFormData.value.id_surat_masuk = `SM${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Surat Masuk ID:', error);
+  }
+};
+
 onMounted(() => {
+  generateNewSmId();
   fetchDataSuratMasuk();
   fetchDataCabang();
+  fetchUserName();
 });
 </script>
 
@@ -103,9 +161,12 @@ onMounted(() => {
   <div class="background-container">
     <div class="content">
       <div class="container mt-5 mb-5">
-        <div class="row">
-          <div class="card2">
+        <div class="flex-container" style="display: flex; justify-content: space-between;">
+          <div class="card2" style="flex: 0 0 81%; margin-right: 10px; margin-left: -10px;">
             <h2>SURAT MASUK</h2>
+          </div>
+          <div class="card-nama" style="flex: 0 0 20%;">
+            <h4>Hello {{ userName }}</h4>
           </div>
         </div>
 
@@ -119,8 +180,14 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat" style="margin-right: 10px; width: 300px;">
-                    <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
+                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                      <option value="">Semua Cabang</option>
+                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                    </select>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat" style="width: 100%; padding-right: 40px;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
                   </div>
                 </div>
               

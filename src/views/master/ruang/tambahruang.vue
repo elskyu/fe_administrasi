@@ -1,54 +1,49 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../../api'; // Import from the api folder containing index.js
+import api from '../../../api';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
-// State for storing ruang
 const ruang = ref([]);
-const cabangList = ref([]); // To store the list of cabangs for selection
-const searchQuery = ref(''); // State for search query
-const tempSearchQuery = ref(''); // Temporary state for holding input value
-
-// State to control modals visibility
+const cabangList = ref([]);
+const searchQuery = ref('');
+const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
+const cabangFilter = ref('');
 
-// Form data for adding a new ruang
 const addFormData = ref({
   id_ruang: '',
   nama_ruang: '',
-  cabang: '', // Store the cabang id for the new ruang
+  cabang: '',
 });
 
-// Form data for editing an existing ruang
 const editFormData = ref({
   id_ruang: '',
   nama_ruang: '',
-  cabang_id: '', // Store the cabang id for the existing ruang
+  cabang_id: '',
 });
 
 const currentRuangId = ref(null);
 
-// Function to fetch ruang from the API
 const fetchDataRuang = async () => {
   try {
     const response = await api.get('/api/ruang');
-    console.log(response); // Log the response to inspect its structure
-    ruang.value = response.data.data.data; // Adjust based on the actual response structure
+    console.log(response);
+    ruang.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching ruang:', error);
   }
 };
 
-// Function to fetch cabang list from the API
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -59,86 +54,111 @@ const editRuang = (r) => {
   editFormData.value = {
     id_ruang: r.id_ruang,
     nama_ruang: r.nama_ruang,
-    cabang: r.cabang, // Pastikan cabang_id diambil dari r.cabang.id
+    cabang: r.cabang,
   };
   showEditModal.value = true;
 };
 
-// Function to delete a ruang
 const deleteRuang = async (id_ruang) => {
   if (confirm("Apakah anda ingin menghapus data ini?")) {
     try {
       await api.delete(`/api/ruang/${id_ruang}`);
-      // Remove the deleted ruang from the ruang array
       ruang.value = ruang.value.filter(r => r.id_ruang !== id_ruang);
+      generateNewRuangId();
+      fetchDataRuang();
     } catch (error) {
       console.error('Error deleting ruang:', error);
     }
   }
 };
 
-// Computed property to filter ruang based on search query
 const filteredRuang = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return ruang.value;
+  const cabang = cabangFilter.value;
+
+  let filtered = ruang.value;
+
+  if (query) {
+    filtered = filtered.filter(r => 
+      r.nama_ruang.toLowerCase().includes(query) ||
+      r.id_ruang.toLowerCase().includes(query) ||
+      getNamaCabang(r.cabang).toLowerCase().includes(query)
+    );
   }
-  return ruang.value.filter(r => 
-    r.nama_ruang.toLowerCase().includes(query) ||
-    r.id_ruang.toLowerCase().includes(query) ||
-    getNamaCabang(r.cabang).toLowerCase().includes(query)
-  );
+
+  if (cabang) {
+    filtered = filtered.filter(s => s.cabang === cabang);
+  }
+
+  return filtered;
 });
 
-// Method to handle the search button click
 const handleSearch = () => {
   searchQuery.value = tempSearchQuery.value;
 };
 
-// Function to handle form submission for adding a new ruang
 const saveNewRuang = async () => {
   try {
-    // Pastikan cabang_id terisi sebelum melakukan permintaan POST
     if (!addFormData.value.cabang) {
       console.error('Cabang harus dipilih');
       return;
     }
-
     await api.post('/api/ruang', addFormData.value);
-    // Reset form data
     addFormData.value = { id_ruang: '', nama_ruang: '', cabang: '' };
-    // Close the modal
     showAddModal.value = false;
-    // Refresh the ruang list
     fetchDataRuang();
+    generateNewRuangId();
   } catch (error) {
     console.error('Error saving new ruang:', error);
   }
 };
 
-// Function to handle form submission for editing a ruang
 const saveEditRuang = async () => {
   try {
     await api.put(`/api/ruang/${currentRuangId.value}`, editFormData.value);
-    // Reset form data
     editFormData.value = { id_ruang: '', nama_ruang: '', cabang: '' };
-    // Close the modal
     showEditModal.value = false;
-    // Refresh the ruang list
     fetchDataRuang();
+    generateNewRuangId();
   } catch (error) {
     console.error('Error saving edit ruang:', error);
   }
 };
 
-// Method atau computed property untuk mendapatkan nama cabang berdasarkan ID cabang
 const getNamaCabang = (idCabang) => {
   const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
   return cabang ? cabang.nama_cabang : '';
 };
 
-// Run hook "onMounted"
+const generateNewRuangId = async () => {
+  try {
+    const response = await api.get('/api/ruangall');
+    const ruang = response.data.data;
+
+    if (ruang.length === 0) {
+      addFormData.value.id_ruang = "R001";
+    } else {
+      const existingIds = ruang.map(r => parseInt(r.id_ruang.slice(3)));
+      existingIds.sort((a, b) => a - b);
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+      addFormData.value.id_ruang = `R${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Ruang ID:', error);
+  }
+};
+
 onMounted(() => {
+  generateNewRuangId();
   fetchDataRuang();
   fetchDataCabang();
 });
@@ -164,8 +184,14 @@ onMounted(() => {
   
                   <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                     <div class="d-flex justify-content-end">
-                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari ruang" style="margin-right: 10px; width: 300px;">
-                      <button class="btn btn-primary ml-2">FILTER</button>
+                      <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                        <option value="">Semua Cabang</option>
+                        <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                      </select>
+                      <div class="search-container" style="margin-right: -10px; width: 275px;">
+                        <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari ruang" style="width: 100%; padding-right: 40px;" />
+                        <SearchIcon class="search-icon" />
+                      </div>
                     </div>
                   </div>
                 

@@ -1,28 +1,24 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../../api'; // Impor dari folder api yang berisi index.js
+import api from '../../../api';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
-// State for storing departments
 const departments = ref([]);
-const searchQuery = ref(''); // State for search query
-const tempSearchQuery = ref(''); // Temporary state for holding input value
-
-// State to control modals visibility
+const searchQuery = ref('');
+const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
-// Form data for adding a new department
 const addFormData = ref({
   id_departement: '',
   nama_departement: '',
 });
 
-// Form data for editing an existing department
 const editFormData = ref({
   id_departement: '',
   nama_departement: '',
@@ -30,12 +26,11 @@ const editFormData = ref({
 
 const currentDepartmentId = ref(null);
 
-// Function to fetch departments from the API
 const fetchDataDepartments = async () => {
   try {
     const response = await api.get('/api/departement');
-    console.log(response); // Log the response to inspect its structure
-    departments.value = response.data.data.data; // Adjust based on the actual response structure
+    console.log(response);
+    departments.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching departments:', error);
   }
@@ -47,20 +42,19 @@ const editDepartment = (department) => {
   showEditModal.value = true;
 };
 
-// Function to delete a department
 const deleteDepartment = async (id_departement) => {
   if (confirm("Apakah anda ingin menghapus data ini?")) {
     try {
       await api.delete(`/api/departement/${id_departement}`);
-      // Remove the deleted department from the departments array
       departments.value = departments.value.filter(department => department.id_departement !== id_departement);
+      generateNewDepartementId();
+      fetchDataDepartments();
     } catch (error) {
       console.error('Error deleting department:', error);
     }
   }
 };
 
-// Computed property to filter departments based on search query
 const filteredDepartments = computed(() => {
   const query = searchQuery.value.toLowerCase();
   if (!query) {
@@ -71,38 +65,59 @@ const filteredDepartments = computed(() => {
   );
 });
 
-// Function to handle form submission for adding a new department
 const saveNewDepartment = async () => {
   try {
     await api.post('/api/departement', addFormData.value);
-    // Reset form data
     addFormData.value = { id_departement: '', nama_departement: '' };
-    // Close the modal
     showAddModal.value = false;
-    // Refresh the department list
     fetchDataDepartments();
+    generateNewDepartementId();
   } catch (error) {
     console.error('Error saving new department:', error);
   }
 };
 
-// Function to handle form submission for editing a department
 const saveEditDepartment = async () => {
   try {
     await api.put(`/api/departement/${currentDepartmentId.value}`, editFormData.value);
-    // Reset form data
     editFormData.value = { id_departement: '', nama_departement: '' };
-    // Close the modal
     showEditModal.value = false;
-    // Refresh the department list
     fetchDataDepartments();
+    generateNewDepartementId();
   } catch (error) {
     console.error('Error saving edit department:', error);
   }
 };
 
-// Run hook "onMounted"
+const generateNewDepartementId = async () => {
+  try {
+    const response = await api.get('/api/departementall');
+    const departements = response.data.data;
+
+    if (departements.length === 0) {
+      addFormData.value.id_departement = "DEPT001";
+    } else {
+      const existingIds = departements.map(d => parseInt(d.id_departement.slice(4)));
+      existingIds.sort((a, b) => a - b);
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+      addFormData.value.id_departement = `DEPT${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Departement ID:', error);
+  }
+};
+
 onMounted(() => {
+  generateNewDepartementId();
   fetchDataDepartments();
 });
 </script>
@@ -127,8 +142,10 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari departemen" style="margin-right: 10px; width: 300px;">
-                    <button @click="handleSearch" class="btn btn-primary ml-2">FILTER</button>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari departemen" style="width: 100%; padding-right: 40px;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
                   </div>
                 </div>
               

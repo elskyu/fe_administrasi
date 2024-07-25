@@ -1,28 +1,22 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import api from '../../api'; // Sesuaikan dengan struktur folder dan file yang benar
+import api from '../../api';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
-
-// State untuk menyimpan data buku tamu
 const bukuTamu = ref([]);
 const pegawaiList = ref([]);
 const cabangList = ref([]);
 const departementList = ref([]);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
-
-// State untuk mengontrol modal tambah dan edit
+const cabangFilter = ref('');
+const departemenFilter = ref('');
 const showAddModal = ref(false);
 
-// State untuk kontrol visibility dropdown menu
-const showDropdown = ref(false);
-
-// Form data untuk tambah tamu
 const addFormData = ref({
   id_tamu: '',
   tanggal_kunjungan: '',
@@ -35,12 +29,11 @@ const addFormData = ref({
   cabang: '',
 });
 
-// Ambil data buku tamu dari API
 const fetchDataBukuTamu = async () => {
   try {
     const response = await api.get('/api/tamu');
-    console.log(response); // Untuk inspeksi struktur respons
-    bukuTamu.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+    console.log(response);
+    bukuTamu.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching buku tamu:', error);
   }
@@ -49,7 +42,7 @@ const fetchDataBukuTamu = async () => {
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -58,39 +51,45 @@ const fetchDataCabang = async () => {
 const fetchDataDepartement = async () => {
   try {
     const response = await api.get('/api/departement');
-    departementList.value = response.data.data.data; // Adjust based on the actual response structure
+    departementList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching departement list:', error);
   }
 };
 
-// Properti computed untuk memfilter buku tamu berdasarkan query pencarian
 const filteredBukuTamu = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return bukuTamu.value;
+  const cabang = cabangFilter.value;
+  const departemen = departemenFilter.value;
+
+  let filtered = bukuTamu.value;
+
+  if (query) {
+    filtered = filtered.filter(tamu =>
+      tamu.nama.toLowerCase().includes(query) ||
+      tamu.jabatan.toLowerCase().includes(query) ||
+      tamu.no_hp.toLowerCase().includes(query) ||
+      tamu.departement_dikunjungi.toLowerCase().includes(query) ||
+      tamu.org_dikunjungi.toLowerCase().includes(query) ||
+      tamu.keperluan.toLowerCase().includes(query) ||
+      getNamaCabang(tamu.cabang).toLowerCase().includes(query)
+    );
   }
-  return bukuTamu.value.filter(tamu =>
-    tamu.nama.toLowerCase().includes(query) ||
-    tamu.jabatan.toLowerCase().includes(query) ||
-    tamu.no_hp.toLowerCase().includes(query) ||
-    tamu.departement_dikunjungi.toLowerCase().includes(query) ||
-    tamu.org_dikunjungi.toLowerCase().includes(query) ||
-    tamu.keperluan.toLowerCase().includes(query) ||
-    getNamaCabang(tamu.cabang).toLowerCase().includes(query)
-  );
+
+  if (cabang) {
+    filtered = filtered.filter(tamu => tamu.cabang === cabang);
+  }
+
+  if (departemen) {
+    filtered = filtered.filter(tamu => tamu.departement_dikunjungi === departemen);
+  }
+
+  return filtered;
 });
 
-// Metode untuk menangani klik tombol pencarian
-const handleSearch = () => {
-  searchQuery.value = tempSearchQuery.value;
-};
-
-// Fungsi untuk menyimpan data tamu baru
 const saveNewTamu = async () => {
   try {
     await api.post('/api/tamu', addFormData.value);
-    // Reset form data
     addFormData.value = {
       id_tamu: '',
       tanggal_kunjungan: '',
@@ -102,10 +101,9 @@ const saveNewTamu = async () => {
       keperluan: '',
       cabang: '',
     };
-    // Tutup modal tambah
     showAddModal.value = false;
-    // Muat ulang daftar buku tamu
     fetchDataBukuTamu();
+    generateNewBtId();
   } catch (error) {
     console.error('Error saving new tamu:', error);
   }
@@ -114,7 +112,7 @@ const saveNewTamu = async () => {
 const fetchDataPegawai = async () => {
   try {
     const response = await api.get('/api/pegawai');
-    pegawaiList.value = response.data.data.data; // Adjust based on the actual response structure
+    pegawaiList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching pegawai list:', error);
   }
@@ -135,24 +133,37 @@ const getNamaDepartemen = (idDepartemen) => {
   return departement ? departement.nama_departement : '';
 };
 
-const filterByCategory = (categoryType, value) => {
-  if (categoryType === 'month') {
-    selectedMonth.value = value;
-  } else if (categoryType === 'departement') {
-    selectedDepartement.value = value;
-  } else if (categoryType === 'cabang') {
-    selectedCabang.value = value;
+const generateNewBtId = async () => {
+  try {
+    const response = await api.get('/api/tamuall');
+    const bukuTamu = response.data.data;
+
+    if (bukuTamu.length === 0) {
+      addFormData.value.id_tamu = "TM001";
+    } else {
+      const existingIds = bukuTamu.map(bt => parseInt(bt.id_tamu.slice(3)));
+      existingIds.sort((a, b) => a - b);
+
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+
+      addFormData.value.id_tamu = `TM${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Tamu ID:', error);
   }
-  showDropdown.value = false; // Hide the dropdown menu after selecting a filter
 };
 
-// Fungsi untuk toggle visibility dropdown menu
-const toggleDropdown = () => {
-  showDropdown.value = !showDropdown.value;
-};
-
-// Jalankan hook "onMounted"
 onMounted(() => {
+  generateNewBtId();
   fetchDataBukuTamu();
   fetchDataCabang();
   fetchDataDepartement();
@@ -180,23 +191,22 @@ onMounted(() => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari buku" style="margin-right: 10px; width: 300px;">
-                    <div class="dropdown" style="position: relative;">
-                      <button @click="toggleDropdown" class="btn btn-icon">
-                        <svg width="28" height="28" viewBox="0   0 24 24"  xmlns="http://www.w3.org/2000/svg" style="margin-right: -15px;">
-                          <path fill-rule="evenodd" clip-rule="evenodd" d="M20.7221 7.47212C20.98 7.21432 21.1249 6.86464 21.125 6.5V3.75C21.125 2.23122 19.8938 1 18.375 1H5.75C4.23122 1 3 2.23122 3 3.75V6.5C3.00008 6.86464 3.14499 7.21432 3.40288 7.47212L9 14V22C9 22.5523 9.44772 23 10 23H11.5C11.8148 23 12.1111 22.8518 12.3 22.6L15 19V14L20.7221 7.47212Z" fill="black"/>
-                        </svg>
-                      </button>
-                      <div v-if="showDropdown" class="dropdown-menu" style="position: absolute; top: 100%; left: 0; z-index: 1000; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.15);">
-                        <a class="dropdown-item" href="#" @click.prevent="filterByCategory('month', '1')">Bulan</a>
-                        <a class="dropdown-item" href="#" @click.prevent="filterByCategory('department', 'selectedDepartement')">Departemen</a>
-                        <a class="dropdown-item" href="#" @click.prevent="filterByCategory('branch', 'selectedCabang')">Cabang</a>
-                      </div>
-                    </div>   
+                    <select id="departemenFilter" v-model="departemenFilter" class="form-cari" style="margin-right: 10px; width: 190px;">
+                      <option value="">Semua Departemen</option>
+                      <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{ dep.nama_departement }}</option>
+                    </select>
+                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                      <option value="">Semua Cabang</option>
+                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                    </select>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari tamu" style="width: 100%; padding-right: 40px;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
                   </div>
                 </div>
-          
-              <table class="table table-bordered">
+
+                <table class="table table-bordered">
                 <thead class="bg-dark text-white text-center">
                   <tr>
                     <th scope="col" style="width: 7%;">ID TAMU</th>
@@ -298,5 +308,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
-

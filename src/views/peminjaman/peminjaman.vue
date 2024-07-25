@@ -6,21 +6,18 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/peminjaman.css';
 import '/src/style/modal.css';
+import SearchIcon from '/src/style/SearchIcon.vue';
 
-// State untuk menyimpan data inventaris
 const pemakaianList = ref([]);
 const cabangList = ref([]);
 const inventarisList = ref([]);
 const pegawaiList = ref([]);
 const currentPemakaianId = ref(null);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
-
-// State untuk mengontrol modal tambah
+const cabangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
-// Form data untuk tambah inventaris
 const addFormData = ref({
   id_pinjam: '',
   inventaris: '',
@@ -43,12 +40,11 @@ const editFormData = ref({
   cabang: '',
 });
 
-// Ambil data inventaris dari API
 const fetchDataPemakaian = async () => {
   try {
     const response = await api.get('/api/pi');
-    console.log(response); // Untuk inspeksi struktur respons
-    pemakaianList.value = response.data.data.data; // Sesuaikan dengan struktur respons yang sesuai
+    console.log(response);
+    pemakaianList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching inventaris:', error);
   }
@@ -57,7 +53,7 @@ const fetchDataPemakaian = async () => {
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -66,7 +62,7 @@ const fetchDataCabang = async () => {
 const fetchDataInventaris = async () => {
   try {
     const response = await api.get('/api/inventaris');
-    inventarisList.value = response.data.data.data; // Adjust based on the actual response structure
+    inventarisList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -82,40 +78,45 @@ const editPemakaian = (p) => {
     durasi_pinjam: p.durasi_pinjam,
     pegawai: p.pegawai,
     keterangan: p.keterangan,
-    cabang: p.cabang, // Pastikan cabang_id diambil dari p.cabang.id_cabang
+    cabang: p.cabang,
   };
   showEditModal.value = true;
 };
 
-// Properti computed untuk memfilter inventaris berdasarkan query pencarian
 const filteredPemakaian = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return pemakaianList.value;
+  const cabang = cabangFilter.value;
+
+  let filtered = pemakaianList.value;
+
+  if (query) {
+    filtered = filtered.filter(pemakaian =>
+      pemakaian.nopol.toLowerCase().includes(query) ||
+      pemakaian.merek.toLowerCase().includes(query) ||
+      pemakaian.kategori.toLowerCase().includes(query) ||
+      pemakaian.tahun.toLowerCase().includes(query) ||
+      pemakaian.pajak.toLowerCase().includes(query) ||
+      pemakaian.keterangan.toLowerCase().includes(query) ||
+      pemakaian.harga_beli.toLowerCase().includes(query) ||
+      pemakaian.tanggal_beli.toLowerCase().includes(query) ||
+      getNamaCabang(pemakaian.cabang).toLowerCase().includes(query)
+    );
   }
-  return pemakaianList.value.filter(pemakaian =>
-    pemakaian.nopol.toLowerCase().includes(query) ||
-    pemakaian.merek.toLowerCase().includes(query) ||
-    pemakaian.kategori.toLowerCase().includes(query) ||
-    pemakaian.tahun.toLowerCase().includes(query) ||
-    pemakaian.pajak.toLowerCase().includes(query) ||
-    pemakaian.keterangan.toLowerCase().includes(query) ||
-    pemakaian.harga_beli.toLowerCase().includes(query) ||
-    pemakaian.tanggal_beli.toLowerCase().includes(query) ||
-    getNamaCabang(pemakaian.cabang).toLowerCase().includes(query)
-  );
+
+  if (cabang) {
+    filtered = filtered.filter(inventaris => inventaris.cabang === cabang);
+  }
+
+  return filtered;
 });
 
-// Metode untuk menangani klik tombol pencarian
 const handleSearch = () => {
   searchQuery.value = tempSearchQuery.value;
 };
 
-// Fungsi untuk menyimpan data inventaris baru
 const saveNewPemakaian = async () => {
   try {
     await api.post('/api/pi', addFormData.value);
-    // Reset form data
     addFormData.value = {
       id_pinjam: '',
       inventaris: '',
@@ -126,10 +127,9 @@ const saveNewPemakaian = async () => {
       keterangan: '',
       cabang: '',
     };
-    // Tutup modal tambah
     showAddModal.value = false;
-    // Muat ulang daftar inventaris
     fetchDataPemakaian();
+    generateNewPiId();
   } catch (error) {
     console.error('Error saving new inventaris:', error);
   }
@@ -150,6 +150,7 @@ const saveEditPemakaian = async () => {
     };
     showEditModal.value = false;
     fetchDataPemakaian();
+    generateNewPiId();
   } catch (error) {
     console.error('Error saving edit pegawai:', error);
   }
@@ -165,6 +166,8 @@ const deletePemakaian = async (id_pinjam) => {
     try {
       await api.delete(`/api/pi/${id_pinjam}`);
       pemakaian.value = pemakaian.value.filter(pemakaian => pemakaian.id_pinjam !== id_pinjam);
+      fetchDataPemakaian();
+      generateNewPiId();
     } catch (error) {
       console.error('Error deleting pegawai:', error);
     }
@@ -174,7 +177,7 @@ const deletePemakaian = async (id_pinjam) => {
 const fetchDataPegawai = async () => {
   try {
     const response = await api.get('/api/pegawai');
-    pegawaiList.value = response.data.data.data; // Adjust based on the actual response structure
+    pegawaiList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching pegawai list:', error);
   }
@@ -190,8 +193,37 @@ function convertToMinutes(time) {
   return parseInt(hours) * 60 + parseInt(minutes);
 }
 
-// Jalankan hook "onMounted"
+const generateNewPiId = async () => {
+  try {
+    const response = await api.get('/api/piall');
+    const pemakaianList = response.data.data;
+
+    if (pemakaianList.length === 0) {
+      addFormData.value.id_pinjam = "PI001";
+    } else {
+      const existingIds = pemakaianList.map(pi => parseInt(pi.id_pinjam.slice(3)));
+      existingIds.sort((a, b) => a - b);
+
+      let newId = null;
+      for (let i = 0; i < existingIds.length; i++) {
+        if (existingIds[i] !== i + 1) {
+          newId = i + 1;
+          break;
+        }
+      }
+      if (newId === null) {
+        newId = existingIds.length + 1;
+      }
+
+      addFormData.value.id_pinjam = `PI${String(newId).padStart(3, '0')}`;
+    }
+  } catch (error) {
+    console.error('Error generating new Peminjaman ID:', error);
+  }
+};
+
 onMounted(() => {
+  generateNewPiId();
   fetchDataPegawai();
   fetchDataPemakaian();
   fetchDataCabang();
@@ -218,11 +250,17 @@ onMounted(() => {
                     </div>
     
                     <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
-                        <div class="d-flex justify-content-end">
-                          <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari pemakaian" style="margin-right: 10px; width: 300px;">
-                            <button   class="btn btn-primary">FILTER</button>
+                      <div class="d-flex justify-content-end">
+                        <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                          <option value="">Semua Cabang</option>
+                          <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                        </select>
+                        <div class="search-container" style="margin-right: -10px; width: 275px;">
+                          <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari pemakaian" style="width: 100%; padding-right: 40px;" />
+                          <SearchIcon class="search-icon" />
+                        </div>
+                      </div>
                     </div>
-                </div>
                 
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
