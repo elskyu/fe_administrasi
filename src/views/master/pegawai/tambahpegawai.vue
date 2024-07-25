@@ -123,7 +123,7 @@ const filteredPegawai = computed(() => {
   }
 
   if (departemen) {
-    filtered = filtered.filter(tamu => tamu.departement_dikunjungi === departemen);
+    filtered = filtered.filter(tamu => tamu.departement === departemen);
   }
 
   return filtered;
