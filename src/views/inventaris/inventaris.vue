@@ -7,6 +7,7 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import '/src/style/surat_masuk.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 
 const userName = ref(''); // Default name
@@ -254,7 +255,7 @@ onMounted(async () => {
             </div>
           </div>
         </div>
-        
+
         <div class="col-md-12" style="margin-left: -10px; width: auto;">
           <div class="card border-0">
             <div class="card-body">

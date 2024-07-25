@@ -8,6 +8,7 @@ import '/src/style/table.css';
 import '/src/style/peminjaman.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import '/src/style/surat_masuk.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 
 const userName = ref(''); // Default name
