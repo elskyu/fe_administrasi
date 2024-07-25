@@ -16,7 +16,7 @@
 
 .vuecal__header {
   background-color: rgb(254, 174, 111);
-  color: #fff;
+  color: #ffffff;
 }
 
 .vuecal__weekdays, .vuecal__weekdays__day {
@@ -28,8 +28,7 @@
 }
 
 .vuecal__event {
-  background-color: #3f51b5;
-  color: #fff;
+  color: #f35b5b;
   border-radius: 4px;
   padding: 2px 6px;
 }
@@ -68,7 +67,7 @@
 }
 
 .btn-secondary {
-  background-color: #6c757d;
+  background-color: #0ad12e;
   color: white;
   border: none;
   cursor: pointer;
@@ -91,20 +90,48 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
+  background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
 }
 
-/* .modal-content {
-  background-color: white;
+.table thead th {
+  background-color: #f7b748; /* Ganti dengan warna yang diinginkan */
+  color: white;
+}
+
+.crud-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px
+}
+
+.crud-table th, .crud-table td {
+  border: 1px solid #000000;
+  padding: 10px;
+  text-align: center;
+}
+
+.crud-table th {
+  background-color: #fbae33;
+}
+
+.crud-table td {
+  text-align: center;
+}
+
+.modal-content {
+  background: #ffffff;
   padding: 20px;
   border-radius: 8px;
-  max-width: 500px;
-  width: 100%;
-} */
+  width: 80%;
+  max-width: 1000px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 
 .close {
   position: absolute;
@@ -166,7 +193,7 @@ button:hover {
 }
 
 .event-item {
-  margin-bottom: 15px;
+  margin-bottom: 0px;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;

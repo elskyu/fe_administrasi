@@ -7,89 +7,167 @@ import '/src/style/background_color.css';
 import '/src/style/modal.css';
 import '/src/style/dasboard.css';
 import '/src/style/kalender_jadwal.css';
-import api from '@/api';
+import api from '../../api';
 
 const events = ref([]);
+const cabangList = ref([]);
+const departementList = ref([]);
+const jadwalList = ref([]);
+const currentJadwalId = ref(null);
 const showModal = ref(false); // State untuk mengontrol visibilitas modal tambah acara
 const viewModal = ref(false); // State untuk mengontrol visibilitas modal view acara
-const editModal = ref({
-  show: false,
-  event: null
-}); // State untuk mengontrol visibilitas modal edit acara
-const newEvent = ref({
-  title: '',
-  start: '',
-  end: ''
+const editModal = ref(false); // State untuk mengontrol visibilitas modal edit acara
+
+const addFormData = ref({
+  id_jadwal:'',
+  agenda: '',
+  status: '',
+  tanggal: '',
+  cabang:''
+  //color:''
 });
 
-// const fetchEvents = async () => {
-//   try {
-//     const response = await api.get('/endpoint'); // Ganti dengan endpoint API Anda yang sebenarnya
-//     events.value = response.data;
-//   } catch (error) {
-//     console.error('Error fetching events:', error);
-//   }
-// };
+const editFormData = ref({
+  id_jadwal:'',
+  agenda: '',
+  status: '',
+  tanggal: '',
+  cabang:''
+  //color:''
+});
 
-// onMounted(() => {
-//   fetchEvents();
-// });
-
-const createEvent = () => {
-  const event = {
-    title: newEvent.value.title,
-    start: new Date(newEvent.value.start),
-    end: new Date(newEvent.value.end)
-  };
-  events.value.push(event);
-  resetForm();
-  showModal.value = false; // Tutup modal
+const fetchDataJadwal = async () => {
+  try {
+    const response = await api.get('/api/jadwal'); // Ganti dengan endpoint API Anda yang sebenarnya
+    jadwalList.value = response.data.data.data;
+    console.log("yuyuu", jadwalList);
+  } catch (error) {
+    console.error('Error fetching jadwal list:', error);
+  }
 };
 
-const viewAllEvents = () => {
+const fetchDataCabang = async () => {
+  try {
+    const response = await api.get('/api/cabang');
+    console.log(response) 
+    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+  } catch (error) {
+    console.error('Error fetching cabang list:', error);
+  }
+};
+
+const fetchDataDepartement = async () => {
+  try {
+    const response = await api.get('/api/departement');
+    console.log(response)
+    departementList.value = response.data.data.data; // Adjust based on the actual response structure
+  } catch (error) {
+    console.error('Error fetching cabang list:', error);
+  }
+};
+
+const getNamaCabang = (idCabang) => {
+  const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
+  return cabang ? cabang.nama_cabang : '';
+};
+
+const getNamaDepartement = (idDepartement) => {
+  const departement = departementList.value.find(d => d.id_departement === idDepartement);
+  return departement ? departement.nama_departement : '';
+};
+
+const editJadwal = (j) => {
+  currentJadwalId.value = j.id_jadwal;
+  editFormData.value = {
+    id_jadwal: j.id_jadwal,
+    agenda: j.agenda,
+    department: j.departement,
+    tanggal: j.tanggal,
+    cabang: j.cabang, // Pastikan cabang_id diambil dari j.cabang.id_cabang
+  };
+  editModal.value = true;
+};
+
+const saveNewJadwal = async () => {
+  try {
+    await api.post('/api/jadwal', addFormData.value);
+    // Reset form data
+    addFormData.value = {
+      id_jadwal: '',
+      agenda: '',
+      departement: '',
+      tanggal: '',
+      cabang: '',
+    };
+    // Tutup modal tambah
+    showModal.value = false;
+    // Muat ulang daftar inventaris
+    fetchDataJadwal();
+  } catch (error) {
+    console.error('Error saving new jadwal:', error);
+  }
+};
+
+const saveEditJadwal = async () => {
+  try {
+    await api.put(`/api/jadwal/${currentJadwalId.value}`, editFormData.value);
+    editFormData.value = {
+      id_jadwal: '',
+      agenda: '',
+      departement: '',
+      tanggal: '',
+      cabang: '',
+    };
+    editModal.value = false;
+    fetchDataJadwal();
+  } catch (error) {
+    console.error('Error saving edit jadwal:', error);
+  }
+};
+
+// const filteredJadwal = computed(() => {
+//   const query = searchQuery.value.toLowerCase();
+//   if (!query) {
+//     return jadwalList.value;
+//   }
+//   return pemakaianList.value.filter(pemakaian =>
+//     pemakaian.nopol.toLowerCase().includes(query) ||
+//     pemakaian.merek.toLowerCase().includes(query) ||
+//     pemakaian.kategori.toLowerCase().includes(query) ||
+//     pemakaian.tahun.toLowerCase().includes(query) ||
+//     pemakaian.pajak.toLowerCase().includes(query) ||
+//     pemakaian.keterangan.toLowerCase().includes(query) ||
+//     pemakaian.harga_beli.toLowerCase().includes(query) ||
+//     pemakaian.tanggal_beli.toLowerCase().includes(query) ||
+//     getNamaCabang(pemakaian.cabang).toLowerCase().includes(query)
+//   );
+// });
+
+const viewAllEvents = async () => {
+  await fetchDataJadwal(); // Pastikan data terbaru diambil dari server
   viewModal.value = true;
 };
 
-const openEditModal = (event) => {
-  editModal.value.show = true;
-  editModal.value.event = { ...event };
-};
-
-const updateEvent = () => {
-  const eventIndex = events.value.findIndex(e => e.id === editModal.value.event.id);
-  if (eventIndex !== -1) {
-    events.value[eventIndex] = { ...editModal.value.event };
+const deleteJadwal = async (id_jadwal) => {
+  if (confirm("Apakah anda ingin menghapus data ini?")) {
+    try {
+      await api.delete(`/api/jadwal/${id_jadwal}`);
+      jadwalList.value = jadwalList.value.filter(jadwalList => jadwalList.id_jadwal !== id_jadwal);
+      fetchDataJadwal();
+    } catch (error) {
+      console.error('Error deleting jadwal:', error);
+    }
   }
-  editModal.value.show = false;
-};
-
-const deleteEvent = (event) => {
-  const index = events.value.indexOf(event);
-  if (index > -1) {
-    events.value.splice(index, 1);
-  }
-  if (editModal.value.show) {
-    editModal.value.show = false;
-  }
-};
-
-const resetForm = () => {
-  newEvent.value.title = '';
-  newEvent.value.start = '';
-  newEvent.value.end = '';
 };
 
 const changeEvent = (event) => {
   console.log('Event changed', event);
 };
 
-defineExpose({
-  createEvent,
-  viewAllEvents,
-  openEditModal,
-  changeEvent,
-  updateEvent,
-  deleteEvent
+onMounted(() => {
+  fetchDataJadwal();
+  fetchDataCabang();
+  fetchDataDepartement();
 });
 </script>
 
@@ -125,94 +203,111 @@ defineExpose({
     <div v-if="showModal" class="modal">
       <div class="modal-content">
         <h2 style="text-align: center;">Create Event</h2>
-        <form @submit.prevent="createEvent" class="form-container">
+        <form @submit.prevent="saveNewJadwal" class="form-container">
           <div class="form-group">
-            <label for="title">Agenda</label>
-            <input type="text" id="title" v-model="newEvent.title" required>
+            <label for="id_jadwal" style="width: 195px;">ID</label>
+            <input type="text" id="id_jadwal" v-model="addFormData.id_jadwal" />
+          </div>
+          <div class="form-group">
+            <label for="agenda">Agenda</label>
+            <input type="text" id="agenda" v-model="addFormData.agenda" required>
           </div>
           
-          <div class="form-group">
-            <label for="department">Department</label>
-            <input type="text" id="department" v-model="newEvent.department" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="start">Mulai</label>
-            <input type="datetime-local" id="start" v-model="newEvent.start" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="end">Selesai</label>
-            <input type="datetime-local" id="end" v-model="newEvent.end" required>
-          </div>      
-          <div class="form-group">
-            <div class="form-group-row">
-              <button type="submit" class="btn-modal-save">Tambah Agenda</button>
-              <button @click="showModal = false" class="btn-modal-batal">Batal</button>
+          <div class="form-group-row">
+            <div class="form-group">
+              <label for="departement" style="width:450px;">Departement</label>
+              <select type="text" id="departement" v-model="addFormData.status">
+                <option v-for="d in departementList" :value="d.id_departement" :key="d.id_departement">{{ d.nama_departement }}</option>
+              </select>
             </div>
+            <div class="form-group">
+              <label for="cabang" style="width: 450px;">Cabang</label>
+              <select type="text" id="cabang" v-model="addFormData.cabang">
+                <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="tanggal">Jadwal</label>
+            <input type="datetime-local" id="tanggal" v-model="addFormData.tanggal">
+          </div>
+          
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" @click="showModal = false" class="btn btn-secondary">Cancel</button>
           </div>
         </form>
       </div>
     </div>
-
+    
     <!-- View Events Modal -->
     <div v-if="viewModal" class="modal">
       <div class="modal-content">
-        <span class="close" @click="viewModal = false" style="padding: 3px 10px; background-color: red; border-radius: 2px; color: white;">&times;</span>
-        <h2 style="text-align: center;">All Events</h2>
-        <div class="event-list">
-          <div v-for="event in events" :key="event.id" class="event-item">
-            <div>
-              <label>Title:</label>
-              <p>{{ event.title }}</p>
-            </div>
-            <div>
-              <label>Department:</label>
-              <p>{{ event.department }}</p>
-            </div>
-            <div>
-              <label>Start:</label>
-              <p>{{ new Date(event.start).toLocaleString() }}</p>
-            </div>
-            <div>
-              <label>End:</label>
-              <p>{{ new Date(event.end).toLocaleString() }}</p>
-            </div>
-            <div class="event-actions">
-              <button @click="openEditModal(event)" class="btn btn-warning">Edit</button>
-              <button @click="deleteEvent(event)" class="btn btn-danger">Delete</button>
-            </div>
-          </div>
-        </div>
+        <h2 style="text-align: center;">View Events</h2>
+        <table class="table table-bordered">
+          <thead class="text-center">
+            <tr>
+              <th>ID</th>
+              <th>Agenda</th>
+              <th>Departement</th>
+              <th>Cabang</th>
+              <th>Jadwal</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="jadwal in jadwalList" :key="jadwal.id_jadwal">
+              <td >{{ jadwal.id_jadwal }}</td>
+              <td>{{ jadwal.agenda }}</td>
+              <td>{{ getNamaDepartement(jadwal.status) }}</td>
+              <td>{{ getNamaCabang(jadwal.cabang) }}</td>
+              <td>{{ jadwal.tanggal }}</td>
+              <td>
+                <button @click="editJadwal(jadwal)" class="btn btn-primary">Edit</button>
+                <button @click="deleteJadwal(jadwal.id_jadwal)" class="btn btn-danger">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button @click="viewModal = false" class="btn btn-danger">Close</button>
       </div>
     </div>
 
     <!-- Edit Event Modal -->
-    <div v-if="editModal.show" class="modal">
+    <div v-if="editModal" class="modal">
       <div class="modal-content">
-        <h2 style="text-align: center;">Edit Event</h2>
-        <form @submit.prevent="updateEvent">
+        <h2>Edit Event</h2>
+        <form @submit.prevent="saveEditJadwal" class="form-container">
           <div class="form-group">
-            <label for="edit-title">Title:</label>
-            <input type="text" id="edit-title" v-model="editModal.event.title" required>
+            <label for="id_jadwal">ID</label>
+            <input type="text" id="id_jadwal" v-model="editFormData.id_jadwal" />
           </div>
           <div class="form-group">
-            <label for="edit-department">Department:</label>
-            <input type="text" id="edit-department" v-model="editModal.event.department" required>
+            <label for="agenda">Agenda</label>
+            <input type="text" id="agenda" v-model="editFormData.agenda" required>
+          </div>
+          <div class="form-group-row">
+          <div class="form-group">
+            <label for="departement" style="width:450px">Departement</label>
+            <select type="text" id="departement" v-model="editFormData.status">
+              <option v-for="d in departementList" :value="d.id_departement" :key="d.id_departement">{{ d.nama_departement }}</option>
+            </select>
           </div>
           <div class="form-group">
-            <label for="edit-start">Start:</label>
-            <input type="datetime-local" id="edit-start" v-model="editModal.event.start" required>
+            <label for="cabang" style="width:450px">Cabang</label>
+            <select type="text" id="cabang" v-model="editFormData.cabang">
+              <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+            </select>
+          </div>
           </div>
           <div class="form-group">
-            <label for="edit-end">End:</label>
-            <input type="datetime-local" id="edit-end" v-model="editModal.event.end" required>
+            <label for="tanggal">Jadwal</label>
+            <input type="datetime-local" id="tanggal" v-model="editFormData.tanggal">
           </div>
           <div class="form-group">
-            <div class="form-group-row">
-              <button type="submit" class="btn-modal-save">Update Perubahan</button>
-              <button @click="editModal.show = false" class="btn-modal-batal">Batal</button>
-            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" @click="editModal = false" class="btn btn-secondary">Cancel</button>
           </div>
         </form>
       </div>
