@@ -192,6 +192,7 @@ onMounted(() => {
           </div>
 
           <VueCal
+            hide-view-selector
             :time="false"
             active-view="month"
             v-model:active-view="activeView"
@@ -203,6 +204,7 @@ onMounted(() => {
             @cell-click="addEventForDate"
             @event-change="changeEvent"
             style="width: 100%; height: 520px;"
+            locale="id"
           />
         </div>
       </div>
