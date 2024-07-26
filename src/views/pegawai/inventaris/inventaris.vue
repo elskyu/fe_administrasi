@@ -81,7 +81,6 @@ const editInventaris = (i) => {
 const filteredInventaris = computed(() => {
   const query = searchQuery.value.toLowerCase();
   const kategori = kategoriFilter.value;
-
   let filtered = inventarisList.value;
 
   if (query) {
