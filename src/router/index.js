@@ -79,6 +79,16 @@ const routes = [
     path: '/tambahcabang', 
     name: 'cabang.tambahcabang',
     component: () => import(/* webpackChunkName: "tambahcabang" */ '../views/master/cabang/tambahcabang.vue')
+  },
+  {
+    path: '/inventaris_pegawai',
+    name: 'inventaris_pegawai.inventaris',
+    component: () => import(/* webpackChunkName: "inventarisp" */ '../views/pegawai/inventaris/inventaris.vue')
+  },
+  {
+    path: '/ruang_pegawai',
+    name: 'ruang_pegawai.ruang',
+    component: () => import(/* webpackChunkName: "ruangp" */ '../views/pegawai/ruang/ruang.vue')
   }
 ];
 

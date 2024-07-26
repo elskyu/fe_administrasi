@@ -29,7 +29,7 @@ const logoutAndReload = () => {
                 </router-link>
             </li>
             <li class="nav-item">
-                <router-link :to="{ name: 'inventaris.inventaris' }" class="nav-link active" aria-current="page" style="margin-left: 15px; margin-right: 15px;">
+                <router-link :to="{ name: 'inventaris_pegawai.inventaris' }" class="nav-link active" aria-current="page" style="margin-left: 15px; margin-right: 15px;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                         <path d="M4.78 10.34L5.87 5.75C6.26 4.18 7.69 3 9.3 3h5.4c1.61 0 3.04 1.18 3.43 2.75l1.09 4.59c.92.27 1.6 1.12 1.6 2.14v3c0 1.11-.89 2-2 2v1c0 .55-.45 1-1 1s-1-.45-1-1v-1H6v1c0 .55-.45 1-1 1s-1-.45-1-1v-1c-1.11 0-2-.89-2-2v-3c0-1.02.68-1.87 1.6-2.14zM16.28 5.75C16.04 4.84 15.21 4 14.3 4h-5.4c-.91 0-1.74.84-1.98 1.75L5.81 10h12.38l-1.91-4.25zM6 14c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm12 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/>
                     </svg>
@@ -37,19 +37,11 @@ const logoutAndReload = () => {
                 </router-link>
             </li>
             <li class="nav-item">
-                <router-link :to="{ name: 'peminjaman.peminjaman' }" class="nav-link active" aria-current="page" style=" margin-left: 15px; margin-right: 15px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
-                        <path fill-rule="evenodd" d="M5.25 2.25a3 3 0 0 0-3 3v4.318a3 3 0 0 0 .879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 0 0 5.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 0 0-2.122-.879H5.25ZM6.375 7.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z" clip-rule="evenodd" />
-                    </svg>
-                  <span>Pemakaian</span>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link :to="{ name: 'reservasi.reservasi' }" class="nav-link active" aria-current="page" style="margin-left: 15px; margin-right: 15px;">
+                <router-link :to="{ name: 'ruang_pegawai.ruang' }" class="nav-link active" aria-current="page" style="margin-left: 15px; margin-right: 15px;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                         <path d="M20,22V5c0-1.654-1.346-3-3-3h-1.19c-.18-.507-.48-.968-.908-1.319C14.205,.109,13.298-.115,12.412,.059L6.411,1.259c-1.397,.28-2.411,1.518-2.411,2.941V22H0v2H24v-2h-4Zm-7.5-8.75c-.828,0-1.5-.672-1.5-1.5s.672-1.5,1.5-1.5,1.5,.672,1.5,1.5-.672,1.5-1.5,1.5Zm5.5,8.75h-2V4h1c.551,0,1,.448,1,1V22Z"></path>
                     </svg>
-                <span>Reservasi</span>
+                <span>Ruang</span>
                 </router-link>
             </li>
             <li class="nav-item" style="position: absolute; bottom: 20px; width: 100%;">
