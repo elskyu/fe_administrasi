@@ -204,7 +204,7 @@ onMounted(() => {
 
     <!-- Create Event Modal -->
     <div v-if="showModal" class="modal">
-      <div class="modal-content">
+      <div class="modal-content-kalendar">
         <h2 style="text-align: center;">Create Event</h2>
         <form @submit.prevent="saveNewJadwal" class="form-container">
           <div class="form-group">
@@ -246,7 +246,7 @@ onMounted(() => {
     
     <!-- View Events Modal -->
     <div v-if="viewModal" class="modal">
-      <div class="modal-content">
+      <div class="modal-content-kalendar">
         <h2 style="text-align: center;">View Events</h2>
         <table class="table table-bordered">
           <thead class="text-center">
@@ -279,7 +279,7 @@ onMounted(() => {
 
     <!-- Edit Event Modal -->
     <div v-if="editModal" class="modal">
-      <div class="modal-content">
+      <div class="modal-content-kalendar">
         <h2>Edit Event</h2>
         <form @submit.prevent="saveEditJadwal" class="form-container">
           <div class="form-group">
