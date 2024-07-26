@@ -84,16 +84,15 @@ const filteredInventaris = computed(() => {
   let filtered = inventarisList.value;
 
   if (query) {
-    filtered = filtered.filter(inventaris =>
-      inventaris.nopol.toLowerCase().includes(query) ||
-      inventaris.merek.toLowerCase().includes(query) ||
-      inventaris.kategori.toLowerCase().includes(query) ||
-      inventaris.tahun.toLowerCase().includes(query) ||
-      inventaris.pajak.toLowerCase().includes(query) ||
-      inventaris.masa_pajak.toLowerCase().includes(query) ||
-      inventaris.harga_beli.toLowerCase().includes(query) ||
-      inventaris.tanggal_beli.toLowerCase().includes(query) ||
-      getNamaCabang(inventaris.cabang).toLowerCase().includes(query)
+    filtered = filtered.filter(i =>
+      i.nopol.toLowerCase().includes(query) ||
+      i.merek.toLowerCase().includes(query) ||
+      i.kategori.toLowerCase().includes(query) ||
+      i.tahun.toLowerCase().includes(query) ||
+      i.pajak.toLowerCase().includes(query) ||
+      i.masa_pajak.toLowerCase().includes(query) ||
+      i.harga_beli.toLowerCase().includes(query) ||
+      i.tanggal_beli.toLowerCase().includes(query)
     );
   }
 
@@ -269,6 +268,7 @@ onMounted(() => {
                     <td>{{ inventaris.harga_beli }}</td>
                     <td>{{ inventaris.tanggal_beli }}</td>
                     <td class="text-center">
+                        <router-link :to="{ name: 'inventaris_pegawai.lihat_inventaris', params: { id: inventaris.id_inventaris } }" class="btn btn-sm btn-primary rounded-sm shadow border-0 me-2 custom-button">Lihatttt</router-link>
                         <button @click="editInventaris(inventaris)" class="btn btn-sm btn-warning rounded-sm shadow border-0" style="margin-right: 7px;">Lihat</button>
                       </td>
                   </tr>
@@ -352,7 +352,7 @@ onMounted(() => {
   <!-- modal edit -->
   <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">TAMBAH INVENTARIS</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">DETAIL INVENTARIS</h4>
       <div class="form-group-row">
         <div class="form-group" style="width: 195px;">
           <label for="id_inventaris">ID Inventaris</label>
@@ -408,7 +408,6 @@ onMounted(() => {
           </select>
         </div>
       </div>
-
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditPegawai">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
