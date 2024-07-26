@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, defineExpose } from 'vue';
+import { ref, onMounted, defineExpose, computed } from 'vue';
 import VueCal from 'vue-cal';
 import 'vue-cal/dist/vuecal.css';
 import '/src/style/font.css';
@@ -8,67 +8,68 @@ import '/src/style/modal.css';
 import '/src/style/dasboard.css';
 import '/src/style/kalender_jadwal.css';
 import api from '../../api';
-import {format} from 'date-fns';
+import { format } from 'date-fns';
 
 const events = ref([]);
 const cabangList = ref([]);
 const departementList = ref([]);
 const jadwalList = ref([]);
 const tanggalList = ref([]);
-const currentEvents = ref ([]);
-const currentTanggal = ref (null);
+const currentEvents = ref([]);
+const currentTanggal = ref(null);
 const currentJadwalId = ref(null);
 const showModal = ref(false); // State untuk mengontrol visibilitas modal tambah acara
 const viewModal = ref(false); // State untuk mengontrol visibilitas modal view acara
 const viewModal2 = ref(false);
 const editModal = ref(false); // State untuk mengontrol visibilitas modal edit acara
+const activeView = ref('month'); // State untuk mengontrol view aktif di kalender
 
 const addFormData = ref({
-  id_jadwal:'',
+  id_jadwal: '',
   agenda: '',
   status: '',
   tanggal: '',
-  cabang:''
+  cabang: ''
   //color:''
 });
 
 const editFormData = ref({
-  id_jadwal:'',
+  id_jadwal: '',
   agenda: '',
   status: '',
   tanggal: '',
-  cabang:''
+  cabang: ''
   //color:''
 });
 
 const fetchDataJadwal = async () => {
   try {
     const response = await api.get('/api/jadwal'); // Ganti dengan endpoint API Anda yang sebenarnya
-    jadwalList.value = response.data.data.data; 
+    jadwalList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching jadwal list:', error);
   }
 };
 
 const addEventForDate = async (date) => {
-  const tanggal = format (new Date(date),'yyyy-MM-dd');
+  if (activeView.value !== 'month') return; // Only show modal in month view
+
+  const tanggal = format(new Date(date), 'yyyy-MM-dd');
   console.log("tanggal klik : ", tanggal);
   try {
     const response = await api.get(`/api/showtgl/${tanggal}`);
-    tanggalList.value = response.data.data; 
-    console.log("tanggal1",response)
+    tanggalList.value = response.data.data;
+    console.log("tanggal1", response);
     viewModal2.value = true;
   } catch (error) {
     console.error('Error fetching jadwal list:', error);
   }
 };
 
-
-
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
-    console.log(response) 
+    console.log(response);
     cabangList.value = response.data.data.data; // Adjust based on the actual response structure
   } catch (error) {
     console.error('Error fetching cabang list:', error);
@@ -78,7 +79,7 @@ const fetchDataCabang = async () => {
 const fetchDataDepartement = async () => {
   try {
     const response = await api.get('/api/departement');
-    console.log(response)
+    console.log(response);
     departementList.value = response.data.data.data; // Adjust based on the actual response structure
   } catch (error) {
     console.error('Error fetching cabang list:', error);
@@ -144,24 +145,6 @@ const saveEditJadwal = async () => {
   }
 };
 
-// const filteredJadwal = computed(() => {
-//   const query = searchQuery.value.toLowerCase();
-//   if (!query) {
-//     return jadwalList.value;
-//   }
-//   return pemakaianList.value.filter(pemakaian =>
-//     pemakaian.nopol.toLowerCase().includes(query) ||
-//     pemakaian.merek.toLowerCase().includes(query) ||
-//     pemakaian.kategori.toLowerCase().includes(query) ||
-//     pemakaian.tahun.toLowerCase().includes(query) ||
-//     pemakaian.pajak.toLowerCase().includes(query) ||
-//     pemakaian.keterangan.toLowerCase().includes(query) ||
-//     pemakaian.harga_beli.toLowerCase().includes(query) ||
-//     pemakaian.tanggal_beli.toLowerCase().includes(query) ||
-//     getNamaCabang(pemakaian.cabang).toLowerCase().includes(query)
-//   );
-// });
-
 const viewAllEvents = async () => {
   await fetchDataJadwal(); // Pastikan data terbaru diambil dari server
   viewModal.value = true;
@@ -183,20 +166,7 @@ const changeEvent = (event) => {
   console.log('Event changed', event);
 };
 
-// const viewEventsForDate = (date) => {
-//   console.log("Checking events for date:", date);
-//   const eventsOnDate = jadwalList.value.filter(events => events.tanggal.startsWith(date));
-//   if (eventsOnDate.length > 0) {
-//     currentEvents.value = eventsOnDate;
-//     viewModal2.value = true;
-//   } else {
-//     alert('No events found on this date');
-//   }
-// };
-
-
 onMounted(() => {
-  // fetchDataTanggal();
   fetchDataJadwal();
   fetchDataCabang();
   fetchDataDepartement();
@@ -213,17 +183,18 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      
+
       <div class="card3">
         <div class="calendar-container">
           <div class="calendar-header">
             <button @click="showModal = true" class="btn btn-primary">Create Event</button>
             <button @click="viewAllEvents" class="btn btn-secondary">View Events</button>
           </div>
-          
+
           <VueCal
-            :time="false" 
+            :time="false"
             active-view="month"
+            v-model:active-view="activeView"
             xsmall
             :disable-views="['years', 'week', 'day']"
             events-count-on-year-view
@@ -250,7 +221,7 @@ onMounted(() => {
             <label for="agenda">Agenda</label>
             <input type="text" id="agenda" v-model="addFormData.agenda" required>
           </div>
-          
+
           <div class="form-group-row">
             <div class="form-group">
               <label for="departement" style="width:450px;">Departement</label>
@@ -270,7 +241,7 @@ onMounted(() => {
             <label for="tanggal">Jadwal</label>
             <input type="datetime-local" id="tanggal" v-model="addFormData.tanggal">
           </div>
-          
+
           <div class="form-group">
             <button type="submit" class="btn btn-primary">Save</button>
             <button type="button" @click="showModal = false" class="btn btn-secondary">Cancel</button>
@@ -278,7 +249,7 @@ onMounted(() => {
         </form>
       </div>
     </div>
-    
+
     <!-- View Events Modal -->
     <div v-if="viewModal" class="modal">
       <div class="modal-content-kalendar">
@@ -296,7 +267,7 @@ onMounted(() => {
           </thead>
           <tbody>
             <tr v-for="jadwal in jadwalList" :key="jadwal.id_jadwal">
-              <td >{{ jadwal.id_jadwal }}</td>
+              <td>{{ jadwal.id_jadwal }}</td>
               <td>{{ jadwal.agenda }}</td>
               <td>{{ getNamaDepartement(jadwal.status) }}</td>
               <td>{{ getNamaCabang(jadwal.cabang) }}</td>
@@ -311,7 +282,7 @@ onMounted(() => {
         <button @click="viewModal = false" class="btn btn-danger">Close</button>
       </div>
     </div>
-    
+
     <div v-if="viewModal2" class="modal">
       <div class="modal-content-kalendar">
         <h2 style="text-align: center;">View Events</h2>
@@ -347,18 +318,18 @@ onMounted(() => {
             <input type="text" id="agenda" v-model="editFormData.agenda" required>
           </div>
           <div class="form-group-row">
-          <div class="form-group">
-            <label for="departement" style="width:450px">Departement</label>
-            <select type="text" id="departement" v-model="editFormData.status">
-              <option v-for="d in departementList" :value="d.id_departement" :key="d.id_departement">{{ d.nama_departement }}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="cabang" style="width:450px">Cabang</label>
-            <select type="text" id="cabang" v-model="editFormData.cabang">
-              <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-            </select>
-          </div>
+            <div class="form-group">
+              <label for="departement" style="width:450px">Departement</label>
+              <select type="text" id="departement" v-model="editFormData.status">
+                <option v-for="d in departementList" :value="d.id_departement" :key="d.id_departement">{{ d.nama_departement }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="cabang" style="width:450px">Cabang</label>
+              <select type="text" id="cabang" v-model="editFormData.cabang">
+                <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+              </select>
+            </div>
           </div>
           <div class="form-group">
             <label for="tanggal">Jadwal</label>
