@@ -9,10 +9,10 @@
   height: 100%;
 }
 
-.vuecal__cell {
-  border: 1px solid #070707;
-  outline: auto;
-}
+/* .vuecal__cell {
+  /* border: 1px solid #070707;
+  outline: auto; */
+
 
 .vuecal__header {
   background-color: rgb(254, 174, 111);
