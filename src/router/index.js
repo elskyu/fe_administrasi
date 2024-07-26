@@ -1,9 +1,6 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import { isTokenExpired } from '../utils/auth';
-import store from '../store'; // Path ke Vuex store Anda
 
-// define a routes
 const routes = [
   {
     path: '/',
@@ -89,19 +86,26 @@ const routes = [
     path: '/ruang_pegawai',
     name: 'ruang_pegawai.ruang',
     component: () => import(/* webpackChunkName: "ruangp" */ '../views/pegawai/ruang/ruang.vue')
+  },
+  {
+    path: '/lihat_inventaris_pegawai',
+    name: 'inventaris_pegawai.lihat_inventaris',
+    component: () => import(/* webpackChunkName: "inventarisp" */ '../views/pegawai/inventaris/lihat_inventaris.vue')
+  },
+  {
+    path: '/lihat_ruang_pegawai',
+    name: 'ruang_pegawai.lihat_ruang',
+    component: () => import(/* webpackChunkName: "ruangp" */ '../views/pegawai/ruang/lihat_ruang.vue')
   }
 ];
 
-// create router
 const router = createRouter({
   history: createWebHistory(),
-  routes // <-- routes,
+  routes
 });
 
-// Navigational Guard Global
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
-
   if (to.name !== 'login' && to.name !== 'error' && isTokenExpired(token)) {
     next({ name: 'error' });
   } else {

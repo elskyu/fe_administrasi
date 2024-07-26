@@ -250,7 +250,7 @@ onMounted(() => {
     <!-- Modal for editing ruang -->
     <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
       <div class="modal-content">
-        <h4 style="text-align: center; color: #28a745; font-weight: bolder;">EDIT RUANG</h4>
+        <h4 style="text-align: center; color: #28a745; font-weight: bolder;">DETAIL RUANG</h4>
         <div class="form-group">
           <label for="id_ruang">ID Ruang</label>
           <input type="text" id="id_ruang" v-model="editFormData.id_ruang" />
