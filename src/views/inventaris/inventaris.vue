@@ -308,7 +308,11 @@ onMounted(() => {
         </div>
         <div class="form-group" style="width: 195px;">
           <label for="kategori">Kategori</label>
-          <input type="text" id="kategori" v-model="addFormData.kategori" />
+          <select id="kategori" v-model="addFormData.kategori">
+            <option value="">Kategori</option>
+            <option value="Mobil">Mobil</option>
+            <option value="Motor">Motor</option>
+          </select>
           <!-- <select id="kategori" v-model="addFormData.kategori">
             <option v-for="k in kategoriList" :value="k.id_kategori" :key="k.id_kategori">{{ k.nama_kategori }}</option>
           </select> -->
@@ -375,7 +379,10 @@ onMounted(() => {
         </div>
         <div class="form-group" style="width: 195px;">
           <label for="kategori">Kategori</label>
-          <input type="text" id="kategori" v-model="editFormData.kategori" />
+          <select id="kategori" v-model="editFormData.kategori">
+            <option value="Mobil">Mobil</option>
+            <option value="Motor">Motor</option>
+          </select>
           <!-- <select id="kategori" v-model="editFormData.kategori">
             <option v-for="k in kategoriList" :value="k.id_kategori" :key="k.id_kategori">{{ k.nama_kategori }}</option>
           </select> -->
