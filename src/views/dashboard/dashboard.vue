@@ -8,14 +8,19 @@ import '/src/style/modal.css';
 import '/src/style/dasboard.css';
 import '/src/style/kalender_jadwal.css';
 import api from '../../api';
+import {format} from 'date-fns';
 
 const events = ref([]);
 const cabangList = ref([]);
 const departementList = ref([]);
 const jadwalList = ref([]);
+const tanggalList = ref([]);
+const currentEvents = ref ([]);
+const currentTanggal = ref (null);
 const currentJadwalId = ref(null);
 const showModal = ref(false); // State untuk mengontrol visibilitas modal tambah acara
 const viewModal = ref(false); // State untuk mengontrol visibilitas modal view acara
+const viewModal2 = ref(false);
 const editModal = ref(false); // State untuk mengontrol visibilitas modal edit acara
 
 const addFormData = ref({
@@ -39,12 +44,26 @@ const editFormData = ref({
 const fetchDataJadwal = async () => {
   try {
     const response = await api.get('/api/jadwal'); // Ganti dengan endpoint API Anda yang sebenarnya
-    jadwalList.value = response.data.data.data;
-    console.log("yuyuu", jadwalList);
+    jadwalList.value = response.data.data.data; 
   } catch (error) {
     console.error('Error fetching jadwal list:', error);
   }
 };
+
+const addEventForDate = async (date) => {
+  const tanggal = format (new Date(date),'yyyy-MM-dd');
+  console.log("tanggal klik : ", tanggal);
+  try {
+    const response = await api.get(`/api/showtgl/${tanggal}`);
+    tanggalList.value = response.data.data; 
+    console.log("tanggal1",response)
+    viewModal2.value = true;
+  } catch (error) {
+    console.error('Error fetching jadwal list:', error);
+  }
+};
+
+
 
 const fetchDataCabang = async () => {
   try {
@@ -164,7 +183,20 @@ const changeEvent = (event) => {
   console.log('Event changed', event);
 };
 
+// const viewEventsForDate = (date) => {
+//   console.log("Checking events for date:", date);
+//   const eventsOnDate = jadwalList.value.filter(events => events.tanggal.startsWith(date));
+//   if (eventsOnDate.length > 0) {
+//     currentEvents.value = eventsOnDate;
+//     viewModal2.value = true;
+//   } else {
+//     alert('No events found on this date');
+//   }
+// };
+
+
 onMounted(() => {
+  // fetchDataTanggal();
   fetchDataJadwal();
   fetchDataCabang();
   fetchDataDepartement();
@@ -191,10 +223,13 @@ onMounted(() => {
           
           <VueCal
             :time="false" 
-            active-view="month" 
+            active-view="month"
+            xsmall
             :disable-views="['years', 'week', 'day']"
+            events-count-on-year-view
             :events="events"
             @event-click="viewEvent"
+            @cell-click="addEventForDate"
             @event-change="changeEvent"
             style="width: 100%; height: 520px;"
           />
@@ -274,6 +309,27 @@ onMounted(() => {
           </tbody>
         </table>
         <button @click="viewModal = false" class="btn btn-danger">Close</button>
+      </div>
+    </div>
+    
+    <div v-if="viewModal2" class="modal">
+      <div class="modal-content-kalendar">
+        <h2 style="text-align: center;">View Events</h2>
+        <table class="table table-bordered">
+          <thead class="text-center">
+            <tr>
+              <th>Jadwal</th>
+              <th>Agenda</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="tanggall in tanggalList" :key="tanggall.tanggal">
+              <td>{{ tanggall.tanggal }}</td>
+              <td>{{ tanggall.agenda }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <button @click="viewModal2 = false" class="btn btn-danger">Close</button>
       </div>
     </div>
 
