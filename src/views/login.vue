@@ -24,9 +24,15 @@ const login = async () => {
     localStorage.setItem('userType', userType);
     toast.success(`Login berhasil sebagai ${userType}`);
     setTimeout(() => {
-      router.push({ name: 'dashboard.dashboard' }).then(() => {
-        window.location.reload();
-      });
+      if (userType === 'admin') {
+        router.push({ name: 'dashboard.dashboard' }).then(() => {
+          window.location.reload();
+        });
+      } else if (userType === 'pegawai') {
+        router.push({ name: 'dashboard_pegawai.dashboard' }).then(() => {
+          window.location.reload();
+        });
+      }
     }, 1500);
     
   } catch (error) {

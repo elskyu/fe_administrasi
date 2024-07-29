@@ -26,6 +26,7 @@ const editFormData = ref({
   id_ruang: '',
   nama_ruang: '',
   cabang_id: '',
+  reservasi_ruang: []
 });
 
 const currentRuangId = ref(null);
@@ -55,6 +56,7 @@ const editRuang = (r) => {
     id_ruang: r.id_ruang,
     nama_ruang: r.nama_ruang,
     cabang: r.cabang,
+    reservasi_ruang: r.reservasi_ruang
   };
   showEditModal.value = true;
 };
@@ -248,27 +250,49 @@ onMounted(() => {
     </div>
   
     <!-- Modal for editing ruang -->
-    <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
-      <div class="modal-content">
-        <h4 style="text-align: center; color: #28a745; font-weight: bolder;">DETAIL RUANG</h4>
-        <div class="form-group">
-          <label for="id_ruang">ID Ruang</label>
-          <input type="text" id="id_ruang" v-model="editFormData.id_ruang" />
-        </div>
-        <div class="form-group">
-          <label for="nama_ruang">Nama Ruang</label>
-          <input type="text" id="nama_ruang" v-model="editFormData.nama_ruang" />
-        </div>
-        <div class="form-group select">
-          <label for="cabang">Cabang</label>
-            <select id="cabang" v-model="editFormData.cabang">
-              <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-            </select>
-        </div>
-        <div class="form-actions">
-          <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditRuang">Update perubahan</button>
-          <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
-        </div>
-      </div>
+<div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
+  <div class="modal-content">
+    <h4 style="text-align: center; color: #28a745; font-weight: bolder;">DETAIL RUANG</h4>
+    <div class="form-group">
+      <label for="id_ruang">ID Ruang</label>
+      <input type="text" id="id_ruang" v-model="editFormData.id_ruang" readonly />
     </div>
+    <div class="form-group">
+      <label for="nama_ruang">Nama Ruang</label>
+      <input type="text" id="nama_ruang" v-model="editFormData.nama_ruang" />
+    </div>
+    <!-- Tampilkan data reservasi -->
+    <div v-if="editFormData.reservasi_ruang.length > 0">
+      <h5>Detail Reservasi Ruang</h5>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>ID Reservasi</th>
+            <th>Tanggal Reservasi</th>
+            <th>Tanggal Selesai</th>
+            <th>Durasi</th>
+            <th>Pegawai</th>
+            <th>Keterangan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="reservasi in editFormData.reservasi_ruang" :key="reservasi.id_reservasi">
+            <td>{{ reservasi.id_reservasi }}</td>
+            <td>{{ reservasi.tanggal_reservasi }}</td>
+            <td>{{ reservasi.tanggal_selesai }}</td>
+            <td>{{ reservasi.durasi }}</td>
+            <td>{{ reservasi.pegawai }}</td>
+            <td>{{ reservasi.keterangan }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-modal-save rounded-sm shadow border-0" @click="saveEditRuang">Update perubahan</button>
+      <button class="btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
+    </div>
+  </div>
+</div>
+
   </template>
