@@ -45,7 +45,7 @@ const editFormData = ref({
 const fetchDataJadwal = async () => {
   try {
     const response = await api.get('/api/jp'); // Ganti dengan endpoint API Anda yang sebenarnya
-    jadwalList.value = response.data.data.data;
+    jadwalList.value = response.data.data;
   } catch (error) {
     console.error('Error fetching jadwal list:', error);
   }
@@ -78,7 +78,7 @@ const fetchDataCabang = async () => {
 
 const fetchDataDepartement = async () => {
   try {
-    const response = await api.get('/api/departement');
+    const response = await api.get('/api/dp');
     console.log(response);
     departementList.value = response.data.data.data; // Adjust based on the actual response structure
   } catch (error) {
