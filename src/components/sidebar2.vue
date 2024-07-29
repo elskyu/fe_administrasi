@@ -17,7 +17,7 @@ const logoutAndReload = () => {
     <div class="d-flex">
         <nav class="sidebar custom-sidebar" style="box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);">
             <ul class="navbar-nav">
-                <logo23 class="logo" style="margin-bottom: -40px; margin-top: -55px;">Login</logo23>
+                <logo23 class="logo" style="margin-bottom: -50px; margin-top: -55px;">Login</logo23>
                 <li class="nav-item">
                     <router-link :to="{ name: 'dashboard_pegawai.dashboard' }" class="nav-link active"
                         style="margin-left: 15px; margin-right: 15px;">
