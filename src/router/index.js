@@ -100,7 +100,7 @@ const routes = [
   {
     path: '/dashboard_pegawai',
     name: 'dashboard_pegawai.dashboard',
-    component: () => import(/* webpackChunkName: "ruangp" */ '../views/pegawai/dashboard/dashboard.vue')
+    component: () => import(/* webpackChunkName: "dashboardp" */ '../views/pegawai/dashboard/dashboard.vue')
   }
 ];
 

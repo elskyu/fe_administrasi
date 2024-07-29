@@ -44,7 +44,7 @@ const editFormData = ref({
 
 const fetchDataJadwal = async () => {
   try {
-    const response = await api.get('/api/jadwal'); // Ganti dengan endpoint API Anda yang sebenarnya
+    const response = await api.get('/api/jp'); // Ganti dengan endpoint API Anda yang sebenarnya
     jadwalList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching jadwal list:', error);
@@ -57,7 +57,7 @@ const addEventForDate = async (date) => {
   const tanggal = format(new Date(date), 'yyyy-MM-dd');
   console.log("tanggal klik : ", tanggal);
   try {
-    const response = await api.get(`/api/showtgl/${tanggal}`);
+    const response = await api.get(`/api/tglp/${tanggal}`);
     tanggalList.value = response.data.data;
     console.log("tanggal1", response);
     viewModal2.value = true;
@@ -68,7 +68,7 @@ const addEventForDate = async (date) => {
 
 const fetchDataCabang = async () => {
   try {
-    const response = await api.get('/api/cabang');
+    const response = await api.get('/api/cp');
     console.log(response);
     cabangList.value = response.data.data.data; // Adjust based on the actual response structure
   } catch (error) {
@@ -110,7 +110,7 @@ const editJadwal = (j) => {
 
 const saveNewJadwal = async () => {
   try {
-    await api.post('/api/jadwal', addFormData.value);
+    await api.post('/api/jp', addFormData.value);
     // Reset form data
     addFormData.value = {
       id_jadwal: '',
@@ -130,7 +130,7 @@ const saveNewJadwal = async () => {
 
 const saveEditJadwal = async () => {
   try {
-    await api.put(`/api/jadwal/${currentJadwalId.value}`, editFormData.value);
+    await api.put(`/api/jp/${currentJadwalId.value}`, editFormData.value);
     editFormData.value = {
       id_jadwal: '',
       agenda: '',
@@ -153,7 +153,7 @@ const viewAllEvents = async () => {
 const deleteJadwal = async (id_jadwal) => {
   if (confirm("Apakah anda ingin menghapus data ini?")) {
     try {
-      await api.delete(`/api/jadwal/${id_jadwal}`);
+      await api.delete(`/api/jp/${id_jadwal}`);
       jadwalList.value = jadwalList.value.filter(jadwalList => jadwalList.id_jadwal !== id_jadwal);
       fetchDataJadwal();
     } catch (error) {
