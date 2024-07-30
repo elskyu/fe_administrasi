@@ -10,6 +10,7 @@ import '/src/style/modal.css';
 import '/src/style/admin.css';
 import '/src/style/surat_masuk.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
+import Loading from '/src/style/loading.vue';
 
 const userName = ref(''); // Default name
 const pemakaianList = ref([]);
@@ -21,6 +22,7 @@ const searchQuery = ref('');
 const cabangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
+const isLoading = ref(true); // State untuk loading
 
 const addFormData = ref({
   id_pinjam: '',
@@ -250,12 +252,13 @@ const generateNewPiId = async () => {
 };
 
 onMounted(async () => {
-  generateNewPiId();
-  fetchDataPegawai();
-  fetchDataPemakaian();
-  fetchDataCabang();
-  fetchDataInventaris();
   await fetchUserName();
+  await generateNewPiId();
+  await fetchDataInventaris();
+  await fetchDataPegawai();
+  await fetchDataPemakaian();
+  await fetchDataCabang();
+  isLoading.value = false;
 });
 </script>
 
@@ -354,6 +357,10 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+  </div>
+
+  <div v-if="isLoading" class="loading-overlay">
+    <Loading /> <!-- Menampilkan komponen loading -->
   </div>
 
   <!-- Simple Pop-up Modal -->

@@ -198,10 +198,10 @@ const generateNewBtId = async () => {
 onMounted(async () => {
   await fetchUserName();
   await fetchDataBukuTamu();
-  await fetchDataCabang();
   await fetchDataDepartement();
   await fetchDataPegawai();
   await generateNewBtId();
+  await fetchDataCabang();
   isLoading.value = false; // Set loading menjadi false setelah semua data diambil
 });
 </script>

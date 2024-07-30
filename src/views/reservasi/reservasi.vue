@@ -9,6 +9,7 @@ import '/src/style/modal.css';
 import '/src/style/admin.css';
 import '/src/style/surat_masuk.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
+import Loading from '/src/style/loading.vue';
 
 const userName = ref(''); // Default name
 
@@ -23,6 +24,7 @@ const cabangFilter = ref('');
 const ruangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
+const isLoading = ref(true); // State untuk loading
 
 const addFormData = ref({
   id_reservasi: '',
@@ -265,12 +267,13 @@ const generateNewRrId = async () => {
 };
 
 onMounted(async () => {
-  generateNewRrId();
-  fetchDataReservasi();
-  fetchDataCabang();
-  fetchDataRuang();
-  fetchDataPegawai();
   await fetchUserName();
+  await generateNewRrId();
+  await fetchDataReservasi();
+  await fetchDataRuang();
+  await fetchDataPegawai();
+  await fetchDataCabang();
+  isLoading.value = false;
 });
 </script>
 
@@ -376,6 +379,10 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+  </div>
+
+  <div v-if="isLoading" class="loading-overlay">
+    <Loading /> <!-- Menampilkan komponen loading -->
   </div>
 
   <!-- Modal untuk menambah reservasi baru -->

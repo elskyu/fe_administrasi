@@ -8,6 +8,7 @@ import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
+import Loading from '/src/style/loading.vue';
 
 const userName = ref(''); // Default name
 const suratKeluar = ref([]);
@@ -16,6 +17,7 @@ const kodeSuratList = ref([]);
 const searchQuery = ref('');
 const showAddModal = ref(false);
 const cabangFilter = ref('');
+const isLoading = ref(true); // State untuk loading
 
 const addFormData = ref({
   id_surat_keluar: '',
@@ -37,7 +39,7 @@ const fetchUserName = async () => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log("nama : ",response.data); // Tambahkan log ini
+      console.log("nama : ", response.data); // Tambahkan log ini
       const user = response.data;
       if (user && user.nama) {
         userName.value = user.nama;
@@ -180,11 +182,12 @@ const generateNewSkId = async () => {
 };
 
 onMounted(async () => {
-  generateNewSkId();
-  fetchDataSuratKeluar();
-  fetchDataCabang();
-  fetchDataKodeSurat();
   await fetchUserName();
+  await generateNewSkId();
+  await fetchDataSuratKeluar();
+  await fetchDataKodeSurat();
+  await fetchDataCabang();
+  isLoading.value = false;
 });
 </script>
 
@@ -198,11 +201,14 @@ onMounted(async () => {
           </div>
           <div class="card-nama" style="flex: 0 0 20%;">
             <div class="form-group-row" style="display: flex; align-items: center; margin-right: 20px;">
-                <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="align-items: center; margin-right: 5px;">
-                  <path d="M10 0C15.52 0 20 4.48 20 10C20 15.52 15.52 20 10 20C4.48 20 0 15.52 0 10C0 4.48 4.48 0 10 0ZM4.023 13.416C5.491 15.606 7.695 17 10.16 17C12.624 17 14.829 15.607 16.296 13.416C14.6317 11.8606 
+              <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
+                style="align-items: center; margin-right: 5px;">
+                <path
+                  d="M10 0C15.52 0 20 4.48 20 10C20 15.52 15.52 20 10 20C4.48 20 0 15.52 0 10C0 4.48 4.48 0 10 0ZM4.023 13.416C5.491 15.606 7.695 17 10.16 17C12.624 17 14.829 15.607 16.296 13.416C14.6317 11.8606 
                   12.4379 10.9968 10.16 11C7.88171 10.9966 5.68751 11.8604 4.023 13.416V13.416ZM10 9C10.7956 9 11.5587 8.68393 12.1213 8.12132C12.6839 7.55871 13 6.79565 13 6C13 5.20435 12.6839 4.44129 12.1213 
-                  3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z" fill="#44d569"/>
-                </svg>
+                  3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z"
+                  fill="#44d569" />
+              </svg>
               <h4>Hello {{ userName }}</h4>
             </div>
           </div>
@@ -218,12 +224,15 @@ onMounted(async () => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari"
+                      style="margin-right: 10px; width: 155px;">
                       <option value="">Semua Cabang</option>
-                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}
+                      </option>
                     </select>
                     <div class="search-container" style="margin-right: -10px; width: 275px;">
-                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat" style="width: 100%; padding-right: 40px;" />
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat"
+                        style="width: 100%; padding-right: 40px;" />
                       <SearchIcon class="search-icon" />
                     </div>
                   </div>
@@ -266,6 +275,10 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+  </div>
+
+  <div v-if="isLoading" class="loading-overlay">
+    <Loading /> <!-- Menampilkan komponen loading -->
   </div>
 
   <!-- Modal untuk menambah surat keluar baru -->

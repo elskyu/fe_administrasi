@@ -9,6 +9,8 @@ import '/src/style/modal.css';
 import '/src/style/admin.css';
 import '/src/style/surat_masuk.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
+import Loading from '/src/style/loading.vue';
+
 
 const userName = ref(''); // Default name
 
@@ -19,6 +21,7 @@ const searchQuery = ref('');
 const cabangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
+const isLoading = ref(true); // State untuk loading
 
 const addFormData = ref({
   id_inventaris: '',
@@ -229,10 +232,11 @@ const generateNewInvId = async () => {
 };
 
 onMounted(async () => {
-  generateNewInvId();
-  fetchDataInventaris();
-  fetchDataCabang();
   await fetchUserName();
+  await generateNewInvId();
+  await fetchDataInventaris();
+  await fetchDataCabang();
+  isLoading.value = false;
 });
 </script>
 
@@ -335,6 +339,10 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+  </div>
+
+  <div v-if="isLoading" class="loading-overlay">
+    <Loading /> <!-- Menampilkan komponen loading -->
   </div>
 
   <!-- Modal untuk menambah inventaris baru -->
