@@ -53,11 +53,11 @@
   }
 
   .nav-item:hover {
-    color: #5e72e4;
+    color: #44d569;
   }
 
   .icon:hover {
-    color:#5e72e4; 
+    color:#44d569; 
   }
   
   .icon {
@@ -98,7 +98,7 @@
     background-color: rgba(255, 255, 255, 0.8);
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    color:#5e72e4;
+    color:#44d569;
     display: block;
   }
 
@@ -147,3 +147,9 @@
     }
   }
   
+  .logo { 
+    max-width: 70%;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+  }

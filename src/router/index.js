@@ -96,6 +96,11 @@ const routes = [
     path: '/lihat_ruang_pegawai',
     name: 'ruang_pegawai.lihat_ruang',
     component: () => import(/* webpackChunkName: "ruangp" */ '../views/pegawai/ruang/lihat_ruang.vue')
+  },
+  {
+    path: '/dashboard_pegawai',
+    name: 'dashboard_pegawai.dashboard',
+    component: () => import(/* webpackChunkName: "dashboardp" */ '../views/pegawai/dashboard/dashboard.vue')
   }
 ];
 

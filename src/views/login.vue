@@ -5,6 +5,7 @@ import { useToast } from 'vue-toastification';
 import axios from 'axios';
 import '../style/login.css';
 import '../style/font.css';
+import logo23 from '/src/style/logo2.vue';
 
 const email = ref('');
 const password = ref('');
@@ -24,11 +25,17 @@ const login = async () => {
     localStorage.setItem('userType', userType);
     toast.success(`Login berhasil sebagai ${userType}`);
     setTimeout(() => {
-      router.push({ name: 'dashboard.dashboard' }).then(() => {
-        window.location.reload();
-      });
+      if (userType === 'admin') {
+        router.push({ name: 'dashboard.dashboard' }).then(() => {
+          window.location.reload();
+        });
+      } else if (userType === 'pegawai') {
+        router.push({ name: 'dashboard_pegawai.dashboard' }).then(() => {
+          window.location.reload();
+        });
+      }
     }, 1500);
-    
+
   } catch (error) {
     console.error(error);
     toast.error('Login gagal, periksa kembali email dan password Anda');
@@ -37,7 +44,7 @@ const login = async () => {
 </script>
 
 <template>
-  <div class="main-container">  
+  <div class="main-container">
     <div class="login-wrapper">
       <div class="col-left">
         <div class="image">
@@ -51,7 +58,7 @@ const login = async () => {
       </div>
       <div class="col-right">
         <div class="login-form">
-          <h2>Login</h2>
+          <logo23 class="logo">Login</logo23>
           <form @submit.prevent="login">
             <p>
               <label style="font-weight: bolder;">Email<span>*</span></label>
