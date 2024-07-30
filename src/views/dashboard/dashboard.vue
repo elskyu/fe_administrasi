@@ -46,6 +46,13 @@ const fetchDataJadwal = async () => {
   try {
     const response = await api.get('/api/jadwal'); // Ganti dengan endpoint API Anda yang sebenarnya
     jadwalList.value = response.data.data.data;
+    events.value = jadwalList.value.map(jadwal => ({
+      start: new Date(jadwal.tanggal),
+      end: new Date(jadwal.tanggal),
+      title: jadwal.agenda,
+      content: `Cabang: ${getNamaCabang(jadwal.cabang)}, Departement: ${getNamaDepartement(jadwal.status)}`,
+    }));
+    console.log("Events:", events.value);
   } catch (error) {
     console.error('Error fetching jadwal list:', error);
   }
