@@ -11,32 +11,12 @@ import api from '../../../api';
 import { format } from 'date-fns';
 
 const events = ref([]);
-const cabangList = ref([]);
 const departementList = ref([]);
 const jadwalList = ref([]);
 const tanggalList = ref([]);
-const currentJadwalId = ref(null);
-const showModal = ref(false);
 const viewModal = ref(false);
 const viewModal2 = ref(false);
-const editModal = ref(false);
 const activeView = ref('month');
-
-const addFormData = ref({
-  id_jadwal: '',
-  agenda: '',
-  status: '',
-  tanggal: '',
-  cabang: ''
-});
-
-const editFormData = ref({
-  id_jadwal: '',
-  agenda: '',
-  status: '',
-  tanggal: '',
-  cabang: ''
-});
 
 const fetchDataJadwal = async () => {
   try {
@@ -69,16 +49,6 @@ const addEventForDate = async (date) => {
   }
 };
 
-const fetchDataCabang = async () => {
-  try {
-    const response = await api.get('/api/cp');
-    console.log(response);
-    cabangList.value = response.data.data.data;
-  } catch (error) {
-    console.error('Error fetching cabang list:', error);
-  }
-};
-
 const fetchDataDepartement = async () => {
   try {
     const response = await api.get('/api/dp');
@@ -89,65 +59,14 @@ const fetchDataDepartement = async () => {
   }
 };
 
-const getNamaCabang = (idCabang) => {
-  const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
-  return cabang ? cabang.nama_cabang : '';
-};
-
 const getNamaDepartement = (idDepartement) => {
   const departement = departementList.value.find(d => d.id_departement === idDepartement);
   return departement ? departement.nama_departement : '';
 };
 
-const saveNewJadwal = async () => {
-  try {
-    await api.post('/api/jp', addFormData.value);
-    addFormData.value = {
-      id_jadwal: '',
-      agenda: '',
-      departement: '',
-      tanggal: '',
-      cabang: '',
-    };
-    showModal.value = false;
-    fetchDataJadwal();
-  } catch (error) {
-    console.error('Error saving new jadwal:', error);
-  }
-};
-
-const saveEditJadwal = async () => {
-  try {
-    await api.put(`/api/jp/${currentJadwalId.value}`, editFormData.value);
-    editFormData.value = {
-      id_jadwal: '',
-      agenda: '',
-      departement: '',
-      tanggal: '',
-      cabang: '',
-    };
-    editModal.value = false;
-    fetchDataJadwal();
-  } catch (error) {
-    console.error('Error saving edit jadwal:', error);
-  }
-};
-
 const viewAllEvents = async () => {
   await fetchDataJadwal();
   viewModal.value = true;
-};
-
-const deleteJadwal = async (id_jadwal) => {
-  if (confirm("Apakah anda ingin menghapus data ini?")) {
-    try {
-      await api.delete(`/api/jp/${id_jadwal}`);
-      jadwalList.value = jadwalList.value.filter(jadwalList => jadwalList.id_jadwal !== id_jadwal);
-      fetchDataJadwal();
-    } catch (error) {
-      console.error('Error deleting jadwal:', error);
-    }
-  }
 };
 
 const changeEvent = (event) => {
@@ -156,7 +75,6 @@ const changeEvent = (event) => {
 
 onMounted(() => {
   fetchDataJadwal();
-  fetchDataCabang();
   fetchDataDepartement();
 });
 </script>
