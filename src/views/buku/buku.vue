@@ -8,7 +8,9 @@ import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 import '/src/style/surat_masuk.css';
+import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
+import Loading from '/src/style/loading.vue';
 
 const userName = ref(''); // Default name
 
@@ -20,6 +22,7 @@ const searchQuery = ref('');
 const cabangFilter = ref('');
 const departemenFilter = ref('');
 const showAddModal = ref(false);
+const isLoading = ref(true); // State untuk loading
 
 const addFormData = ref({
   id_tamu: '',
@@ -42,7 +45,7 @@ const fetchUserName = async () => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log("nama : ",response.data); // Tambahkan log ini
+      console.log("nama : ", response.data); // Tambahkan log ini
       const user = response.data;
       if (user && user.nama) {
         userName.value = user.nama;
@@ -193,12 +196,13 @@ const generateNewBtId = async () => {
 };
 
 onMounted(async () => {
-  generateNewBtId();
-  fetchDataBukuTamu();
-  fetchDataCabang();
-  fetchDataDepartement();
-  fetchDataPegawai();
   await fetchUserName();
+  await fetchDataBukuTamu();
+  await fetchDataCabang();
+  await fetchDataDepartement();
+  await fetchDataPegawai();
+  await generateNewBtId();
+  isLoading.value = false; // Set loading menjadi false setelah semua data diambil
 });
 </script>
 
@@ -212,15 +216,19 @@ onMounted(async () => {
           </div>
           <div class="card-nama" style="flex: 0 0 20%;">
             <div class="form-group-row" style="display: flex; align-items: center; margin-right: 20px;">
-                <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="align-items: center; margin-right: 5px;">
-                  <path d="M10 0C15.52 0 20 4.48 20 10C20 15.52 15.52 20 10 20C4.48 20 0 15.52 0 10C0 4.48 4.48 0 10 0ZM4.023 13.416C5.491 15.606 7.695 17 10.16 17C12.624 17 14.829 15.607 16.296 13.416C14.6317 11.8606 
+              <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
+                style="align-items: center; margin-right: 5px;">
+                <path
+                  d="M10 0C15.52 0 20 4.48 20 10C20 15.52 15.52 20 10 20C4.48 20 0 15.52 0 10C0 4.48 4.48 0 10 0ZM4.023 13.416C5.491 15.606 7.695 17 10.16 17C12.624 17 14.829 15.607 16.296 13.416C14.6317 11.8606 
                   12.4379 10.9968 10.16 11C7.88171 10.9966 5.68751 11.8604 4.023 13.416V13.416ZM10 9C10.7956 9 11.5587 8.68393 12.1213 8.12132C12.6839 7.55871 13 6.79565 13 6C13 5.20435 12.6839 4.44129 12.1213 
-                  3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z" fill="#44d569"/>
-                </svg>
+                  3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z"
+                  fill="#44d569" />
+              </svg>
               <h4>Hello {{ userName }}</h4>
             </div>
           </div>
         </div>
+
 
         <div class="col-md-12" style="margin-left: -10px; width: auto;">
           <div class="card border-0">
@@ -232,62 +240,71 @@ onMounted(async () => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <select id="departemenFilter" v-model="departemenFilter" class="form-cari" style="margin-right: 10px; width: 190px;">
+                    <select id="departemenFilter" v-model="departemenFilter" class="form-cari"
+                      style="margin-right: 10px; width: 190px;">
                       <option value="">Semua Departemen</option>
-                      <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{ dep.nama_departement }}</option>
+                      <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{
+                        dep.nama_departement }}</option>
                     </select>
-                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari"
+                      style="margin-right: 10px; width: 155px;">
                       <option value="">Semua Cabang</option>
-                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}
+                      </option>
                     </select>
                     <div class="search-container" style="margin-right: -10px; width: 275px;">
-                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari tamu" style="width: 100%; padding-right: 40px;" />
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari tamu"
+                        style="width: 100%; padding-right: 40px;" />
                       <SearchIcon class="search-icon" />
                     </div>
                   </div>
                 </div>
 
                 <table class="table table-bordered">
-                <thead class="bg-dark text-white text-center">
-                  <tr>
-                    <th scope="col" style="width: 7%;">ID TAMU</th>
-                    <th scope="col" style="width: 16%;">TANGGAL KUNJUNGAN</th>
-                    <th scope="col" style="width: 5%;">NAMA</th>
-                    <th scope="col" style="width: 5%;">JABATAN</th>
-                    <th scope="col" style="width: 7%;">NO HP</th>
-                    <th scope="col" style="width: 18%;">DEPARTEMEN DIKUNJUNGI</th>
-                    <th scope="col" style="width: 15%;">ORANG DIKUNJUNGI</th>
-                    <th scope="col" style="width: 15%;">KEPERLUAN</th>
-                    <th scope="col" style="width: 7%;">CABANG</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-if="filteredBukuTamu.length === 0">
-                    <td colspan="9" class="text-center">
-                      <div class="alert alert-danger mb-0">
-                        Data Belum Tersedia!
-                      </div>
-                    </td>
-                  </tr>
-                  <tr v-else v-for="(tamu, index) in filteredBukuTamu" :key="index">
-                    <td class="text-center">{{ tamu.id_tamu }}</td>
-                    <td>{{ tamu.tanggal_kunjungan }}</td>
-                    <td>{{ tamu.nama }}</td>
-                    <td>{{ tamu.jabatan }}</td>
-                    <td>{{ tamu.no_hp }}</td>
-                    <td>{{ getNamaDepartemen(tamu.departement_dikunjungi) }}</td>
-                    <td>{{ getNamaPegawai(tamu.org_dikunjungi) }}</td>
-                    <td>{{ tamu.keperluan }}</td>
-                    <td>{{ getNamaCabang(tamu.cabang) }}</td>
-                  </tr>
-                </tbody>
-              </table>
+                  <thead class="bg-dark text-white text-center">
+                    <tr>
+                      <th scope="col" style="width: 7%;">ID TAMU</th>
+                      <th scope="col" style="width: 16%;">TANGGAL KUNJUNGAN</th>
+                      <th scope="col" style="width: 5%;">NAMA</th>
+                      <th scope="col" style="width: 5%;">JABATAN</th>
+                      <th scope="col" style="width: 7%;">NO HP</th>
+                      <th scope="col" style="width: 18%;">DEPARTEMEN DIKUNJUNGI</th>
+                      <th scope="col" style="width: 15%;">ORANG DIKUNJUNGI</th>
+                      <th scope="col" style="width: 15%;">KEPERLUAN</th>
+                      <th scope="col" style="width: 7%;">CABANG</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-if="filteredBukuTamu.length === 0">
+                      <td colspan="9" class="text-center">
+                        <div class="alert alert-danger mb-0">
+                          Data Belum Tersedia!
+                        </div>
+                      </td>
+                    </tr>
+                    <tr v-else v-for="(tamu, index) in filteredBukuTamu" :key="index">
+                      <td class="text-center">{{ tamu.id_tamu }}</td>
+                      <td>{{ tamu.tanggal_kunjungan }}</td>
+                      <td>{{ tamu.nama }}</td>
+                      <td>{{ tamu.jabatan }}</td>
+                      <td>{{ tamu.no_hp }}</td>
+                      <td>{{ getNamaDepartemen(tamu.departement_dikunjungi) }}</td>
+                      <td>{{ getNamaPegawai(tamu.org_dikunjungi) }}</td>
+                      <td>{{ tamu.keperluan }}</td>
+                      <td>{{ getNamaCabang(tamu.cabang) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+
+  <div v-if="isLoading" class="loading-overlay">
+    <Loading /> <!-- Menampilkan komponen loading -->
   </div>
 
   <!-- Modal untuk menambah tamu baru -->
@@ -318,9 +335,10 @@ onMounted(async () => {
       </div>
       <div class="form-group" style="width: 400px;">
         <label for="departement_dikunjungi">Departemen Dikunjungi</label>
-          <select id="departement_dikunjungi" v-model="addFormData.departement_dikunjungi">
-            <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{ dep.nama_departement }}</option>
-          </select>
+        <select id="departement_dikunjungi" v-model="addFormData.departement_dikunjungi">
+          <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{
+            dep.nama_departement }}</option>
+        </select>
       </div>
       <div class="form-group-row">
         <div class="form-group" style="width: 195px;">
@@ -331,8 +349,8 @@ onMounted(async () => {
           <label for="no_hp">No HP</label>
           <input type="text" id="no_hp" v-model="addFormData.no_hp" />
         </div>
-      </div>     
-      
+      </div>
+
       <div class="form-group">
         <label for="org_dikunjungi">Orang Dikunjungi</label>
         <input type="text" id="org_dikunjungi" v-model="addFormData.org_dikunjungi" />
@@ -341,7 +359,7 @@ onMounted(async () => {
         <label for="keperluan">Keperluan</label>
         <input type="text" id="keperluan" v-model="addFormData.keperluan" />
       </div>
-      
+
       <div class="form-actions">
         <button class="btn-modal-save rounded-sm shadow border-0" @click="saveNewTamu">Simpan Perubahan</button>
         <button class="btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>

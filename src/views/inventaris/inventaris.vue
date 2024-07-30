@@ -117,8 +117,11 @@ const filteredInventaris = computed(() => {
     filtered = filtered.filter(inventaris =>
       inventaris.nopol.toLowerCase().includes(query) ||
       inventaris.merek.toLowerCase().includes(query) ||
-      inventaris.tahun.toString().toLowerCase().includes(query) ||
       inventaris.kategori.toLowerCase().includes(query) ||
+      inventaris.tahun.toString().includes(query) ||
+      inventaris.pajak.toString().includes(query) ||
+      inventaris.masa_pajak.toString().includes(query) ||
+      inventaris.harga_beli.toString().includes(query) ||
       inventaris.tanggal_beli.toLowerCase().includes(query) ||
       getNamaCabang(inventaris.cabang).toLowerCase().includes(query)
     );
@@ -382,7 +385,7 @@ onMounted(async () => {
         </div>
         <div class="form-group" style="width: 195px;">
           <label for="harga_beli">Harga Beli</label>
-          <input type="number" id="harga_beli" v-model="addFormData.harga_beli" />
+          <input type="text" id="harga_beli" v-model="addFormData.harga_beli" />
         </div>
       </div>
       <div class="form-group-row">
@@ -452,7 +455,7 @@ onMounted(async () => {
         </div>
         <div class="form-group" style="width: 195px;">
           <label for="harga_beli">Harga Beli</label>
-          <input type="number" id="harga_beli" v-model="editFormData.harga_beli" />
+          <input type="text" id="harga_beli" v-model="editFormData.harga_beli" />
         </div>
       </div>
       <div class="form-group-row">
