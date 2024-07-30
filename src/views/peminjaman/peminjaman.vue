@@ -369,8 +369,8 @@ onMounted(async () => {
       <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH PEMAKAIAN INVENTARIS</h4>
       <div class="form-group-row">
         <div class="form-group">
-          <label for="id_pinjam" style="width: 195px;">ID Inven</label>
-          <input type="text" id="id_pinjam" v-model="addFormData.id_pinjam" />
+          <label for="id_pinjam" style="width: 195px;">ID</label>
+          <input type="text" id="id_pinjam" v-model="addFormData.id_pinjam" readonly />
         </div>
         <div class="form-group">
           <label for="inventaris" style="width: 195px;">Nama Inven</label>

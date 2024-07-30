@@ -84,15 +84,16 @@ const filteredInventaris = computed(() => {
   let filtered = inventarisList.value;
 
   if (query) {
-    filtered = filtered.filter(i =>
-      i.nopol.toLowerCase().includes(query) ||
-      i.merek.toLowerCase().includes(query) ||
-      i.kategori.toLowerCase().includes(query) ||
-      i.tahun.toLowerCase().includes(query) ||
-      i.pajak.toLowerCase().includes(query) ||
-      i.masa_pajak.toLowerCase().includes(query) ||
-      i.harga_beli.toLowerCase().includes(query) ||
-      i.tanggal_beli.toLowerCase().includes(query)
+    filtered = filtered.filter(inventaris =>
+      inventaris.nopol.toLowerCase().includes(query) ||
+      inventaris.merek.toLowerCase().includes(query) ||
+      inventaris.kategori.toLowerCase().includes(query) ||
+      inventaris.tahun.toString().includes(query) ||
+      inventaris.pajak.toString().includes(query) ||
+      inventaris.masa_pajak.toString().includes(query) ||
+      inventaris.harga_beli.toString().includes(query) ||
+      inventaris.tanggal_beli.toLowerCase().includes(query) ||
+      getNamaCabang(inventaris.cabang).toLowerCase().includes(query)
     );
   }
 

@@ -88,12 +88,12 @@ const routes = [
     component: () => import(/* webpackChunkName: "ruangp" */ '../views/pegawai/ruang/ruang.vue')
   },
   {
-    path: '/lihat_inventaris_pegawai',
+    path: '/lihat_inventaris_pegawai/:id',
     name: 'inventaris_pegawai.lihat_inventaris',
     component: () => import(/* webpackChunkName: "inventarisp" */ '../views/pegawai/inventaris/lihat_inventaris.vue')
   },
   {
-    path: '/lihat_ruang_pegawai',
+    path: '/lihat_ruang_pegawai/:id',
     name: 'ruang_pegawai.lihat_ruang',
     component: () => import(/* webpackChunkName: "ruangp" */ '../views/pegawai/ruang/lihat_ruang.vue')
   },
