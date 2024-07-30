@@ -210,7 +210,7 @@ onMounted(() => {
                       <td class="text-center">{{ r.id_ruang }}</td>
                       <td>{{ r.nama_ruang }}</td>
                       <td class="text-center">
-                        <button @click="editRuang(r)" class="btn btn-sm btn-warning rounded-sm shadow border-0" style="margin-right: 7px;">Lihat</button>
+                        <router-link :to="{ name: 'ruang_pegawai.lihat_ruang', params: { id: r.id_ruang } }" class="btn btn-sm btn-warning rounded-sm shadow border-0 me-2 custom-button">Lihat</router-link>
                       </td>
                     </tr>
                   </tbody>
@@ -270,8 +270,6 @@ onMounted(() => {
             <th>ID Reservasi</th>
             <th>Tanggal Reservasi</th>
             <th>Tanggal Selesai</th>
-            <th>Durasi</th>
-            <th>Pegawai</th>
             <th>Keterangan</th>
           </tr>
         </thead>
@@ -280,8 +278,6 @@ onMounted(() => {
             <td>{{ reservasi.id_reservasi }}</td>
             <td>{{ reservasi.tanggal_reservasi }}</td>
             <td>{{ reservasi.tanggal_selesai }}</td>
-            <td>{{ reservasi.durasi }}</td>
-            <td>{{ reservasi.pegawai }}</td>
             <td>{{ reservasi.keterangan }}</td>
           </tr>
         </tbody>

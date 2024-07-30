@@ -15,8 +15,6 @@ const cabangList = ref([]);
 const departementList = ref([]);
 const jadwalList = ref([]);
 const tanggalList = ref([]);
-const currentEvents = ref([]);
-const currentTanggal = ref(null);
 const currentJadwalId = ref(null);
 const showModal = ref(false); // State untuk mengontrol visibilitas modal tambah acara
 const viewModal = ref(false); // State untuk mengontrol visibilitas modal view acara
@@ -94,18 +92,6 @@ const getNamaCabang = (idCabang) => {
 const getNamaDepartement = (idDepartement) => {
   const departement = departementList.value.find(d => d.id_departement === idDepartement);
   return departement ? departement.nama_departement : '';
-};
-
-const editJadwal = (j) => {
-  currentJadwalId.value = j.id_jadwal;
-  editFormData.value = {
-    id_jadwal: j.id_jadwal,
-    agenda: j.agenda,
-    department: j.departement,
-    tanggal: j.tanggal,
-    cabang: j.cabang, // Pastikan cabang_id diambil dari j.cabang.id_cabang
-  };
-  editModal.value = true;
 };
 
 const saveNewJadwal = async () => {
@@ -187,8 +173,7 @@ onMounted(() => {
       <div class="card3">
         <div class="calendar-container">
           <div class="calendar-header">
-            <button @click="showModal = true" class="btn btn-primary">Create Event</button>
-            <button @click="viewAllEvents" class="btn btn-secondary">View Events</button>
+            <button @click="viewAllEvents" class="btn btn-secondary">Lihat Jadwal</button>
           </div>
 
           <VueCal
@@ -261,23 +246,16 @@ onMounted(() => {
             <tr>
               <th>ID</th>
               <th>Agenda</th>
-              <th>Departement</th>
-              <th>Cabang</th>
+              <th>Status</th>
               <th>Jadwal</th>
-              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="jadwal in jadwalList" :key="jadwal.id_jadwal">
               <td>{{ jadwal.id_jadwal }}</td>
               <td>{{ jadwal.agenda }}</td>
-              <td>{{ getNamaDepartement(jadwal.status) }}</td>
-              <td>{{ getNamaCabang(jadwal.cabang) }}</td>
+              <td>{{ jadwal.status === null ? 'Seluruh Departement' : "Departement " + getNamaDepartement(jadwal.status) }}</td>
               <td>{{ jadwal.tanggal }}</td>
-              <td>
-                <button @click="editJadwal(jadwal)" class="btn btn-primary">Edit</button>
-                <button @click="deleteJadwal(jadwal.id_jadwal)" class="btn btn-danger">Delete</button>
-              </td>
             </tr>
           </tbody>
         </table>

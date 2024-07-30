@@ -1,18 +1,15 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onBeforeMount, onMounted } from 'vue';
 import api from '../../../api';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
-import SearchIcon from '/src/style/SearchIcon.vue';
 
 const inventarisList = ref([]);
 const cabangList = ref([]);
 const currentInventarisId = ref(null);
-const searchQuery = ref('');
-const cabangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 
@@ -44,7 +41,7 @@ const editFormData = ref({
 
 const fetchDataInventaris = async () => {
   try {
-    const response = await api.get('/api/ip');
+    const response = await api.get('/api/ip/INV001');
     console.log(response);
     inventarisList.value = response.data.data;
   } catch (error) {
@@ -77,33 +74,6 @@ const editInventaris = (i) => {
   };
   showEditModal.value = true;
 };
-
-const filteredInventaris = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  const cabang = cabangFilter.value;
-
-  let filtered = inventarisList.value;
-
-  if (query) {
-    filtered = filtered.filter(inventaris =>
-      inventaris.nopol.toLowerCase().includes(query) ||
-      inventaris.merek.toLowerCase().includes(query) ||
-      inventaris.kategori.toLowerCase().includes(query) ||
-      inventaris.tahun.toLowerCase().includes(query) ||
-      inventaris.pajak.toLowerCase().includes(query) ||
-      inventaris.masa_pajak.toLowerCase().includes(query) ||
-      inventaris.harga_beli.toLowerCase().includes(query) ||
-      inventaris.tanggal_beli.toLowerCase().includes(query) ||
-      getNamaCabang(inventaris.cabang).toLowerCase().includes(query)
-    );
-  }
-
-  if (cabang) {
-    filtered = filtered.filter(inventaris => inventaris.cabang === cabang);
-  }
-
-  return filtered;
-});
 
 const saveNewInventaris = async () => {
   try {
@@ -156,51 +126,11 @@ const getNamaCabang = (idCabang) => {
   return cabang ? cabang.nama_cabang : '';
 };
 
-const deleteInventaris = async (id_inventaris) => {
-  if (confirm("Apakah anda ingin menghapus data ini?")) {
-    try {
-      await api.delete(`/api/ip/${id_inventaris}`);
-      inventaris.value = inventaris.value.filter(inventaris => inventaris.id_inventaris !== id_inventaris);
-      generateNewInvId();
-      fetchDataInventaris();
-    } catch (error) {
-      console.error('Error deleting pegawai:', error);
-    }
-  }
-};
-
-const generateNewInvId = async () => {
-  try {
-    const response = await api.get('/api/ip');
-    const inventarisList = response.data.data;
-
-    if (inventarisList.length === 0) {
-      addFormData.value.id_surat_masuk = "INV001";
-    } else {
-      const existingIds = inventarisList.map(inv => parseInt(inv.id_inventaris.slice(3)));
-      existingIds.sort((a, b) => a - b);
-
-      let newId = null;
-      for (let i = 0; i < existingIds.length; i++) {
-        if (existingIds[i] !== i + 1) {
-          newId = i + 1;
-          break;
-        }
-      }
-      if (newId === null) {
-        newId = existingIds.length + 1;
-      }
-
-      addFormData.value.id_inventaris = `INV${String(newId).padStart(3, '0')}`;
-    }
-  } catch (error) {
-    console.error('Error generating new Inventaris ID:', error);
-  }
-};
+onBeforeMount(() => {
+  fetchDataInventaris();
+});
 
 onMounted(() => {
-  generateNewInvId();
-  generateNewInvId();
   fetchDataInventaris();
   fetchDataCabang();
 });
@@ -220,53 +150,89 @@ onMounted(() => {
           <div class="card border-0">
             <div class="card-body">
               <div class="row">
-                <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                </div>
-                <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
-                  <div class="d-flex justify-content-end">
-                    <div class="search-container" style="margin-right: -10px; width: 275px;">
-                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari inventaris" style="width: 100%; padding-right: 40px;" />
-                      <SearchIcon class="search-icon" />
+                <div class="card-body">
+                  <h3 class="card-title">Detail Inventaris</h3>
+                  <div class="row">
+                    <label class="col-sm-3 col-form-label">ID Inventaris :</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-plaintext">{{ inventarisList[0].id_inventaris }}</p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-sm-3 col-form-label">Nopol :</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-plaintext">{{ inventarisList[0].nopol }}</p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-sm-3 col-form-label">Merek :</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-plaintext">{{ inventarisList[0].merek }}</p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-sm-3 col-form-label">Kategori :</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-plaintext">{{ inventarisList[0].kategori }}</p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-sm-3 col-form-label">Tahun :</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-plaintext">{{ inventarisList[0].tahun }}</p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-sm-3 col-form-label">Pajak :</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-plaintext">{{ inventarisList[0].pajak }}</p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-sm-3 col-form-label">Masa Pajak :</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-plaintext">{{ inventarisList[0].masa_pajak }}</p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-sm-3 col-form-label">Harga Beli :</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-plaintext">{{ inventarisList[0].harga_beli }}</p>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-sm-3 col-form-label">Tanggal Beli :</label>
+                    <div class="col-sm-9">
+                      <p class="form-control-plaintext">{{ inventarisList[0].tanggal_beli }}</p>
                     </div>
                   </div>
                 </div>
-              
+                <h3 class="card-title">Detail Peminjaman</h3>
+                <div class="col-md-6 mb-3" style="margin-top: 5px;">
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Pinjam Inventaris</button>
+                </div>
+                <div class="col-md-6 mb-3" style="margin-top: 5px;">
+                  <router-link :to="{ name: 'ruang_pegawai.ruang' }" class="btn btn-md btn-warning rounded-sm" style="right: 0;">Kembali</router-link>
+                </div>
               <table class="table table-bordered">
                 <thead class="bg-dark text-white text-center">
                   <tr>
-                    <th scope="col">ID INVENTARIS</th>
-                    <th scope="col">NOPOL</th>
-                    <th scope="col">MEREK</th>
-                    <th scope="col">KATEGORI</th>
-                    <th scope="col">TAHUN</th>
-                    <th scope="col">PAJAK</th>
-                    <th scope="col">MASA PAJAK</th>
-                    <th scope="col">HARGA BELI</th>
-                    <th scope="col">TANGGAL BELI</th>
-                    <th scope="col">AKSI</th>
+                    <th scope="col">ID Pinjam</th>
+                    <th scope="col">Inventaris</th>
+                    <th scope="col">pinjam</th>
+                    <th scope="col">kembali</th>
+                    <th scope="col">Durasi Pinjam</th>
+                    <th scope="col">Keterangan</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="filteredInventaris.length === 0">
-                    <td colspan="11" class="text-center">
-                      <div class="alert alert-danger mb-0">
-                        Data Belum Tersedia!
-                      </div>
-                    </td>
-                  </tr>
-                  <tr v-else v-for="(inventaris, index) in filteredInventaris" :key="index">
-                    <td class="text-center">{{ inventaris.id_inventaris }}</td>
-                    <td>{{ inventaris.nopol }}</td>
-                    <td>{{ inventaris.merek }}</td>
-                    <td>{{ inventaris.kategori }}</td>
-                    <td>{{ inventaris.tahun }}</td>
-                    <td>{{ inventaris.pajak }}</td>
-                    <td>{{ inventaris.masa_pajak }}</td>
-                    <td>{{ inventaris.harga_beli }}</td>
-                    <td>{{ inventaris.tanggal_beli }}</td>
-                    <td class="text-center">
-                        <button @click="editInventaris(inventaris)" class="btn btn-sm btn-warning rounded-sm shadow border-0" style="margin-right: 7px;">Lihat</button>
-                      </td>
+                  <tr v-for="pinventaris in inventarisList[0].pemakaian_inventaris" :key="pinventaris.id_pinjam">
+                    <td class="text-center">{{ pinventaris.id_pinjam }}</td>
+                    <td>{{ pinventaris.inventaris }}</td>
+                    <td>{{ pinventaris.tanggal_pinjam }}</td>
+                    <td>{{ pinventaris.tanggal_kembali }}</td>
+                    <td>{{ pinventaris.durasi_pinjam }}</td>
+                    <td>{{ pinventaris.keterangan }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -337,7 +303,6 @@ onMounted(() => {
           </select>
         </div>
       </div>
-
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewInventaris">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>

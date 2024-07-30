@@ -18,19 +18,17 @@ const tanggalList = ref([]);
 const currentEvents = ref([]);
 const currentTanggal = ref(null);
 const currentJadwalId = ref(null);
-const showModal = ref(false); // State untuk mengontrol visibilitas modal tambah acara
-const viewModal = ref(false); // State untuk mengontrol visibilitas modal view acara
+const showModal = ref(false);
+const viewModal = ref(false);
 const viewModal2 = ref(false);
-const editModal = ref(false); // State untuk mengontrol visibilitas modal edit acara
-const activeView = ref('month'); // State untuk mengontrol view aktif di kalender
-
+const editModal = ref(false);
+const activeView = ref('month');
 const addFormData = ref({
   id_jadwal: '',
   agenda: '',
   status: '',
   tanggal: '',
   cabang: ''
-  //color:''
 });
 
 const editFormData = ref({
@@ -39,12 +37,11 @@ const editFormData = ref({
   status: '',
   tanggal: '',
   cabang: ''
-  //color:''
 });
 
 const fetchDataJadwal = async () => {
   try {
-    const response = await api.get('/api/jadwal'); // Ganti dengan endpoint API Anda yang sebenarnya
+    const response = await api.get('/api/jadwal');
     jadwalList.value = response.data.data.data;
     events.value = jadwalList.value.map(jadwal => ({
       start: new Date(jadwal.tanggal),
@@ -59,7 +56,7 @@ const fetchDataJadwal = async () => {
 };
 
 const addEventForDate = async (date) => {
-  if (activeView.value !== 'month') return; // Only show modal in month view
+  if (activeView.value !== 'month') return;
 
   const tanggal = format(new Date(date), 'yyyy-MM-dd');
   console.log("tanggal klik : ", tanggal);
@@ -77,7 +74,7 @@ const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cabang');
     console.log(response);
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -87,7 +84,7 @@ const fetchDataDepartement = async () => {
   try {
     const response = await api.get('/api/departement');
     console.log(response);
-    departementList.value = response.data.data.data; // Adjust based on the actual response structure
+    departementList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -110,7 +107,7 @@ const editJadwal = (j) => {
     agenda: j.agenda,
     department: j.departement,
     tanggal: j.tanggal,
-    cabang: j.cabang, // Pastikan cabang_id diambil dari j.cabang.id_cabang
+    cabang: j.cabang,
   };
   editModal.value = true;
 };
@@ -118,7 +115,6 @@ const editJadwal = (j) => {
 const saveNewJadwal = async () => {
   try {
     await api.post('/api/jadwal', addFormData.value);
-    // Reset form data
     addFormData.value = {
       id_jadwal: '',
       agenda: '',
@@ -126,9 +122,7 @@ const saveNewJadwal = async () => {
       tanggal: '',
       cabang: '',
     };
-    // Tutup modal tambah
     showModal.value = false;
-    // Muat ulang daftar inventaris
     fetchDataJadwal();
   } catch (error) {
     console.error('Error saving new jadwal:', error);
@@ -153,7 +147,7 @@ const saveEditJadwal = async () => {
 };
 
 const viewAllEvents = async () => {
-  await fetchDataJadwal(); // Pastikan data terbaru diambil dari server
+  await fetchDataJadwal();
   viewModal.value = true;
 };
 
