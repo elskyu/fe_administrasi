@@ -16,11 +16,11 @@ const departementList = ref([]);
 const jadwalList = ref([]);
 const tanggalList = ref([]);
 const currentJadwalId = ref(null);
-const showModal = ref(false); // State untuk mengontrol visibilitas modal tambah acara
-const viewModal = ref(false); // State untuk mengontrol visibilitas modal view acara
+const showModal = ref(false);
+const viewModal = ref(false);
 const viewModal2 = ref(false);
-const editModal = ref(false); // State untuk mengontrol visibilitas modal edit acara
-const activeView = ref('month'); // State untuk mengontrol view aktif di kalender
+const editModal = ref(false);
+const activeView = ref('month');
 
 const addFormData = ref({
   id_jadwal: '',
@@ -28,7 +28,6 @@ const addFormData = ref({
   status: '',
   tanggal: '',
   cabang: ''
-  //color:''
 });
 
 const editFormData = ref({
@@ -37,20 +36,26 @@ const editFormData = ref({
   status: '',
   tanggal: '',
   cabang: ''
-  //color:''
 });
 
 const fetchDataJadwal = async () => {
   try {
-    const response = await api.get('/api/jp'); // Ganti dengan endpoint API Anda yang sebenarnya
+    const response = await api.get('/api/jp');
     jadwalList.value = response.data.data;
+    events.value = jadwalList.value.map(jadwal => ({
+      start: new Date(jadwal.tanggal),
+      end: new Date(jadwal.tanggal),
+      title: jadwal.agenda,
+      content: `Cabang: ${getNamaCabang(jadwal.cabang)}, Departement: ${getNamaDepartement(jadwal.status)}`,
+    }));
+    console.log("Events:", events.value);
   } catch (error) {
     console.error('Error fetching jadwal list:', error);
   }
 };
 
 const addEventForDate = async (date) => {
-  if (activeView.value !== 'month') return; // Only show modal in month view
+  if (activeView.value !== 'month') return;
 
   const tanggal = format(new Date(date), 'yyyy-MM-dd');
   console.log("tanggal klik : ", tanggal);
@@ -68,7 +73,7 @@ const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cp');
     console.log(response);
-    cabangList.value = response.data.data.data; // Adjust based on the actual response structure
+    cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -78,7 +83,7 @@ const fetchDataDepartement = async () => {
   try {
     const response = await api.get('/api/dp');
     console.log(response);
-    departementList.value = response.data.data.data; // Adjust based on the actual response structure
+    departementList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
   }
@@ -97,7 +102,6 @@ const getNamaDepartement = (idDepartement) => {
 const saveNewJadwal = async () => {
   try {
     await api.post('/api/jp', addFormData.value);
-    // Reset form data
     addFormData.value = {
       id_jadwal: '',
       agenda: '',
@@ -105,9 +109,7 @@ const saveNewJadwal = async () => {
       tanggal: '',
       cabang: '',
     };
-    // Tutup modal tambah
     showModal.value = false;
-    // Muat ulang daftar inventaris
     fetchDataJadwal();
   } catch (error) {
     console.error('Error saving new jadwal:', error);
@@ -132,7 +134,7 @@ const saveEditJadwal = async () => {
 };
 
 const viewAllEvents = async () => {
-  await fetchDataJadwal(); // Pastikan data terbaru diambil dari server
+  await fetchDataJadwal();
   viewModal.value = true;
 };
 
@@ -195,52 +197,10 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Create Event Modal -->
-    <div v-if="showModal" class="modal">
-      <div class="modal-content-kalendar">
-        <h2 style="text-align: center;">Create Event</h2>
-        <form @submit.prevent="saveNewJadwal" class="form-container">
-          <div class="form-group">
-            <label for="id_jadwal" style="width: 195px;">ID</label>
-            <input type="text" id="id_jadwal" v-model="addFormData.id_jadwal" />
-          </div>
-          <div class="form-group">
-            <label for="agenda">Agenda</label>
-            <input type="text" id="agenda" v-model="addFormData.agenda" required>
-          </div>
-
-          <div class="form-group-row">
-            <div class="form-group">
-              <label for="departement" style="width:450px;">Departement</label>
-              <select type="text" id="departement" v-model="addFormData.status">
-                <option v-for="d in departementList" :value="d.id_departement" :key="d.id_departement">{{ d.nama_departement }}</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="cabang" style="width: 450px;">Cabang</label>
-              <select type="text" id="cabang" v-model="addFormData.cabang">
-                <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="tanggal">Jadwal</label>
-            <input type="datetime-local" id="tanggal" v-model="addFormData.tanggal">
-          </div>
-
-          <div class="form-group">
-            <button type="submit" class="btn btn-primary">Save</button>
-            <button type="button" @click="showModal = false" class="btn btn-secondary">Cancel</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
     <!-- View Events Modal -->
     <div v-if="viewModal" class="modal">
       <div class="modal-content-kalendar">
-        <h2 style="text-align: center;">View Events</h2>
+        <h2 style="text-align: center;">Lihat Jadwal</h2>
         <table class="table table-bordered">
           <thead class="text-center">
             <tr>
@@ -259,13 +219,14 @@ onMounted(() => {
             </tr>
           </tbody>
         </table>
-        <button @click="viewModal = false" class="btn btn-danger">Close</button>
+        <button @click="viewModal = false" class="btn btn-danger">Tutup</button>
       </div>
     </div>
 
+    <!-- View Date Modal -->
     <div v-if="viewModal2" class="modal">
       <div class="modal-content-kalendar">
-        <h2 style="text-align: center;">View Events</h2>
+        <h2 style="text-align: center;">Lihat Jadwal</h2>
         <table class="table table-bordered">
           <thead class="text-center">
             <tr>
@@ -280,46 +241,7 @@ onMounted(() => {
             </tr>
           </tbody>
         </table>
-        <button @click="viewModal2 = false" class="btn btn-danger">Close</button>
-      </div>
-    </div>
-
-    <!-- Edit Event Modal -->
-    <div v-if="editModal" class="modal">
-      <div class="modal-content-kalendar">
-        <h2>Edit Event</h2>
-        <form @submit.prevent="saveEditJadwal" class="form-container">
-          <div class="form-group">
-            <label for="id_jadwal">ID</label>
-            <input type="text" id="id_jadwal" v-model="editFormData.id_jadwal" />
-          </div>
-          <div class="form-group">
-            <label for="agenda">Agenda</label>
-            <input type="text" id="agenda" v-model="editFormData.agenda" required>
-          </div>
-          <div class="form-group-row">
-            <div class="form-group">
-              <label for="departement" style="width:450px">Departement</label>
-              <select type="text" id="departement" v-model="editFormData.status">
-                <option v-for="d in departementList" :value="d.id_departement" :key="d.id_departement">{{ d.nama_departement }}</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="cabang" style="width:450px">Cabang</label>
-              <select type="text" id="cabang" v-model="editFormData.cabang">
-                <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="tanggal">Jadwal</label>
-            <input type="datetime-local" id="tanggal" v-model="editFormData.tanggal">
-          </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-primary">Save</button>
-            <button type="button" @click="editModal = false" class="btn btn-secondary">Cancel</button>
-          </div>
-        </form>
+        <button @click="viewModal2 = false" class="btn btn-danger">Tutup</button>
       </div>
     </div>
   </div>
