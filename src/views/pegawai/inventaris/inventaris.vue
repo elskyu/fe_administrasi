@@ -268,8 +268,7 @@ onMounted(() => {
                     <td>{{ inventaris.harga_beli }}</td>
                     <td>{{ inventaris.tanggal_beli }}</td>
                     <td class="text-center">
-                        <router-link :to="{ name: 'inventaris_pegawai.lihat_inventaris', params: { id: inventaris.id_inventaris } }" class="btn btn-sm btn-primary rounded-sm shadow border-0 me-2 custom-button">Lihatttt</router-link>
-                        <button @click="editInventaris(inventaris)" class="btn btn-sm btn-warning rounded-sm shadow border-0" style="margin-right: 7px;">Lihat</button>
+                        <router-link :to="{ name: 'inventaris_pegawai.lihat_inventaris', params: { id: inventaris.id_inventaris } }" class="btn btn-sm btn-warning rounded-sm shadow border-0 me-2 custom-button">Lihat</router-link>
                       </td>
                   </tr>
                 </tbody>

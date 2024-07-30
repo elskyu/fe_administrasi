@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onBeforeMount, onMounted } from 'vue';
 import api from '../../../api';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
@@ -10,11 +10,8 @@ import SearchIcon from '/src/style/SearchIcon.vue';
 
 const ruang = ref([]);
 const cabangList = ref([]);
-const searchQuery = ref('');
-const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
-const cabangFilter = ref('');
 
 const addFormData = ref({
   id_ruang: '',
@@ -32,7 +29,7 @@ const currentRuangId = ref(null);
 
 const fetchDataRuang = async () => {
   try {
-    const response = await api.get('/api/rp');
+    const response = await api.get('/api/rp/R001');
     console.log(response);
     ruang.value = response.data.data;
   } catch (error) {
@@ -70,31 +67,6 @@ const deleteRuang = async (id_ruang) => {
       console.error('Error deleting ruang:', error);
     }
   }
-};
-
-const filteredRuang = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  const cabang = cabangFilter.value;
-
-  let filtered = ruang.value;
-
-  if (query) {
-    filtered = filtered.filter(r => 
-      r.nama_ruang.toLowerCase().includes(query) ||
-      r.id_ruang.toLowerCase().includes(query) ||
-      getNamaCabang(r.cabang).toLowerCase().includes(query)
-    );
-  }
-
-  if (cabang) {
-    filtered = filtered.filter(s => s.cabang === cabang);
-  }
-
-  return filtered;
-});
-
-const handleSearch = () => {
-  searchQuery.value = tempSearchQuery.value;
 };
 
 const saveNewRuang = async () => {
@@ -157,6 +129,10 @@ const generateNewRuangId = async () => {
   }
 };
 
+onBeforeMount(() => {
+  fetchDataRuang();
+});
+
 onMounted(() => {
   generateNewRuangId();
   fetchDataRuang();
@@ -178,48 +154,57 @@ onMounted(() => {
             <div class="card border-0">
               <div class="card-body">
                 <div class="row">
-                  <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  </div>
-                  <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
-                    <div class="d-flex justify-content-end">
-                      <div class="search-container" style="margin-right: -10px; width: 275px;">
-                        <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari ruang" style="width: 100%; padding-right: 40px;" />
-                        <SearchIcon class="search-icon" />
+                  <div class="card-body">
+                    <h3 class="card-title">Detail Ruang</h3>
+                    <div class="row">
+                      <label class="col-sm-3 col-form-label">ID Ruang :</label>
+                      <div class="col-sm-9">
+                        <p class="form-control-plaintext">{{ ruang[0].id_ruang }}</p>
                       </div>
                     </div>
+                    <div class="row">
+                      <label class="col-sm-3 col-form-label">Nama Ruang :</label>
+                      <div class="col-sm-9">
+                        <p class="form-control-plaintext">{{ ruang[0].nama_ruang }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <h3 class="card-title">Detail Reservasi Ruang</h3>
+                  <div class="col-md-6 mb-3" style="margin-top: 5px;">
+                    <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Reservasi</button>
+                  </div>
+                  <div class="col-md-6 mb-3" style="margin-top: 5px;">
+                    <router-link :to="{ name: 'ruang_pegawai.ruang' }" class="btn btn-md btn-warning rounded-sm">Kembali</router-link>
                   </div>
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:10%">ID RUANG</th>
-                      <th scope="col" style="width:15%">NAMA RUANG</th>
-                      <th scope="col" style="width:5%">AKSI</th>
+                      <th scope="col">ID Reservasi</th>
+                      <th scope="col">Tanggal Reservasi</th>
+                      <th scope="col">Tanggal Selesai</th>
+                      <th scope="col">Durasi Resrvasi</th>
+                      <th scope="col">Keterangan</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="filteredRuang.length === 0">
-                      <td colspan="4" class="text-center">
-                        <div class="alert alert-danger mb-0">
-                          Data Belum Tersedia!
-                        </div>
-                      </td>
-                    </tr>
-                    <tr v-else v-for="(r, index) in filteredRuang" :key="index">
-                      <td class="text-center">{{ r.id_ruang }}</td>
-                      <td>{{ r.nama_ruang }}</td>
-                      <td class="text-center">
-                        <button @click="editRuang(r)" class="btn btn-sm btn-warning rounded-sm shadow border-0" style="margin-right: 7px;">Lihat</button>
-                      </td>
+                    <tr v-for="rr in ruang[0].reservasi_ruang" :key="rr.id_reservasi">
+                      <td class="text-center">{{ rr.id_reservasi }}</td>
+                      <td>{{ rr.tanggal_reservasi }}</td>
+                      <td>{{ rr.tanggal_selesai }}</td>
+                      <td>{{ rr.durasi }}</td>
+                      <td>{{ rr.keterangan }}</td>
                     </tr>
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        </div>
       </div>
     </div>
+
+    
   
     <!-- Modal for adding new ruang -->
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
