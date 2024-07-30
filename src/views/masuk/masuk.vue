@@ -7,6 +7,7 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/surat_masuk.css';
+import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
@@ -151,10 +152,10 @@ const generateNewSmId = async () => {
 };
 
 onMounted(async () => {
-  await fetchUserName();
-  await generateNewSmId();
+  fetchUserName();
+  fetchDataCabang();
   await fetchDataSuratMasuk();
-  await fetchDataCabang();
+  await generateNewSmId();
   isLoading.value = false;
 });
 </script>

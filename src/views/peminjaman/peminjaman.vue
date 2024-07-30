@@ -9,6 +9,7 @@ import '/src/style/peminjaman.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 import '/src/style/surat_masuk.css';
+import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
@@ -252,12 +253,12 @@ const generateNewPiId = async () => {
 };
 
 onMounted(async () => {
-  await fetchUserName();
-  await generateNewPiId();
+  fetchUserName();
+  fetchDataCabang();
+  fetchDataPegawai();
+  fetchDataPemakaian();
   await fetchDataInventaris();
-  await fetchDataPegawai();
-  await fetchDataPemakaian();
-  await fetchDataCabang();
+  await generateNewPiId();
   isLoading.value = false;
 });
 </script>
@@ -312,14 +313,14 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:10%">ID PINJAM</th>
+                      <th scope="col" style="width:8%">ID PINJAM</th>
                       <th scope="col" style="width:7%">INVENTARIS</th>
                       <th scope="col" style="width:15%">TANGGAL PINJAM</th>
                       <th scope="col" style="width:15%">TANGGAL KEMBALI</th>
                       <th scope="col" style="width:12%">DURASI PINJAM</th>
-                      <th scope="col" style="width:7%">PEGAWAI</th>
-                      <th scope="col" style="width:15%">KETERANGAN</th>
-                      <th scope="col" style="width:7%">CABANG</th>
+                      <th scope="col" style="width:10%">PEGAWAI</th>
+                      <th scope="col" style="width:13%">KETERANGAN</th>
+                      <th scope="col" style="width:8%">CABANG</th>
                       <th scope="col" style="width:15%">AKSI</th>
                     </tr>
                   </thead>

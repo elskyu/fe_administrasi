@@ -8,6 +8,7 @@ import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 import '/src/style/surat_masuk.css';
+import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
@@ -190,10 +191,10 @@ const generateNewRuangId = async () => {
 };
 
 onMounted(async () => {
-  await fetchUserName();
-  await generateNewRuangId();
+  fetchUserName();
+  fetchDataCabang();
   await fetchDataRuang();
-  await fetchDataCabang();
+  await generateNewRuangId();
   isLoading.value = false;
 });
 </script>
