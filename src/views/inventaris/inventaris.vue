@@ -8,6 +8,7 @@ import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 import '/src/style/surat_masuk.css';
+import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
@@ -232,10 +233,10 @@ const generateNewInvId = async () => {
 };
 
 onMounted(async () => {
-  await fetchUserName();
-  await generateNewInvId();
+  fetchUserName();
+  fetchDataCabang();
   await fetchDataInventaris();
-  await fetchDataCabang();
+  await generateNewInvId();
   isLoading.value = false;
 });
 </script>

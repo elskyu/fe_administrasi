@@ -9,6 +9,7 @@ import '/src/style/peminjaman.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 import '/src/style/surat_masuk.css';
+import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
@@ -252,12 +253,12 @@ const generateNewPiId = async () => {
 };
 
 onMounted(async () => {
-  await fetchUserName();
-  await generateNewPiId();
+  fetchUserName();
+  fetchDataCabang();
+  fetchDataPegawai();
+  fetchDataPemakaian();
   await fetchDataInventaris();
-  await fetchDataPegawai();
-  await fetchDataPemakaian();
-  await fetchDataCabang();
+  await generateNewPiId();
   isLoading.value = false;
 });
 </script>

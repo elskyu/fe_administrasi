@@ -7,6 +7,8 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import '/src/style/surat_masuk.css';
+import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
@@ -182,11 +184,11 @@ const generateNewSkId = async () => {
 };
 
 onMounted(async () => {
-  await fetchUserName();
-  await generateNewSkId();
+  fetchUserName();
+  fetchDataKodeSurat();
+  fetchDataCabang();
   await fetchDataSuratKeluar();
-  await fetchDataKodeSurat();
-  await fetchDataCabang();
+  await generateNewSkId();
   isLoading.value = false;
 });
 </script>
