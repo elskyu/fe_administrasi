@@ -8,6 +8,7 @@ import '/src/style/table.css';
 import '/src/style/surat_masuk.css';
 import '/src/style/modal.css';
 import '/src/style/surat_masuk.css';
+import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
@@ -254,12 +255,12 @@ const generateNewPegawaiId = async () => {
 };
 
 onMounted(async () => {
-  await fetchUserName();
+  fetchUserName();
+  fetchDataDepartement();
+  fetchDataCabang();
   await fetchDataPegawai();
-  await fetchDataDepartement();
-  await fetchDataCabang();
-  isLoading.value = false;
   await generateNewPegawaiId();
+  isLoading.value = false;
 });
 </script>
 

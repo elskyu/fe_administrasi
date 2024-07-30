@@ -313,14 +313,14 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:10%">ID PINJAM</th>
+                      <th scope="col" style="width:8%">ID PINJAM</th>
                       <th scope="col" style="width:7%">INVENTARIS</th>
                       <th scope="col" style="width:15%">TANGGAL PINJAM</th>
                       <th scope="col" style="width:15%">TANGGAL KEMBALI</th>
                       <th scope="col" style="width:12%">DURASI PINJAM</th>
-                      <th scope="col" style="width:7%">PEGAWAI</th>
-                      <th scope="col" style="width:15%">KETERANGAN</th>
-                      <th scope="col" style="width:7%">CABANG</th>
+                      <th scope="col" style="width:10%">PEGAWAI</th>
+                      <th scope="col" style="width:13%">KETERANGAN</th>
+                      <th scope="col" style="width:8%">CABANG</th>
                       <th scope="col" style="width:15%">AKSI</th>
                     </tr>
                   </thead>
