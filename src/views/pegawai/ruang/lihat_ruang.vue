@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onBeforeMount, onMounted } from 'vue';
 import api from '../../../api';
+import axios from 'axios';
 import { useRoute } from 'vue-router';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
@@ -14,20 +15,45 @@ const id = ref(route.params.id);
 const ruang = ref([]);
 const cabangList = ref([]);
 const showAddModal = ref(false);
+const userID = ref('');
+const userCabang = ref('');
 
 const addFormData = ref({
-  id_ruang: '',
-  nama_ruang: '',
-  cabang: '',
-});
-
-const editFormData = ref({
-  id_ruang: '',
-  nama_ruang: '',
-  cabang_id: '',
+      id_reservasi: '',
+      ruang: '',
+      tanggal_reservasi: '',
+      tanggal_selesai: '',
+      durasi: '',
+      pegawai: '',
+      keterangan: '',
+      cabang: '',
 });
 
 const currentRuangId = ref(null);
+
+const fetchUserName = async () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const response = await axios.get('http://localhost:8000/api/userpegawai', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const user = response.data;
+      if (user && user.nama) {
+        userID.value = user.id_pegawai;
+        userCabang.value = user.cabang;
+      } else {
+        console.error('Data pengguna tidak ditemukan dalam respons');
+      }
+    } catch (error) {
+      console.error('Gagal mengambil data pengguna:', error);
+    }
+  } else {
+    console.error('Token tidak ditemukan');
+  }
+};
 
 const fetchDataRuang = async () => {
   try {
@@ -50,6 +76,9 @@ const fetchDataCabang = async () => {
 
 const saveNewReservasi = async () => {
   try {
+    addFormData.value.pegawai = userID.value;
+    addFormData.value.cabang = userCabang.value;
+    addFormData.value.ruang = id.value;
     await api.post('/api/rrp', addFormData.value);
     addFormData.value = {
       id_reservasi: '',
@@ -62,7 +91,7 @@ const saveNewReservasi = async () => {
       cabang: '',
     };
     showAddModal.value = false;
-    fetchDataReservasi();
+    fetchDataRuang();
     generateNewRrId();
   } catch (error) {
     console.error('Error saving new reservasi:', error);
@@ -106,9 +135,11 @@ const generateNewRrId = async () => {
 onBeforeMount(() => {
   fetchDataRuang();
   generateNewRrId();
+  fetchUserName();
 });
 
 onMounted(() => {
+  fetchUserName();
   fetchDataRuang();
   fetchDataCabang();
   generateNewRrId();
@@ -184,19 +215,11 @@ onMounted(() => {
     <!-- Modal for adding new ruang -->
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
       <div class="modal-content">
-        <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">TAMBAH RESERVASI</h4>
-        <div class="form-group-row">
-          <div class="form-group" style="width: 195px;">
+        <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">RESERVASI {{ ruang[0].nama_ruang }}</h4>
+          <div class="form-group">
             <label for="id_reservasi">Id Reservasi</label>
-            <input v-model="addFormData.id_reservasi" type="text" id="id_reservasi">
+            <input v-model="addFormData.id_reservasi" type="text" id="id_reservasi" readonly>
           </div>
-          <div class="form-group" style="width: 195px;">
-            <label for="ruang">Ruang</label>
-            <select id="ruang" v-model="addFormData.ruang">
-              <option v-for="r in ruang" :value="r.id_ruang" :key="r.id_ruang">{{ r.nama_ruang }}</option>
-            </select>
-          </div>
-        </div>
         <div class="form-group-row">
           <div class="form-group" style="width: 195px;">
             <label for="tanggal_reservasi">Tanggal Reservasi</label>
@@ -213,18 +236,8 @@ onMounted(() => {
           <input v-model="addFormData.durasi" type="time" id="durasi">
         </div>
         <div class="form-group">
-          <label for="pegawai">Pegawai</label>
-          <input v-model="addFormData.pegawai" type="text" id="pegawai">
-        </div>
-        <div class="form-group">
           <label for="keterangan">Keterangan</label>
           <input v-model="addFormData.keterangan" type="text" id="keterangan">
-        </div>
-        <div class="form-group">
-          <label for="cabang">Cabang</label>
-          <select id="cabang" v-model="addFormData.cabang">
-            <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-          </select>
         </div>
   
         <div class="form-actions">
