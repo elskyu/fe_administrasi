@@ -39,3 +39,48 @@
   .dropdown-toggle {
     position: relative;
   }
+
+  /* Style untuk pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  padding-left: 0;
+  list-style: none;
+  border-radius: 0.25rem;
+}
+
+.page-item {
+  margin: 0 0.1rem;
+}
+
+.page-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  margin: 0;
+  line-height: 1.25;
+  color: #44d569;
+  text-decoration: none;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+}
+
+.page-item.disabled .page-link {
+  color: #44d569;
+  pointer-events: none;
+  background-color: #fff;
+  border-color: #dee2e6;
+}
+
+.page-item.active .page-link {
+  z-index: 1;
+  color: #fff;
+  background-color: #44d569;
+  border-color: #44d569;
+}
+
+.page-link:hover {
+  color: #ffff;
+  background-color: #44d569;
+  border-color: #ddd;
+}

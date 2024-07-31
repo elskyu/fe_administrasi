@@ -22,6 +22,8 @@ const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const cabangFilter = ref('');
+const currentPage = ref(1); // State untuk paginasi
+const itemsPerPage = ref(10);
 
 const addFormData = ref({
   id_ruang: '',
@@ -36,6 +38,21 @@ const editFormData = ref({
 });
 
 const currentRuangId = ref(null);
+
+// Properti terhitung untuk paginasi
+const totalPages = computed(() => Math.ceil(filteredRuang.value.length / itemsPerPage.value));
+
+const paginatedRuang = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return filteredRuang.value.slice(start, end);
+});
+
+const changePage = (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
 
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');
@@ -63,11 +80,12 @@ const fetchUserName = async () => {
   }
 };
 
-const fetchDataRuang = async () => {
+const fetchDataRuang = async (page = 1) => {
   try {
-    const response = await api.get('/api/ruang');
-    console.log(response);
+    const response = await api.get(`/api/ruang?page=${page}`);
     ruang.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching ruang:', error);
   }
@@ -125,10 +143,6 @@ const filteredRuang = computed(() => {
 
   return filtered;
 });
-
-const handleSearch = () => {
-  searchQuery.value = tempSearchQuery.value;
-};
 
 const saveNewRuang = async () => {
   try {
@@ -256,14 +270,14 @@ onMounted(async () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="filteredRuang.length === 0">
+                    <tr v-if="ruang.length === 0">
                       <td colspan="4" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
                       </td>
                     </tr>
-                    <tr v-else v-for="(r, index) in filteredRuang" :key="index">
+                    <tr v-else v-for="(r, index) in paginatedRuang" :key="index">
                       <td class="text-center">{{ r.id_ruang }}</td>
                       <td>{{ r.nama_ruang }}</td>
                       <td>{{ getNamaCabang(r.cabang) }}</td>
@@ -278,6 +292,24 @@ onMounted(async () => {
                   </tbody>
                 </table>
               </div>
+
+              <!-- Kontrol Paginasi -->
+              <nav>
+                <ul class="pagination">
+                  <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                    <a class="page-link" @click="changePage(currentPage - 1)">
+                      Previous</a>
+                  </li>
+                  <li v-for="page in totalPages" :key="page" class="page-item"
+                    :class="{ active: currentPage === page }">
+                    <a class="page-link" @click="changePage(page)">{{ page }}</a>
+                  </li>
+                  <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                    <a class="page-link" @click="changePage(currentPage + 1)">Next</a>
+                  </li>
+                </ul>
+              </nav>
+
             </div>
           </div>
         </div>
@@ -340,3 +372,5 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<style scoped></style>
