@@ -221,7 +221,6 @@ onMounted(() => {
                 <thead class="bg-dark text-white text-center">
                   <tr>
                     <th scope="col">ID Pinjam</th>
-                    <th scope="col">Inventaris</th>
                     <th scope="col">pinjam</th>
                     <th scope="col">kembali</th>
                     <th scope="col">Durasi Pinjam</th>
@@ -238,7 +237,6 @@ onMounted(() => {
                   </tr>
                   <tr v-else v-for="pinventaris in inventarisList[0].pemakaian_inventaris" :key="pinventaris.id_pinjam">
                     <td class="text-center">{{ pinventaris.id_pinjam }}</td>
-                    <td>{{ pinventaris.inventaris }}</td>
                     <td>{{ pinventaris.tanggal_pinjam }}</td>
                     <td>{{ pinventaris.tanggal_kembali }}</td>
                     <td>{{ pinventaris.durasi_pinjam }}</td>
