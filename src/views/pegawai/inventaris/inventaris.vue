@@ -8,6 +8,8 @@ import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/surat_masuk.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
+import '/src/style/loading.css';
+import Loading from '/src/style/loading.vue';
 
 const inventarisList = ref([]);
 const searchQuery = ref('');
@@ -73,13 +75,15 @@ const filteredInventaris = computed(() => {
   return filtered;
 });
 
-onBeforeMount(() => {
-  fetchUserName();
+onBeforeMount(async() => {
+  await fetchUserName();
+  isLoading.value = false;
 });
 
-onMounted(() => {
-  fetchUserName();
-  fetchDataInventaris();
+onMounted(async() => {
+  await fetchUserName();
+  await fetchDataInventaris();
+  isLoading.value = false;
 });
 </script>
 
@@ -171,5 +175,8 @@ onMounted(() => {
         </div>
       </div>
     </div>
+  </div>
+  <div v-if="isLoading" class="loading-overlay">
+    <Loading />
   </div>
 </template>

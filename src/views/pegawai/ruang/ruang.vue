@@ -8,6 +8,8 @@ import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
+import '/src/style/loading.css';
+import Loading from '/src/style/loading.vue';
 
 const ruang = ref([]);
 const searchQuery = ref('');
@@ -61,9 +63,10 @@ const filteredRuang = computed(() => {
   return filtered;
 });
 
-onMounted(() => {
+onMounted(async() => {
   fetchUserName();
-  fetchDataRuang();
+  await fetchDataRuang();
+  isLoading.value = false;
 });
 </script>
 
@@ -135,5 +138,8 @@ onMounted(() => {
         </div>
         </div>
       </div>
+    </div>
+    <div v-if="isLoading" class="loading-overlay">
+      <Loading />
     </div>
   </template>

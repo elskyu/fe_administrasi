@@ -8,6 +8,8 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/surat_masuk.css';
+import '/src/style/loading.css';
+import Loading from '/src/style/loading.vue';
 
 const route = useRoute();
 const id = ref(route.params.id);
@@ -117,16 +119,18 @@ const generateNewPiId = async () => {
   }
 };
 
-onBeforeMount(() => {
+onBeforeMount(async() => {
   fetchUserName();
   generateNewPiId();
-  fetchDataInventaris();
+  await fetchDataInventaris();
+  isLoading.value = false;
 });
 
-onMounted(() => { 
+onMounted(async() => { 
   fetchUserName();
   generateNewPiId();
-  fetchDataInventaris();
+  await fetchDataInventaris();
+  isLoading.value = false;
 });
 </script>
 
@@ -254,6 +258,10 @@ onMounted(() => {
         </div>
       </div>
     </div>
+  </div>
+
+  <div v-if="isLoading" class="loading-overlay">
+    <Loading />
   </div>
 
   <!-- Modal untuk peminjaman inventaris -->

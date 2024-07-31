@@ -8,6 +8,9 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
+import '/src/style/loading.css';
+import Loading from '/src/style/loading.vue';
+
 
 
 const route = useRoute();
@@ -117,16 +120,18 @@ const generateNewRrId = async () => {
   }
 };
 
-onBeforeMount(() => {
-  fetchDataRuang();
-  generateNewRrId();
+onBeforeMount(async() => {
   fetchUserName();
+  await fetchDataRuang();
+  await generateNewRrId();
+  isLoading.value = false;
 });
 
 onMounted(async () => {
   fetchUserName();
-  fetchDataRuang();
-  generateNewRrId();
+  await fetchDataRuang();
+  await generateNewRrId();
+  isLoading.value = false;
 });
 </script>
 
@@ -176,7 +181,7 @@ onMounted(async () => {
                   <div class="col-md-6 mb-3" style="margin-top: 5px;">
                     <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Reservasi</button>
                   </div>
-                  <div class="col-md-6 mb-3" style="margin-top: 5px;">
+                  <div class="col-md-6 mb-3">
                     <router-link :to="{ name: 'ruang_pegawai.ruang' }" class="btn btn-md btn-warning rounded-sm">Kembali</router-link>
                   </div>
                 <table class="table table-bordered">
@@ -207,7 +212,9 @@ onMounted(async () => {
       </div>
     </div>
 
-    
+    <div v-if="isLoading" class="loading-overlay">
+      <Loading />
+    </div>
   
     <!-- Modal for adding new ruang -->
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
