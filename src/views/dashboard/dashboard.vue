@@ -163,6 +163,11 @@ const deleteJadwal = async (id_jadwal) => {
   }
 };
 
+const formatTime = (datetime) => {
+  const date = new Date(datetime);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
 const changeEvent = (event) => {
   console.log('Event changed', event);
 };
@@ -274,7 +279,7 @@ onMounted(() => {
               <td>{{ jadwal.agenda }}</td>
               <td>{{ getNamaDepartement(jadwal.status) }}</td>
               <td>{{ getNamaCabang(jadwal.cabang) }}</td>
-              <td>{{ jadwal.tanggal }}</td>
+              <td>{{ new Date(jadwal.tanggal).toLocaleString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</td>
               <td>
                 <button @click="editJadwal(jadwal)" class="btn btn-primary">Edit</button>
                 <button @click="deleteJadwal(jadwal.id_jadwal)" class="btn btn-danger">Delete</button>
@@ -288,7 +293,7 @@ onMounted(() => {
 
     <div v-if="viewModal2" class="modal">
       <div class="modal-content-kalendar">
-        <h2 style="text-align: center;">View Events</h2>
+        <h2 style="text-align: center;">{{ new Date(clickedDate ?? new Date()).toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}</h2>
         <table class="table table-bordered">
           <thead class="text-center">
             <tr>
@@ -298,7 +303,7 @@ onMounted(() => {
           </thead>
           <tbody>
             <tr v-for="tanggall in tanggalList" :key="tanggall.tanggal">
-              <td>{{ tanggall.tanggal }}</td>
+              <td>{{ formatTime(tanggall.tanggal) }}</td>
               <td>{{ tanggall.agenda }}</td>
             </tr>
           </tbody>
