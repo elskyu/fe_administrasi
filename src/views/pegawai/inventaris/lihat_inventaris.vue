@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onBeforeMount, onMounted } from 'vue';
 import api from '../../../api';
+import axios from 'axios';
 import { useRoute } from 'vue-router';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
@@ -13,6 +14,8 @@ const id = ref(route.params.id);
 const inventarisList = ref([]);
 const cabangList = ref([]);
 const showAddModal = ref(false);
+const userID = ref('');
+const userCabang = ref('');
 
 const addFormData = ref({
   id_pinjam: '',
@@ -24,6 +27,30 @@ const addFormData = ref({
   keterangan: '',
   cabang: '',
 });
+
+const fetchUserName = async () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const response = await axios.get('http://localhost:8000/api/userpegawai', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const user = response.data;
+      if (user && user.nama) {
+        userID.value = user.id_pegawai;
+        userCabang.value = user.cabang;
+      } else {
+        console.error('Data pengguna tidak ditemukan dalam respons');
+      }
+    } catch (error) {
+      console.error('Gagal mengambil data pengguna:', error);
+    }
+  } else {
+    console.error('Token tidak ditemukan');
+  }
+};
 
 const fetchDataInventaris = async () => {
   try {
@@ -47,6 +74,9 @@ const fetchDataCabang = async () => {
 
 const saveNewPemakaian = async () => {
   try {
+    addFormData.value.pegawai = userID.value;
+    addFormData.value.cabang = userCabang.value;
+    addFormData.value.inventaris = id.value;
     await api.post('/api/pip', addFormData.value);
     addFormData.value = {
       id_pinjam: '',
@@ -96,11 +126,13 @@ const generateNewPiId = async () => {
 };
 
 onBeforeMount(() => {
+  fetchUserName();
   generateNewPiId();
   fetchDataInventaris();
 });
 
 onMounted(() => { 
+  fetchUserName();
   generateNewPiId();
   fetchDataInventaris();
   fetchDataCabang();
@@ -225,30 +257,11 @@ onMounted(() => {
   <!-- Modal untuk menambah inventaris baru -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH PEMAKAIAN INVENTARIS</h4>
-      <div class="form-group-row">
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Pinjam {{ inventarisList[0].merek }}</h4>
         <div class="form-group">
           <label for="id_pinjam" style="width: 195px;">ID</label>
           <input type="text" id="id_pinjam" v-model="addFormData.id_pinjam" readonly />
         </div>
-        <div class="form-group">
-          <label for="inventaris" style="width: 195px;">Nama Inven</label>
-          <!-- <input type="text" id="inventaris" v-model="addFormData.inventaris" /> -->
-          <select id="inventaris" v-model="addFormData.inventaris">
-            <option v-for="i in inventarisList" :value="i.id_inventaris" :key="i.id_inventaris">{{ i.merek }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group-row">
-        <div class="form-group">
-          <label for="pegawai" style="width: 195px;">Nama Pegawai</label>
-          <input type="text" id="pegawai" v-model="addFormData.pegawai" />
-        </div>
-        <div class="form-group">
-          <label for="durasi_pinjam" style="width: 195px;">Durasi</label>
-          <input type="time" id="durasi_pinjam" v-model="addFormData.durasi_pinjam" />
-        </div>
-      </div>
       <div class="form-group-row">
         <div class="form-group">
           <label for="tanggal_pinjam" style="width: 195px;">Tanggal Pinjam</label>
@@ -260,14 +273,12 @@ onMounted(() => {
         </div>
       </div>
       <div class="form-group">
-        <label for="keterangan">Keterangan</label>
-        <input type="text" id="keterangan" v-model="addFormData.keterangan" />
+        <label for="durasi_pinjam" style="width: 195px;">Durasi</label>
+        <input type="time" id="durasi_pinjam" v-model="addFormData.durasi_pinjam" />
       </div>
       <div class="form-group">
-        <label for="cabang">Cabang</label>
-        <select id="cabang" v-model="addFormData.cabang">
-          <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-        </select>
+        <label for="keterangan">Keterangan</label>
+        <input type="text" id="keterangan" v-model="addFormData.keterangan" />
       </div>
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewPemakaian">Simpan Perubahan</button>
