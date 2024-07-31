@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount, onMounted } from 'vue';
+import { ref, onBeforeMount, onMounted, created } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
@@ -120,17 +120,14 @@ const generateNewPiId = async () => {
   }
 };
 
-onBeforeMount(async() => {
-  fetchUserName();
-  generateNewPiId();
-  await fetchDataInventaris();
-  isLoading.value = false;
+created(() => {
+  fetchDataInventaris();
 });
 
 onMounted(async() => { 
   fetchUserName();
-  generateNewPiId();
   await fetchDataInventaris();
+  await generateNewPiId();
   isLoading.value = false;
 });
 </script>
