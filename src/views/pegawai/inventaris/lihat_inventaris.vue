@@ -120,7 +120,7 @@ const generateNewPiId = async () => {
   }
 };
 
-created(() => {
+onBeforeMount(() => {
   fetchDataInventaris();
 });
 
