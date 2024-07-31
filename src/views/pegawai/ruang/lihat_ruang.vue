@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onBeforeMount, onMounted } from 'vue';
+import { ref, computed, onBeforeMount, onMounted, created } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
@@ -121,11 +121,8 @@ const generateNewRrId = async () => {
   }
 };
 
-onBeforeMount(async() => {
-  fetchUserName();
-  await fetchDataRuang();
-  await generateNewRrId();
-  isLoading.value = false;
+onBeforeMount(() => {
+  fetchDataRuang();
 });
 
 onMounted(async () => {
