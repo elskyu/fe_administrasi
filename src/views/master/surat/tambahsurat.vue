@@ -15,12 +15,14 @@ import Loading from '/src/style/loading.vue';
 const isLoading = ref(true);
 
 const userName = ref(''); // Default name
-
 const surat = ref([]);
 const searchQuery = ref('');
 const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
+const currentPage = ref(1); // State untuk paginasi
+const itemsPerPage = ref(10); // Tetap simpan ini untuk backend pagination
+const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
   kode_surat: '',
@@ -34,11 +36,23 @@ const editFormData = ref({
 
 const currentSuratId = ref(null);
 
-const fetchDataSurat = async () => {
+// Ganti paginatedRuang dengan yang baru dari backend
+const paginatedSurat = computed(() => surat.value);
+
+const changePage = async (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    await fetchDataSurat(page); // Fetch data for the new page
+  }
+};
+
+const fetchDataSurat = async (page = 1) => {
   try {
-    const response = await api.get('/api/surat');
+    const response = await api.get('/api/surat?page=${page}');
     console.log(response);
     surat.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching surat:', error);
   }
@@ -72,9 +86,6 @@ const filteredSurat = computed(() => {
   );
 });
 
-const handleSearch = () => {
-  searchQuery.value = tempSearchQuery.value;
-};
 
 const saveNewSurat = async () => {
   try {
@@ -180,7 +191,7 @@ onMounted(async () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="filteredSurat.length === 0">
+                    <tr v-if="surat.length === 0">
                       <td colspan="3" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
@@ -200,6 +211,13 @@ onMounted(async () => {
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination">
+                  <button class="btn-prev" @click="changePage(currentPage - 1)"
+                    :disabled="currentPage === 1">Previous</button>
+                  <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button class="btn-next" @click="changePage(currentPage + 1)"
+                    :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
           </div>
