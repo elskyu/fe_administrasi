@@ -14,6 +14,7 @@ import Loading from '/src/style/loading.vue';
 const ruang = ref([]);
 const searchQuery = ref('');
 const userName = ref('');
+const isLoading = ref(true);
 
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');

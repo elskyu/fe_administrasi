@@ -15,6 +15,7 @@ const inventarisList = ref([]);
 const searchQuery = ref('');
 const kategoriFilter = ref('');
 const userName = ref('');
+const isLoading = ref(true);
 
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');

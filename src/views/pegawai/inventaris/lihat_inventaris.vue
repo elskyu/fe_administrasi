@@ -18,6 +18,7 @@ const showAddModal = ref(false);
 const userID = ref('');
 const userCabang = ref('');
 const userName = ref('');
+const isLoading = ref(true);
 
 const addFormData = ref({
   id_pinjam: '',
