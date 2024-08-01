@@ -22,7 +22,7 @@
 
 
 .vuecal__header {
-  background-color: #f7b748;
+  background-color: #6C7698;
   color: #ffffff;
 }
 
@@ -109,7 +109,7 @@
 }
 
 .table thead th {
-  background-color: #f7b748; /* Ganti dengan warna yang diinginkan */
+  background-color: #6C7698; /* Ganti dengan warna yang diinginkan */
   color: white;
 }
 
@@ -126,7 +126,7 @@
 }
 
 .crud-table th {
-  background-color: #fbae33;
+  background-color: #6C7698;
 }
 
 .crud-table td {

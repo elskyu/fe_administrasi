@@ -10,14 +10,14 @@
   }
   
   .table th {
-    background-color: rgb(254, 174, 111); /* Header background color */
+    background-color: #6C7698; /* Header background color */
     color: #fff; /* Header text color */
     font-weight: normal;
   }
   
   .table td {
-    background-color: rgb(246, 220, 172); /* Cell background color */
-    color: #212529; /* Cell text color */
+    background-color: #E6EFFF; /* Cell background color */
+    color: #3a416e; /* Cell text color */
   }
   
   .table-bordered {

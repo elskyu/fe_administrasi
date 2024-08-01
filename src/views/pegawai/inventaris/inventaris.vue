@@ -43,7 +43,6 @@ const fetchUserName = async () => {
 const fetchDataInventaris = async () => {
   try {
     const response = await api.get('/api/ip');
-    console.log(response);
     inventarisList.value = response.data.data;
   } catch (error) {
     console.error('Error fetching inventaris:', error);
@@ -165,7 +164,7 @@ onMounted(async() => {
                     <td>{{ inventaris.harga_beli }}</td>
                     <td>{{ inventaris.tanggal_beli }}</td>
                     <td class="text-center">
-                        <router-link :to="{ name: 'inventaris_pegawai.lihat_inventaris', params: { id: inventaris.id_inventaris } }" class="btn btn-sm btn-warning rounded-sm shadow border-0 me-2 custom-button">Lihat</router-link>
+                        <router-link :to="{ name: 'inventaris_pegawai.lihat_inventaris', params: { id: inventaris.id_inventaris } }" class="btn btn-sm btn-warning rounded-sm border-0 me-2 custom-button">Lihat</router-link>
                       </td>
                   </tr>
                 </tbody>

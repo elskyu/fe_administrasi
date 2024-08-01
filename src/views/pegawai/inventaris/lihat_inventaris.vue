@@ -58,9 +58,7 @@ const fetchUserName = async () => {
 
 const fetchDataInventaris = async () => {
   try {
-    console.log('ID:', id.value);
     const response = await api.get(`/api/ip/${id.value}`);
-    console.log(response);
     inventarisList.value = response.data.data;
   } catch (error) {
     console.error('Error fetching inventaris:', error);

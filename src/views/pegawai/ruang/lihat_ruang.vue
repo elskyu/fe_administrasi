@@ -11,8 +11,6 @@ import '/src/style/admin.css';
 import '/src/style/loading.css';
 import Loading from '/src/style/loading.vue';
 
-
-
 const route = useRoute();
 const id = ref(route.params.id);
 const ruang = ref([]);
@@ -61,7 +59,6 @@ const fetchUserName = async () => {
 const fetchDataRuang = async () => {
   try {
     const response = await api.get(`/api/rp/${id.value}`);
-    console.log(response);
     ruang.value = response.data.data;
   } catch (error) {
     console.error('Error fetching ruang:', error);

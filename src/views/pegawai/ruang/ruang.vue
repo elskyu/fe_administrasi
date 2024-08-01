@@ -43,7 +43,6 @@ const fetchUserName = async () => {
 const fetchDataRuang = async () => {
   try {
     const response = await api.get('/api/rp');
-    console.log(response);
     ruang.value = response.data.data;
   } catch (error) {
     console.error('Error fetching ruang:', error);
@@ -128,7 +127,7 @@ onMounted(async() => {
                       <td class="text-center">{{ r.id_ruang }}</td>
                       <td>{{ r.nama_ruang }}</td>
                       <td class="text-center">
-                        <router-link :to="{ name: 'ruang_pegawai.lihat_ruang', params: { id: r.id_ruang } }" class="btn btn-sm btn-warning rounded-sm shadow border-0 me-2 custom-button">Lihat</router-link>
+                        <router-link :to="{ name: 'ruang_pegawai.lihat_ruang', params: { id: r.id_ruang } }" class="btn btn-sm btn-warning rounded-sm border-0 me-2 custom-button">Lihat</router-link>
                       </td>
                     </tr>
                   </tbody>

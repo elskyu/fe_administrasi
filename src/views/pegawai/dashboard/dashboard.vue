@@ -9,7 +9,7 @@ import '/src/style/modal.css';
 import '/src/style/dasboard.css';
 import '/src/style/kalender_jadwal.css';
 import api from '../../../api';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 const events = ref([]);
 const cabangList = ref([]);
@@ -21,6 +21,8 @@ const viewModal2 = ref(false);
 const activeView = ref('month');
 const clickedDate = ref(null);
 const userName = ref('');
+const currentMonth = ref('');
+const currentYear = ref('');
 
 const addFormData = ref({
   id_jadwal: '',
@@ -71,7 +73,6 @@ const fetchDataJadwal = async () => {
       title: jadwal.agenda,
       content: `Cabang: ${getNamaCabang(jadwal.cabang)}, Departement: ${getNamaDepartement(jadwal.status)}`,
     }));
-    console.log("Events:", events.value);
   } catch (error) {
     console.error('Error fetching jadwal list:', error);
   }
@@ -82,11 +83,9 @@ const addEventForDate = async (date) => {
 
   const tanggal = format(new Date(date), 'yyyy-MM-dd');
   clickedDate.value = tanggal;
-  console.log("tanggal klik : ", tanggal);
   try {
     const response = await api.get(`/api/tglp/${tanggal}`);
     tanggalList.value = response.data.data;
-    console.log("tanggal1", response);
     viewModal2.value = true;
   } catch (error) {
     console.error('Error fetching jadwal list:', error);
@@ -96,7 +95,6 @@ const addEventForDate = async (date) => {
 const fetchDataCabang = async () => {
   try {
     const response = await api.get('/api/cp');
-    console.log(response);
     cabangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
@@ -106,7 +104,6 @@ const fetchDataCabang = async () => {
 const fetchDataDepartement = async () => {
   try {
     const response = await api.get('/api/dp');
-    console.log(response);
     departementList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching cabang list:', error);
@@ -136,7 +133,17 @@ const changeEvent = (event) => {
   console.log('Event changed', event);
 };
 
+const handleViewChange = (view) => {
+  const date = new Date(view.start);
+  currentMonth.value = date.getMonth()+1;
+  currentYear.value = date.getFullYear();
+
+  console.log("bulan", currentMonth.value);
+  console.log("tahun", currentYear.value);
+};
+
 onMounted(() => {
+  handleViewChange({ start: new Date() });
   fetchUserName();
   fetchDataJadwal();
   fetchDataCabang();
@@ -183,6 +190,7 @@ onMounted(() => {
             :disable-views="['years', 'week', 'day']"
             events-count-on-year-view
             :events="events"
+            @view-change="handleViewChange"
             @event-click="viewEvent"
             @cell-click="addEventForDate"
             @event-change="changeEvent"
