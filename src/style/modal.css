@@ -49,6 +49,11 @@
     border-radius: 5px;
     padding: 5px;
   }
+
+  .dropdown-scroll {
+    max-height: 20px; /* Anda dapat menyesuaikan tinggi ini sesuai kebutuhan */
+    overflow-y: auto;
+  }
   
   .form-group {
     margin-bottom: 15px;

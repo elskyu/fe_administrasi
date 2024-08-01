@@ -84,7 +84,7 @@ const fetchDataRuang = async () => {
         }
       });
     } else {
-      response = await api.get(`/api/ruang?keyword=${cabangFilter.value}`, {
+      response = await api.get(`/api/ruang?cabang?=${cabangFilter.value}`, {
         params: {
           page: currentPage.value,
         }
@@ -135,7 +135,6 @@ const deleteRuang = async (id_ruang) => {
 
 const filteredRuang = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  const cabang = cabangFilter.value;
 
   let filtered = ruang.value;
 

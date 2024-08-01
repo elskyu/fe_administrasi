@@ -26,6 +26,9 @@ const ruangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const isLoading = ref(true); // State untuk loading
+const currentPage = ref(1); // State untuk paginasi
+const itemsPerPage = ref(5); // Disesuaikan dengan pagination dari backend
+const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
   id_reservasi: '',
@@ -96,10 +99,44 @@ const fetchDataCabang = async () => {
 
 const fetchDataRuang = async () => {
   try {
-    const response = await api.get('/api/ruang');
-    ruangList.value = response.data.data.data;
+    let allData = [];
+    let page = 1;
+    let totalPages;
+
+    do {
+      let response;
+
+      if (cabangFilter.value === '') {
+        response = await api.get('/api/ruang', {
+          params: {
+            page,
+          }
+        });
+      } else {
+        response = await api.get('/api/ruang', {
+          params: {
+            page,
+            keyword: cabangFilter.value,
+          }
+        });
+      }
+
+      console.log(`API response for page ${page}:`, response);
+
+      if (response.data && response.data.data) {
+        allData = allData.concat(response.data.data.data);
+        totalPages = response.data.data.last_page;
+        page++;
+      } else {
+        console.error('Struktur data API tidak sesuai harapan:', response.data);
+        break;
+      }
+    } while (page <= totalPages);
+
+    ruangList.value = allData;
+    console.log('All fetched ruang:', ruangList.value);
   } catch (error) {
-    console.error('Error fetching cabang list:', error);
+    console.error('Error fetching ruang:', error);
   }
 };
 
@@ -312,10 +349,11 @@ onMounted(async () => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <select id="ruangFilter" v-model="ruangFilter" class="form-cari"
+                    <select id="ruangFilter" v-model="ruangFilter" :id="ruangFilter" class="form-cari"
                       style="margin-right: 10px; width: 175px;">
                       <option value="">Semua Ruang</option>
-                      <option v-for="r in ruangList" :value="r.id_ruang" :key="r.id_ruang">{{ r.nama_ruang }}</option>
+                      <option v-for="r in ruangList" :value="r.id_ruang" :key="r.id_ruang">{{
+                        r.nama_ruang }}</option>
                     </select>
                     <select id="cabangFilter" v-model="cabangFilter" class="form-cari"
                       style="margin-right: 10px; width: 155px;">
