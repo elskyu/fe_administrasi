@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
@@ -13,7 +13,6 @@ import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
 const isLoading = ref(true);
-
 const userName = ref(''); // Default name
 const ruang = ref([]);
 const cabangList = ref([]);
@@ -22,6 +21,9 @@ const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const cabangFilter = ref('');
+const currentPage = ref(1); // State untuk paginasi
+const itemsPerPage = ref(5); // Disesuaikan dengan pagination dari backend
+const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
   id_ruang: '',
@@ -32,10 +34,17 @@ const addFormData = ref({
 const editFormData = ref({
   id_ruang: '',
   nama_ruang: '',
-  cabang_id: '',
+  cabang: '',
 });
 
 const currentRuangId = ref(null);
+
+const changePage = async (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchDataRuang(); // Fetch data for the new page
+  }
+};
 
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');
@@ -46,7 +55,6 @@ const fetchUserName = async () => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log("nama : ", response.data); // Tambahkan log ini
       const user = response.data;
       if (user && user.nama) {
         userName.value = user.nama;
@@ -64,14 +72,34 @@ const fetchUserName = async () => {
 };
 
 const fetchDataRuang = async () => {
-  try {
-    const response = await api.get('/api/ruang');
-    console.log(response);
+  try { // Declare response variable in the outer scope
+    let response
+
+    // const response = await api.get(`/api/ruang?keyword=${cabangFilter.value}`);
+
+    if (cabangFilter.value === '') {
+      response = await api.get('/api/ruang', {
+        params: {
+          page: currentPage.value,
+        }
+      });
+    } else {
+      response = await api.get(`/api/ruang?keyword=${cabangFilter.value}`, {
+        params: {
+          page: currentPage.value,
+        }
+      });
+    }
+
+    // Now response is available here
     ruang.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching ruang:', error);
   }
 };
+
 
 const fetchDataCabang = async () => {
   try {
@@ -114,21 +142,11 @@ const filteredRuang = computed(() => {
   if (query) {
     filtered = filtered.filter(r =>
       r.nama_ruang.toLowerCase().includes(query) ||
-      r.id_ruang.toLowerCase().includes(query) ||
-      getNamaCabang(r.cabang).toLowerCase().includes(query)
+      r.id_ruang.toLowerCase().includes(query)
     );
   }
-
-  if (cabang) {
-    filtered = filtered.filter(s => s.cabang === cabang);
-  }
-
   return filtered;
 });
-
-const handleSearch = () => {
-  searchQuery.value = tempSearchQuery.value;
-};
 
 const saveNewRuang = async () => {
   try {
@@ -189,6 +207,10 @@ const generateNewRuangId = async () => {
     console.error('Error generating new Ruang ID:', error);
   }
 };
+
+watch(cabangFilter, async () => {
+  await fetchDataRuang();
+});
 
 onMounted(async () => {
   fetchUserName();
@@ -256,10 +278,17 @@ onMounted(async () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="filteredRuang.length === 0">
+                    <tr v-if="ruang.length === 0">
                       <td colspan="4" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
+                        </div>
+                      </td>
+                    </tr>
+                    <tr v-else-if="filteredRuang.length === 0">
+                      <td colspan="4" class="text-center">
+                        <div class="alert alert-warning mb-0">
+                          Data Tidak Ditemukan!
                         </div>
                       </td>
                     </tr>
@@ -277,6 +306,13 @@ onMounted(async () => {
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination">
+                  <button class="btn-prev" @click="changePage(currentPage - 1)"
+                    :disabled="currentPage === 1">Previous</button>
+                  <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button class="btn-next" @click="changePage(currentPage + 1)"
+                    :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
           </div>
@@ -340,3 +376,5 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<style scoped></style>

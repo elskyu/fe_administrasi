@@ -1,46 +1,44 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeMount } from 'vue';
 import api from '../../../api';
+import axios from 'axios';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
-import '/src/style/admin.css';
+import '/src/style/surat_masuk.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
+import '/src/style/loading.css';
+import Loading from '/src/style/loading.vue';
 
 const inventarisList = ref([]);
-const cabangList = ref([]);
-const currentInventarisId = ref(null);
 const searchQuery = ref('');
 const kategoriFilter = ref('');
-const showAddModal = ref(false);
-const showEditModal = ref(false);
+const userName = ref('');
+const isLoading = ref(true);
 
-const addFormData = ref({
-  id_inventaris: '',
-  nopol: '',
-  merek: '',
-  kategori: '',
-  tahun: '',
-  pajak: '',
-  masa_pajak: '',
-  harga_beli: '',
-  tanggal_beli: '',
-  cabang: '',
-});
-
-const editFormData = ref({
-  id_inventaris: '',
-  nopol: '',
-  merek: '',
-  kategori: '',
-  tahun: '',
-  pajak: '',
-  masa_pajak: '',
-  harga_beli: '',
-  tanggal_beli: '',
-  cabang: '',
-});
+const fetchUserName = async () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const response = await axios.get('http://localhost:8000/api/userpegawai', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const user = response.data;
+      if (user && user.nama) {
+        userName.value = user.nama;
+      } else {
+        console.error('Data pengguna tidak ditemukan dalam respons');
+      }
+    } catch (error) {
+      console.error('Gagal mengambil data pengguna:', error);
+    }
+  } else {
+    console.error('Token tidak ditemukan');
+  }
+};
 
 const fetchDataInventaris = async () => {
   try {
@@ -50,32 +48,6 @@ const fetchDataInventaris = async () => {
   } catch (error) {
     console.error('Error fetching inventaris:', error);
   }
-};
-
-const fetchDataCabang = async () => {
-  try {
-    const response = await api.get('/api/cp');
-    cabangList.value = response.data.data.data;
-  } catch (error) {
-    console.error('Error fetching cabang list:', error);
-  }
-};
-
-const editInventaris = (i) => {
-  currentInventarisId.value = i.id_inventaris;
-  editFormData.value = {
-    id_inventaris: i.id_inventaris,
-    nopol: i.nopol,
-    merek: i.merek,
-    kategori: i.kategori,
-    tahun: i.tahun,
-    pajak: i.pajak,
-    masa_pajak: i.masa_pajak,
-    harga_beli: i.harga_beli,
-    tanggal_beli: i.tanggal_beli,
-    cabang: i.cabang,
-  };
-  showEditModal.value = true;
 };
 
 const filteredInventaris = computed(() => {
@@ -104,104 +76,15 @@ const filteredInventaris = computed(() => {
   return filtered;
 });
 
-const saveNewInventaris = async () => {
-  try {
-    await api.post('/api/ip', addFormData.value);
-    addFormData.value = {
-      id_inventaris: '',
-      nopol: '',
-      merek: '',
-      kategori: '',
-      tahun: '',
-      pajak: '',
-      masa_pajak: '',
-      harga_beli: '',
-      tanggal_beli: '',
-      cabang: '',
-    };
-    showAddModal.value = false;
-    fetchDataInventaris();
-    generateNewInvId();
-  } catch (error) {
-    console.error('Error saving new inventaris:', error);
-  }
-};
+onBeforeMount(async() => {
+  await fetchUserName();
+  isLoading.value = false;
+});
 
-const saveEditPegawai = async () => {
-  try {
-    await api.put(`/api/ip/${currentInventarisId.value}`, editFormData.value);
-    editFormData.value = {
-      id_inventaris: '',
-      nopol: '',
-      merek: '',
-      kategori: '',
-      tahun: '',
-      pajak: '',
-      masa_pajak: '',
-      harga_beli: '',
-      tanggal_beli: '',
-      cabang: '',
-    };
-    showEditModal.value = false;
-    fetchDataInventaris();
-    generateNewInvId();
-  } catch (error) {
-    console.error('Error saving edit pegawai:', error);
-  }
-};
-
-const getNamaCabang = (idCabang) => {
-  const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
-  return cabang ? cabang.nama_cabang : '';
-};
-
-const deleteInventaris = async (id_inventaris) => {
-  if (confirm("Apakah anda ingin menghapus data ini?")) {
-    try {
-      await api.delete(`/api/ip/${id_inventaris}`);
-      inventaris.value = inventaris.value.filter(inventaris => inventaris.id_inventaris !== id_inventaris);
-      generateNewInvId();
-      fetchDataInventaris();
-    } catch (error) {
-      console.error('Error deleting pegawai:', error);
-    }
-  }
-};
-
-const generateNewInvId = async () => {
-  try {
-    const response = await api.get('/api/ip');
-    const inventarisList = response.data.data;
-
-    if (inventarisList.length === 0) {
-      addFormData.value.id_surat_masuk = "INV001";
-    } else {
-      const existingIds = inventarisList.map(inv => parseInt(inv.id_inventaris.slice(3)));
-      existingIds.sort((a, b) => a - b);
-
-      let newId = null;
-      for (let i = 0; i < existingIds.length; i++) {
-        if (existingIds[i] !== i + 1) {
-          newId = i + 1;
-          break;
-        }
-      }
-      if (newId === null) {
-        newId = existingIds.length + 1;
-      }
-
-      addFormData.value.id_inventaris = `INV${String(newId).padStart(3, '0')}`;
-    }
-  } catch (error) {
-    console.error('Error generating new Inventaris ID:', error);
-  }
-};
-
-onMounted(() => {
-  generateNewInvId();
-  generateNewInvId();
-  fetchDataInventaris();
-  fetchDataCabang();
+onMounted(async() => {
+  await fetchUserName();
+  await fetchDataInventaris();
+  isLoading.value = false;
 });
 </script>
 
@@ -209,9 +92,22 @@ onMounted(() => {
   <div class="background-container">
     <div class="content">
       <div class="container mt-5 mb-5">
-        <div class="row">
-          <div class="card2">
-            <h2>INVENTARIS</h2>
+        <div class="flex-container" style="display: flex; justify-content: space-between;">
+          <div class="card2" style="flex: 0 0 81%; margin-right: 10px; margin-left: -10px;">
+            <h2>Inventaris</h2>
+          </div>
+          <div class="card-nama" style="flex: 0 0 20%;">
+            <div class="form-group-row" style="display: flex; align-items: center; margin-right: 20px;">
+              <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
+                style="align-items: center; margin-right: 5px;">
+                <path
+                  d="M10 0C15.52 0 20 4.48 20 10C20 15.52 15.52 20 10 20C4.48 20 0 15.52 0 10C0 4.48 4.48 0 10 0ZM4.023 13.416C5.491 15.606 7.695 17 10.16 17C12.624 17 14.829 15.607 16.296 13.416C14.6317 11.8606 
+                  12.4379 10.9968 10.16 11C7.88171 10.9966 5.68751 11.8604 4.023 13.416V13.416ZM10 9C10.7956 9 11.5587 8.68393 12.1213 8.12132C12.6839 7.55871 13 6.79565 13 6C13 5.20435 12.6839 4.44129 12.1213 
+                  3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z"
+                  fill="#44d569" />
+              </svg>
+              <h4>{{ userName }}</h4>
+            </div>
           </div>
         </div>
 
@@ -281,137 +177,7 @@ onMounted(() => {
       </div>
     </div>
   </div>
-
-  <!-- Modal untuk menambah inventaris baru -->
-  <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
-    <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">TAMBAH INVENTARIS</h4>
-      <div class="form-group-row">
-        <div class="form-group" style="width: 195px;">
-          <label for="id_inventaris">ID Inventaris</label>
-          <input type="text" id="id_inventaris" v-model="addFormData.id_inventaris" />
-        </div>
-        <div class="form-group" style="width: 195px;">
-          <label for="nopol">Nopol</label>
-          <input type="text" id="nopol" v-model="addFormData.nopol" />
-        </div>
-      </div>
-      <div class="form-group-row">
-        <div class="form-group" style="width: 195px;">
-          <label for="merek">Merek</label>
-          <input type="text" id="merek" v-model="addFormData.merek" />
-        </div>
-        <div class="form-group" style="width: 195px;">
-          <label for="kategori">Kategori</label>
-          <input type="text" id="kategori" v-model="addFormData.kategori" />
-          <!-- <select id="kategori" v-model="addFormData.kategori">
-            <option v-for="k in kategoriList" :value="k.id_kategori" :key="k.id_kategori">{{ k.nama_kategori }}</option>
-          </select> -->
-        </div>
-      </div>
-      <div class="form-group-row">
-        <div class="form-group" style="width: 195px;">
-          <label for="tahun">Tahun</label>
-          <input type="text" id="tahun" v-model="addFormData.tahun" />
-        </div>
-        <div class="form-group" style="width: 195px;">
-          <label for="pajak">Pajak</label>
-          <input type="text" id="pajak" v-model="addFormData.pajak" />
-        </div>
-      </div>
-      <div class="form-group-row">
-        <div class="form-group" style="width: 195px;">
-          <label for="masa_pajak">Masa Pajak</label>
-          <input type="date" id="masa_pajak" v-model="addFormData.masa_pajak" />
-        </div>
-        <div class="form-group" style="width: 195px;">
-          <label for="harga_beli">Harga Beli</label>
-          <input type="text" id="harga_beli" v-model="addFormData.harga_beli" />
-        </div>
-      </div>
-      <div class="form-group-row">
-        <div class="form-group" style="width: 195px;">
-          <label for="tanggal_beli">Tanggal Beli</label>
-          <input type="date" id="tanggal_beli" v-model="addFormData.tanggal_beli" />
-        </div>
-        <div class="form-group" style="width: 195px;">
-          <label for="cabang">Cabang</label>
-          <select id="cabang" v-model="addFormData.cabang">
-            <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewInventaris">Simpan Perubahan</button>
-        <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- modal edit -->
-  <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
-    <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">DETAIL INVENTARIS</h4>
-      <div class="form-group-row">
-        <div class="form-group" style="width: 195px;">
-          <label for="id_inventaris">ID Inventaris</label>
-          <input type="text" id="id_inventaris" v-model="editFormData.id_inventaris" />
-        </div>
-        <div class="form-group" style="width: 195px;">
-          <label for="nopol">Nopol</label>
-          <input type="text" id="nopol" v-model="editFormData.nopol" />
-        </div>
-      </div>
-      <div class="form-group-row">
-        <div class="form-group" style="width: 195px;">
-          <label for="merek">Merek</label>
-          <input type="text" id="merek" v-model="editFormData.merek" />
-        </div>
-        <div class="form-group" style="width: 195px;">
-          <label for="kategori">Kategori</label>
-          <input type="text" id="kategori" v-model="editFormData.kategori" />
-          <!-- <select id="kategori" v-model="editFormData.kategori">
-            <option v-for="k in kategoriList" :value="k.id_kategori" :key="k.id_kategori">{{ k.nama_kategori }}</option>
-          </select> -->
-        </div>
-      </div>
-      <div class="form-group-row">
-        <div class="form-group" style="width: 195px;">
-          <label for="tahun">Tahun</label>
-          <input type="text" id="tahun" v-model="editFormData.tahun" />
-        </div>
-        <div class="form-group" style="width: 195px;">
-          <label for="pajak">Pajak</label>
-          <input type="text" id="pajak" v-model="editFormData.pajak" />
-        </div>
-      </div>
-      <div class="form-group-row">
-        <div class="form-group" style="width: 195px;">
-          <label for="masa_pajak">Masa Pajak</label>
-          <input type="date" id="masa_pajak" v-model="editFormData.masa_pajak" />
-        </div>
-        <div class="form-group" style="width: 195px;">
-          <label for="harga_beli">Harga Beli</label>
-          <input type="text" id="harga_beli" v-model="editFormData.harga_beli" />
-        </div>
-      </div>
-      <div class="form-group-row">
-        <div class="form-group" style="width: 195px;">
-          <label for="tanggal_beli">Tanggal Beli</label>
-          <input type="date" id="tanggal_beli" v-model="editFormData.tanggal_beli" />
-        </div>
-        <div class="form-group" style="width: 195px;">
-          <label for="cabang">Cabang</label>
-          <select id="cabang" v-model="editFormData.cabang">
-            <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-actions">
-        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditPegawai">Simpan Perubahan</button>
-        <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
-      </div>
-    </div>
+  <div v-if="isLoading" class="loading-overlay">
+    <Loading />
   </div>
 </template>
