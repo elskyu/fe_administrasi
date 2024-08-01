@@ -47,6 +47,7 @@
   padding-left: 0;
   list-style: none;
   border-radius: 0.25rem;
+  margin: 5px;
 }
 
 .page-item {
@@ -79,8 +80,30 @@
   border-color: #44d569;
 }
 
-.page-link:hover {
-  color: #ffff;
+.btn-next {
+  color: #ffffff;
   background-color: #44d569;
-  border-color: #ddd;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 2px;
+  border: none;
+}
+
+.btn-next:hover {
+  color: #ffff;
+  background-color: #288840;
+}
+
+.btn-prev {
+  color: #ffffff;
+  background-color: #44d569;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 2px;
+  border: none;
+}
+
+.btn-prev:hover {
+  color: #ffff;
+  background-color: #288840;
 }

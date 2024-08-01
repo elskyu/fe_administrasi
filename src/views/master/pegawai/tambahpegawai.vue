@@ -21,11 +21,13 @@ const cabangList = ref([]);
 const departementList = ref([]);
 const currentPegawaiId = ref(null);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
 const cabangFilter = ref('');
 const departemenFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
+const currentPage = ref(1); // State untuk paginasi
+const itemsPerPage = ref(10); // Tetap simpan ini untuk backend pagination
+const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
   id_pegawai: '',
@@ -50,6 +52,16 @@ const editFormData = ref({
   no_hp: '',
   cabang: '',
 });
+
+// Ganti paginatedRuang dengan yang baru dari backend
+const paginatedPegawai = computed(() => pegawai.value);
+
+const changePage = async (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    await fetchDataPegawai(page); // Fetch data for the new page
+  }
+};
 
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');
@@ -78,10 +90,12 @@ const fetchUserName = async () => {
 };
 
 
-const fetchDataPegawai = async () => {
+const fetchDataPegawai = async (page = 1) => {
   try {
-    const response = await api.get('/api/pegawai');
+    const response = await api.get(`/api/pegawai?page=${page}`);
     pegawai.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching pegawai:', error);
   }
@@ -164,9 +178,6 @@ const filteredPegawai = computed(() => {
   return filtered;
 });
 
-const handleSearch = () => {
-  searchQuery.value = tempSearchQuery.value;
-};
 
 const saveNewPegawai = async () => {
   try {
@@ -332,10 +343,17 @@ onMounted(async () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="filteredPegawai.length === 0">
+                    <tr v-if="pegawai.length === 0">
                       <td colspan="9" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
+                        </div>
+                      </td>
+                    </tr>
+                    <tr v-else-if="filteredPegawai.length === 0">
+                      <td colspan="9" class="text-center">
+                        <div class="alert alert-warning mb-0">
+                          Data Tidak Ditemukan!
                         </div>
                       </td>
                     </tr>
@@ -358,6 +376,13 @@ onMounted(async () => {
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination">
+                  <button class="btn-prev" @click="changePage(currentPage - 1)"
+                    :disabled="currentPage === 1">Previous</button>
+                  <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button class="btn-next" @click="changePage(currentPage + 1)"
+                    :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
           </div>
