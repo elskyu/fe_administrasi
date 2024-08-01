@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
@@ -7,26 +7,23 @@ import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/surat_masuk.css';
 import '/src/style/modal.css';
-import '/src/style/surat_masuk.css';
 import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
 const isLoading = ref(true);
-
 const userName = ref(''); // Default name
-
 const pegawai = ref([]);
 const cabangList = ref([]);
 const departementList = ref([]);
 const currentPegawaiId = ref(null);
 const searchQuery = ref('');
 const cabangFilter = ref('');
-const departemenFilter = ref('');
+const departementFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const currentPage = ref(1); // State untuk paginasi
-const itemsPerPage = ref(10); // Tetap simpan ini untuk backend pagination
+const itemsPerPage = ref(5); // Tetap simpan ini untuk backend pagination
 const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
@@ -89,10 +86,25 @@ const fetchUserName = async () => {
   }
 };
 
-
-const fetchDataPegawai = async (page = 1) => {
+const fetchDataPegawai = async () => {
   try {
-    const response = await api.get(`/api/pegawai?page=${page}`);
+    let response;
+
+    if (cabangFilter.value === '' && departementFilter.value === '') {
+      console.log(departementFilter.value)
+      response = await api.get('/api/pegawai', {
+        params: {
+          page: currentPage.value,
+        }
+      });
+    } else {
+      response = await api.get(`/api/pegawai?cabang?=${cabangFilter.value}&departement?=${departementFilter.value}`, {
+        params: {
+          page: currentPage.value,
+        }
+      });
+    }
+
     pegawai.value = response.data.data.data;
     currentPage.value = response.data.data.current_page;
     totalPages.value = response.data.data.last_page;
@@ -150,8 +162,6 @@ const deletePegawai = async (id_pegawai) => {
 
 const filteredPegawai = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  const cabang = cabangFilter.value;
-  const departemen = departemenFilter.value;
 
   let filtered = pegawai.value;
 
@@ -167,17 +177,8 @@ const filteredPegawai = computed(() => {
     );
   }
 
-  if (cabang) {
-    filtered = filtered.filter(tamu => tamu.cabang === cabang);
-  }
-
-  if (departemen) {
-    filtered = filtered.filter(tamu => tamu.departement === departemen);
-  }
-
   return filtered;
 });
-
 
 const saveNewPegawai = async () => {
   try {
@@ -265,6 +266,10 @@ const generateNewPegawaiId = async () => {
   }
 };
 
+watch([cabangFilter, departementFilter], async () => {
+  await fetchDataPegawai();
+});
+
 onMounted(async () => {
   fetchUserName();
   fetchDataDepartement();
@@ -274,6 +279,7 @@ onMounted(async () => {
   isLoading.value = false;
 });
 </script>
+
 
 <template>
   <div class="background-container">
@@ -308,7 +314,7 @@ onMounted(async () => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <select id="departemenFilter" v-model="departemenFilter" class="form-cari"
+                    <select id="departemenFilter" v-model="departementFilter" class="form-cari"
                       style="margin-right: 10px; width: 190px;">
                       <option value="">Semua Departemen</option>
                       <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{
