@@ -12,17 +12,22 @@ import { format } from 'date-fns';
 
 const events = ref([]);
 const cabangList = ref([]);
+const monthList = ref([]);
+const yearList = ref([]);
 const departementList = ref([]);
 const jadwalList = ref([]);
 const tanggalList = ref([]);
-const currentEvents = ref([]);
-const currentTanggal = ref(null);
 const currentJadwalId = ref(null);
 const showModal = ref(false);
 const viewModal = ref(false);
 const viewModal2 = ref(false);
 const editModal = ref(false);
 const activeView = ref('month');
+const clickedDate = ref(null);
+const cabangFilter = ref('');
+const searchQuery = ref('');
+const monthFilter = ref ('');
+const yearFilter = ref ('');
 const addFormData = ref({
   id_jadwal: '',
   agenda: '',
@@ -41,7 +46,7 @@ const editFormData = ref({
 
 const fetchDataJadwal = async () => {
   try {
-    const response = await api.get('/api/jadwal');
+    const response = await api.get('/api/jadwal'); 
     jadwalList.value = response.data.data.data;
     events.value = jadwalList.value.map(jadwal => ({
       start: new Date(jadwal.tanggal),
@@ -59,6 +64,7 @@ const addEventForDate = async (date) => {
   if (activeView.value !== 'month') return;
 
   const tanggal = format(new Date(date), 'yyyy-MM-dd');
+  clickedDate.value = tanggal;
   console.log("tanggal klik : ", tanggal);
   try {
     const response = await api.get(`/api/showtgl/${tanggal}`);
@@ -89,6 +95,37 @@ const fetchDataDepartement = async () => {
     console.error('Error fetching cabang list:', error);
   }
 };
+
+const filteredJadwal = computed(() => {
+  const query = searchQuery.value.toLowerCase();
+  const cabang = cabangFilter.value;
+  const month = monthFilter.value;
+  const year = yearFilter.value;
+
+  let filtered = jadwalList.value;
+
+  if (query) {
+    filtered = filtered.filter(jadwal =>
+      jadwal.tanggal.toLowerCase().includes(query) ||
+      getNamaCabang(jadwal.cabang).toLowerCase().includes(query)
+    );
+  }
+
+  if (cabang) {
+    filtered = filtered.filter(jadwal => jadwal.cabang === cabang);
+  }
+  // Filter by month
+  if (month) {
+    filtered = filtered.filter(jadwal => new Date(jadwal.tanggal).getMonth() + 1 === parseInt(month));
+  }
+
+  // Filter by year
+  if (year) {
+    filtered = filtered.filter(jadwal => new Date(jadwal.tanggal).getFullYear() === parseInt(year));
+  }
+
+  return filtered;
+});
 
 const getNamaCabang = (idCabang) => {
   const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
@@ -261,7 +298,28 @@ onMounted(() => {
     <!-- View Events Modal -->
     <div v-if="viewModal" class="modal">
       <div class="modal-content-kalendar">
-        <h2 style="text-align: center;">View Events</h2>
+        <h2 style="text-align: center">View Events</h2>
+        <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
+                  <div class="d-flex justify-content-end">
+                    <select id="cabangFilter" v-model="cabangFilter" class="form-cari"
+                      style="margin-right: 10px; width: 155px;">
+                      <option value="">Semua Cabang</option>
+                      <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}
+                      </option>
+                    </select>
+                    <select id="monthFilter" v-model="monthFilter" class="form-cari" style="margin-right: 10px; width: 150px;">
+                      <option v-for="m in monthList" :value="m.value" :key="m.value">{{ m.text }}</option>
+                    </select>
+                    <select id="yearFilter" v-model="yearFilter" class="form-cari" style="margin-right: 10px; width: 150px;">
+                      <option v-for="y in yearList" :value="y" :key="y">{{ y }}</option>
+                    </select>
+                    <div class="search-container" style="margin-right: -10px; width: 275px;">
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari agenda"
+                        style="width: 100%;" />
+                      <SearchIcon class="search-icon" />
+                    </div>
+                  </div>
+                </div>
         <table class="table table-bordered">
           <thead class="text-center">
             <tr>
@@ -274,10 +332,10 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="jadwal in jadwalList" :key="jadwal.id_jadwal">
+            <tr v-for="jadwal in filteredJadwal" :key="jadwal.id_jadwal">
               <td>{{ jadwal.id_jadwal }}</td>
               <td>{{ jadwal.agenda }}</td>
-              <td>{{ getNamaDepartement(jadwal.status) }}</td>
+              <td>{{ jadwal.status === null ? 'Seluruh Departement' : "Departement " + getNamaDepartement(jadwal.status) }}</td>
               <td>{{ getNamaCabang(jadwal.cabang) }}</td>
               <td>{{ new Date(jadwal.tanggal).toLocaleString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</td>
               <td>
@@ -293,7 +351,8 @@ onMounted(() => {
 
     <div v-if="viewModal2" class="modal">
       <div class="modal-content-kalendar">
-        <h2 style="text-align: center;">{{ new Date(clickedDate ?? new Date()).toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}</h2>
+        <h2 style="text-align: center">
+          {{ new Date(clickedDate ?? new Date()).toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}</h2>
         <table class="table table-bordered">
           <thead class="text-center">
             <tr>
@@ -302,6 +361,13 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
+            <tr v-if="tanggalList.length === 0">
+              <td colspan="11" class="text-center">
+                <div class="alert alert-warning mb-0">
+                  Belum ada jadwal pada tanggal ini.
+                </div>
+              </td>
+            </tr>
             <tr v-for="tanggall in tanggalList" :key="tanggall.tanggal">
               <td>{{ formatTime(tanggall.tanggal) }}</td>
               <td>{{ tanggall.agenda }}</td>
