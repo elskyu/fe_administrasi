@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
@@ -13,15 +13,13 @@ import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
 const isLoading = ref(true);
-
 const userName = ref(''); // Default name
 const surat = ref([]);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const currentPage = ref(1); // State untuk paginasi
-const itemsPerPage = ref(10); // Tetap simpan ini untuk backend pagination
+const itemsPerPage = ref(5); // Tetap simpan ini untuk backend pagination
 const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
@@ -36,9 +34,6 @@ const editFormData = ref({
 
 const currentSuratId = ref(null);
 
-// Ganti paginatedRuang dengan yang baru dari backend
-const paginatedSurat = computed(() => surat.value);
-
 const changePage = async (page) => {
   if (page > 0 && page <= totalPages.value) {
     currentPage.value = page;
@@ -48,8 +43,14 @@ const changePage = async (page) => {
 
 const fetchDataSurat = async (page = 1) => {
   try {
-    const response = await api.get('/api/surat?page=${page}');
-    console.log(response);
+    let url = `/api/surat?page=${currentPage.value}`;
+
+    if (searchQuery.value) {
+      url += `&keyword=${encodeURIComponent(searchQuery.value)}`;
+    }
+
+    const response = await api.get(url);
+
     surat.value = response.data.data.data;
     currentPage.value = response.data.data.current_page;
     totalPages.value = response.data.data.last_page;
@@ -75,17 +76,16 @@ const deleteSurat = async (kode_surat) => {
   }
 };
 
-const filteredSurat = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return surat.value;
-  }
-  return surat.value.filter(s =>
-    s.jenis_surat.toLowerCase().includes(query) ||
-    s.kode_surat.toLowerCase().includes(query)
-  );
-});
-
+// const filteredSurat = computed(() => {
+//   const query = searchQuery.value.toLowerCase();
+//   if (!query) {
+//     return surat.value;
+//   }
+//   return surat.value.filter(s =>
+//     s.jenis_surat.toLowerCase().includes(query) ||
+//     s.kode_surat.toLowerCase().includes(query)
+//   );
+// });
 
 const saveNewSurat = async () => {
   try {
@@ -134,6 +134,10 @@ const saveEditSurat = async () => {
     console.error('Error saving edit surat:', error);
   }
 };
+
+watch(searchQuery, async () => {
+  await fetchDataSurat();
+});
 
 onMounted(async () => {
   fetchUserName();
@@ -198,14 +202,13 @@ onMounted(async () => {
                         </div>
                       </td>
                     </tr>
-                    <tr v-else v-for="(s, index) in filteredSurat" :key="index">
+                    <tr v-else v-for="(s, index) in surat" :key="index">
                       <td class="text-center">{{ s.kode_surat }}</td>
                       <td>{{ s.jenis_surat }}</td>
                       <td class="text-center">
-                        <button @click="editSurat(s)" class="btn btn-sm btn-warning rounded-sm shadow border-0"
+                        <button @click="editSurat(s)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">EDIT</button>
-                        <button @click="deleteSurat(s.kode_surat)"
-                          class="btn btn-sm btn-danger rounded-sm shadow border-0"
+                        <button @click="deleteSurat(s.kode_surat)" class="btn btn-sm btn-danger border-0"
                           style="margin-right: 7px;">HAPUS</button>
                       </td>
                     </tr>
