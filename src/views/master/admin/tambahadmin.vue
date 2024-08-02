@@ -232,8 +232,8 @@ onMounted(async () => {
                     <tr>
                       <th scope="col" style="width:10%">ID</th>
                       <th scope="col" style="width:10%">NAMA</th>
-                      <th scope="col" style="width:10%">NO TELEPON</th>
-                      <th scope="col" style="width:20%">EMAIL</th>
+                      <th scope="col" style="width:15%">NO TELEPON</th>
+                      <th scope="col" style="width:15%">EMAIL</th>
                       <th scope="col" style="width:10%">PASSWORD</th>
                       <th scope="col" style="width:15%">AKSI</th>
                     </tr>
