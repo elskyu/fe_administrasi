@@ -74,21 +74,9 @@ const fetchUserName = async () => {
 
 const fetchDataBukuTamu = async () => {
   try {
-    let response;
-
-    if (cabangFilter.value === '' && departementFilter.value === '') {
-      response = await api.get('/api/tamu', {
-        params: {
-          page: currentPage.value,
-        }
-      });
-    } else {
-      response = await api.get(`/api/tamu?cabang?=${cabangFilter.value}&departement?=${departementFilter.value}`, {
-        params: {
-          page: currentPage.value,
-        }
-      });
-    }
+    const response = await api.get(`/api/tamu?page=${currentPage.value}
+    &keyword=${searchQuery.value}&departement?=${departementFilter.value}
+    &cabang?=${cabangFilter.value}`);
 
     bukuTamu.value = response.data.data.data;
     currentPage.value = response.data.data.current_page;
@@ -221,7 +209,7 @@ const generateNewBtId = async () => {
   }
 };
 
-watch([cabangFilter, departementFilter], async () => {
+watch([cabangFilter, departementFilter, searchQuery], async () => {
   await fetchDataBukuTamu();
 });
 

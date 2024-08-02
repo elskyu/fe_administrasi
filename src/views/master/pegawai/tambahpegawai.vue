@@ -25,6 +25,7 @@ const showEditModal = ref(false);
 const currentPage = ref(1); // State untuk paginasi
 const itemsPerPage = ref(5); // Tetap simpan ini untuk backend pagination
 const totalPages = ref(1); // Total pages dari backend
+const lastpage = ref('');
 
 const addFormData = ref({
   id_pegawai: '',
@@ -52,6 +53,7 @@ const editFormData = ref({
 
 
 const changePage = async (page) => {
+  console.log("s", page);
   if (page > 0 && page <= totalPages.value) {
     currentPage.value = page;
     await fetchDataPegawai(page); // Fetch data for the new page
@@ -86,21 +88,21 @@ const fetchUserName = async () => {
 
 const fetchDataPegawai = async () => {
   try {
-    let url = `/api/pegawai?page=${currentPage.value}`;
+    const response = await api.get(`/api/pegawai?page=${currentPage.value}&keyword=${searchQuery.value}&departement?=${departementFilter.value}&cabang?=${cabangFilter.value}`);
 
-    if (cabangFilter.value) {
-      url += `&cabang?=${encodeURIComponent(cabangFilter.value)}`;
-    }
+    // if (cabangFilter.value) {
+    //   url += `&cabang?=${encodeURIComponent(cabangFilter.value)}`;
+    // }
 
-    if (departementFilter.value) {
-      url += `&departement?=${encodeURIComponent(departementFilter.value)}`;
-    }
+    // if (departementFilter.value) {
+    //   url += `&departement?=${encodeURIComponent(departementFilter.value)}`;
+    // }
 
-    if (searchQuery.value) {
-      url += `&keyword=${encodeURIComponent(searchQuery.value)}`;
-    }
+    // if (searchQuery.value) {
+    //   url += `&keyword=${encodeURIComponent(searchQuery.value)}`;
+    // }
 
-    const response = await api.get(url);
+    // const response = await api.get(url);
 
     pegawai.value = response.data.data.data;
     currentPage.value = response.data.data.current_page;
@@ -263,7 +265,8 @@ const generateNewPegawaiId = async () => {
   }
 };
 
-watch([cabangFilter, departementFilter, searchQuery], async () => {
+watch([cabangFilter, departementFilter, searchQuery, currentPage], async () => {
+  changePage();
   await fetchDataPegawai();
 });
 
