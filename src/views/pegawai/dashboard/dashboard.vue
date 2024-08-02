@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, defineExpose, computed } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import VueCal from 'vue-cal';
 import axios from 'axios';
 import 'vue-cal/dist/vuecal.css';
@@ -23,6 +23,8 @@ const clickedDate = ref(null);
 const userName = ref('');
 const currentMonth = ref('');
 const currentYear = ref('');
+const currentMonthYear = ref(new Date());
+
 
 const addFormData = ref({
   id_jadwal: '',
@@ -65,7 +67,7 @@ const fetchUserName = async () => {
 
 const fetchDataJadwal = async () => {
   try {
-    const response = await api.get('/api/jp');
+    const response = await api.get(`/api/jp?tahun?=${currentYear.value}&bulan?=${currentMonth.value}`);
     jadwalList.value = response.data.data;
     events.value = jadwalList.value.map(jadwal => ({
       start: new Date(jadwal.tanggal),
@@ -80,7 +82,6 @@ const fetchDataJadwal = async () => {
 
 const addEventForDate = async (date) => {
   if (activeView.value !== 'month') return;
-
   const tanggal = format(new Date(date), 'yyyy-MM-dd');
   clickedDate.value = tanggal;
   try {
@@ -134,16 +135,32 @@ const changeEvent = (event) => {
 };
 
 const handleViewChange = (view) => {
-  const date = new Date(view.start);
-  currentMonth.value = date.getMonth()+1;
-  currentYear.value = date.getFullYear();
+  let startDate;
+  
+  if (view.startDate) {
+    startDate = view.startDate;
+  } else if (view.start) {
+    startDate = view.start;
+  } else {
+    console.error("Invalid view object:", view);
+    return;
+  }
 
-  console.log("bulan", currentMonth.value);
-  console.log("tahun", currentYear.value);
+  const date = new Date(startDate);
+  currentMonth.value = date.getMonth() + 1;
+  currentYear.value = date.getFullYear();
 };
 
+watch([currentMonth, currentYear], async () => {
+  currentMonthYear.value = new Date(currentYear.value, currentMonth.value - 1);
+  await fetchDataJadwal();
+});
+
 onMounted(() => {
-  handleViewChange({ start: new Date() });
+  const initialView = {
+    start: new Date()
+  };
+  handleViewChange(initialView);
   fetchUserName();
   fetchDataJadwal();
   fetchDataCabang();
@@ -206,7 +223,10 @@ onMounted(() => {
     <!-- View Events Modal -->
     <div v-if="viewModal" class="modal">
       <div class="modal-content-kalendar">
-        <h2 style="text-align: center;">Lihat Jadwal</h2>
+        <h2 style="text-align: center;">
+          Jadwal Bulan
+          {{ currentMonthYear.toLocaleString('id-ID', { month: 'long', year: 'numeric' }) }}
+        </h2>
         <table class="table table-bordered">
           <thead class="text-center">
             <tr>
@@ -217,7 +237,14 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(jadwal, index) in jadwalList" :key="jadwal.id_jadwal">
+            <tr v-if="jadwalList.length === 0">
+              <td colspan="11" class="text-center">
+                <div class="alert alert-warning mb-0">
+                  Belum ada jadwal pada bulan ini.
+                </div>
+              </td>
+            </tr>
+            <tr v-else v-for="(jadwal, index) in jadwalList" :key="jadwal.id_jadwal">
               <td>{{ index + 1 }}</td>
               <td>{{ jadwal.agenda }}</td>
               <td>{{ jadwal.status === null ? 'Seluruh Departement' : "Departement " + getNamaDepartement(jadwal.status) }}</td>
