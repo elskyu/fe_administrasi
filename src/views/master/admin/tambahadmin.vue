@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
@@ -13,13 +13,14 @@ import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
 const userName = ref(''); // Default name
-
 const admins = ref([]);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const isLoading = ref(true);
+const currentPage = ref(1); // State untuk paginasi
+const itemsPerPage = ref(5); // Disesuaikan dengan pagination dari backend
+const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
   id_admin: '',
@@ -38,6 +39,13 @@ const editFormData = ref({
 });
 
 const currentAdminId = ref(null);
+
+const changePage = async (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchDataAdmins(); // Fetch data for the new page
+  }
+};
 
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');
@@ -67,9 +75,17 @@ const fetchUserName = async () => {
 
 const fetchDataAdmins = async () => {
   try {
-    const response = await api.get('/api/admin');
-    console.log(response);
+    let url = `/api/admin?page=${currentPage.value}`;
+
+    if (searchQuery.value) {
+      url += `&keyword=${encodeURIComponent(searchQuery.value)}`;
+    }
+
+    const response = await api.get(url);
+
     admins.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching admins:', error);
   }
@@ -94,17 +110,16 @@ const deleteAdmin = async (id_admin) => {
   }
 };
 
-const filteredAdmins = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return admins.value;
-  }
-  return admins.value.filter(admin =>
-    admin.nama.toLowerCase().includes(query) ||
-    admin.email.toLowerCase().includes(query)
-  );
-});
-
+// const filteredAdmins = computed(() => {
+//   const query = searchQuery.value.toLowerCase();
+//   if (!query) {
+//     return admins.value;
+//   }
+//   return admins.value.filter(admin =>
+//     admin.nama.toLowerCase().includes(query) ||
+//     admin.email.toLowerCase().includes(query)
+//   );
+// });
 
 const saveNewAdmin = async () => {
   try {
@@ -156,6 +171,10 @@ const generateNewAdminId = async () => {
     console.error('Error generating new Admin ID:', error);
   }
 };
+
+watch(searchQuery, async () => {
+  await fetchDataAdmins();
+});
 
 onMounted(async () => {
   fetchUserName();
@@ -212,7 +231,7 @@ onMounted(async () => {
                   <thead class="bg-dark text-white text-center">
                     <tr>
                       <th scope="col" style="width:10%">ID</th>
-                      <th scope="col" style="width:15%">NAMA</th>
+                      <th scope="col" style="width:10%">NAMA</th>
                       <th scope="col" style="width:10%">NO TELEPON</th>
                       <th scope="col" style="width:20%">EMAIL</th>
                       <th scope="col" style="width:10%">PASSWORD</th>
@@ -220,29 +239,35 @@ onMounted(async () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="filteredAdmins.length === 0">
+                    <tr v-if="admins.length === 0">
                       <td colspan="6" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
                       </td>
                     </tr>
-                    <tr v-else v-for="(admin, index) in filteredAdmins" :key="index">
+                    <tr v-else v-for="(admin, index) in admins" :key="index">
                       <td class="text-center">{{ admin.id_admin }}</td>
                       <td>{{ admin.nama }}</td>
                       <td>{{ admin.no_hp }}</td>
                       <td>{{ admin.email }}</td>
                       <td>{{ admin.password }}</td>
                       <td class="text-center">
-                        <button @click="editAdmin(admin)" class="btn btn-sm btn-warning rounded-sm shadow border-0"
+                        <button @click="editAdmin(admin)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">EDIT</button>
-                        <button @click="deleteAdmin(admin.id_admin)"
-                          class="btn btn-sm btn-danger rounded-sm shadow border-0"
+                        <button @click="deleteAdmin(admin.id_admin)" class="btn btn-sm btn-danger border-0"
                           style="margin-right: 7px;">HAPUS</button>
                       </td>
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination">
+                  <button class="btn-prev" @click="changePage(currentPage - 1)"
+                    :disabled="currentPage === 1">Previous</button>
+                  <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button class="btn-next" @click="changePage(currentPage + 1)"
+                    :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
           </div>

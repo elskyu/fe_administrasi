@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
@@ -20,6 +20,9 @@ const searchQuery = ref('');
 const showAddModal = ref(false);
 const cabangFilter = ref('');
 const isLoading = ref(true); // State untuk loading
+const currentPage = ref(1); // State untuk paginasi
+const itemsPerPage = ref(5); // Disesuaikan dengan pagination dari backend
+const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
   id_surat_keluar: '',
@@ -31,6 +34,13 @@ const addFormData = ref({
   cabang: '',
   kode_surat: '',
 });
+
+const changePage = async (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchDataSuratKeluar(); // Fetch data for the new page
+  }
+};
 
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');
@@ -60,8 +70,25 @@ const fetchUserName = async () => {
 
 const fetchDataSuratKeluar = async () => {
   try {
-    const response = await api.get('/api/sk');
+    let response
+
+    if (cabangFilter.value === '') {
+      response = await api.get('/api/sk', {
+        params: {
+          page: currentPage.value,
+        }
+      });
+    } else {
+      response = await api.get(`/api/sk?cabang?=${cabangFilter.value}`, {
+        params: {
+          page: currentPage.value,
+        }
+      });
+    }
+
     suratKeluar.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching surat keluar:', error);
   }
@@ -97,10 +124,6 @@ const filteredSuratKeluar = computed(() => {
       s.tujuan_surat.toLowerCase().includes(query) ||
       getNamaCabang(s.cabang).toLowerCase().includes(query)
     );
-  }
-
-  if (cabang) {
-    filtered = filtered.filter(s => s.cabang === cabang);
   }
 
   return filtered;
@@ -183,6 +206,10 @@ const generateNewSkId = async () => {
   }
 };
 
+watch(cabangFilter, async () => {
+  await fetchDataSuratKeluar();
+});
+
 onMounted(async () => {
   fetchUserName();
   fetchDataKodeSurat();
@@ -253,10 +280,17 @@ onMounted(async () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="filteredSuratKeluar.length === 0">
+                    <tr v-if="suratKeluar.length === 0">
                       <td colspan="8" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
+                        </div>
+                      </td>
+                    </tr>
+                    <tr v-else-if="filteredSuratKeluar.length === 0">
+                      <td colspan="8" class="text-center">
+                        <div class="alert alert-warning mb-0">
+                          Data Tidak Ditemukan!
                         </div>
                       </td>
                     </tr>
@@ -271,6 +305,13 @@ onMounted(async () => {
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination">
+                  <button class="btn-prev" @click="changePage(currentPage - 1)"
+                    :disabled="currentPage === 1">Previous</button>
+                  <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button class="btn-next" @click="changePage(currentPage + 1)"
+                    :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
           </div>

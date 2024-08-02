@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
@@ -14,13 +14,15 @@ import Loading from '/src/style/loading.vue';
 
 
 const userName = ref(''); // Default name
-
 const departments = ref([]);
 const searchQuery = ref('');
 const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const isLoading = ref(true);
+const currentPage = ref(1); // State untuk paginasi
+const itemsPerPage = ref(5); // Disesuaikan dengan pagination dari backend
+const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
   id_departement: '',
@@ -33,6 +35,13 @@ const editFormData = ref({
 });
 
 const currentDepartmentId = ref(null);
+
+const changePage = async (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchDataDepartments(); // Fetch data for the new page
+  }
+};
 
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');
@@ -62,9 +71,17 @@ const fetchUserName = async () => {
 
 const fetchDataDepartments = async () => {
   try {
-    const response = await api.get('/api/departement');
-    console.log(response);
+    let url = `/api/departement?page=${currentPage.value}`;
+
+    if (searchQuery.value) {
+      url += `&keyword=${encodeURIComponent(searchQuery.value)}`;
+    }
+
+    const response = await api.get(url);
+
     departments.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching departments:', error);
   }
@@ -89,15 +106,15 @@ const deleteDepartment = async (id_departement) => {
   }
 };
 
-const filteredDepartments = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return departments.value;
-  }
-  return departments.value.filter(department =>
-    department.nama_departement.toLowerCase().includes(query)
-  );
-});
+// const filteredDepartments = computed(() => {
+//   const query = searchQuery.value.toLowerCase();
+//   if (!query) {
+//     return departments.value;
+//   }
+//   return departments.value.filter(department =>
+//     department.nama_departement.toLowerCase().includes(query)
+//   );
+// });
 
 const saveNewDepartment = async () => {
   try {
@@ -149,6 +166,10 @@ const generateNewDepartementId = async () => {
     console.error('Error generating new Departement ID:', error);
   }
 };
+
+watch(searchQuery, async () => {
+  await fetchDataDepartments();
+});
 
 onMounted(async () => {
   fetchUserName();
@@ -209,27 +230,32 @@ onMounted(async () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="filteredDepartments.length === 0">
+                    <tr v-if="departments.length === 0">
                       <td colspan="3" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
                       </td>
                     </tr>
-                    <tr v-else v-for="(department, index) in filteredDepartments" :key="index">
+                    <tr v-else v-for="(department, index) in departments" :key="index">
                       <td class="text-center">{{ department.id_departement }}</td>
                       <td>{{ department.nama_departement }}</td>
                       <td class="text-center">
-                        <button @click="editDepartment(department)"
-                          class="btn btn-sm btn-warning rounded-sm shadow border-0"
+                        <button @click="editDepartment(department)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">EDIT</button>
                         <button @click="deleteDepartment(department.id_departement)"
-                          class="btn btn-sm btn-danger rounded-sm shadow border-0"
-                          style="margin-right: 7px;">HAPUS</button>
+                          class="btn btn-sm btn-danger border-0" style="margin-right: 7px;">HAPUS</button>
                       </td>
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination">
+                  <button class="btn-prev" @click="changePage(currentPage - 1)"
+                    :disabled="currentPage === 1">Previous</button>
+                  <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button class="btn-next" @click="changePage(currentPage + 1)"
+                    :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
@@ -13,7 +13,6 @@ import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
 const userName = ref(''); // Default name
-
 const reservasiList = ref([]);
 const cabangList = ref([]);
 const ruangList = ref([]);
@@ -52,6 +51,13 @@ const editFormData = ref({
   cabang: '',
 });
 
+const changePage = async (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    await fetchDataPegawai(page); // Fetch data for the new page
+  }
+};
+
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -80,9 +86,25 @@ const fetchUserName = async () => {
 
 const fetchDataReservasi = async () => {
   try {
-    const response = await api.get('/api/rr');
-    console.log(response);
+    let response;
+
+    if (cabangFilter.value === '' && ruangFilter.value === '') {
+      response = await api.get('/api/rr', {
+        params: {
+          page: currentPage.value,
+        }
+      });
+    } else {
+      response = await api.get(`/api/rr?cabang?=${cabangFilter.value}&ruang?=${ruangFilter.value}`, {
+        params: {
+          page: currentPage.value,
+        }
+      });
+    }
+
     reservasiList.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching reservasi:', error);
   }
@@ -99,42 +121,8 @@ const fetchDataCabang = async () => {
 
 const fetchDataRuang = async () => {
   try {
-    let allData = [];
-    let page = 1;
-    let totalPages;
-
-    do {
-      let response;
-
-      if (cabangFilter.value === '') {
-        response = await api.get('/api/ruang', {
-          params: {
-            page,
-          }
-        });
-      } else {
-        response = await api.get('/api/ruang', {
-          params: {
-            page,
-            keyword: cabangFilter.value,
-          }
-        });
-      }
-
-      console.log(`API response for page ${page}:`, response);
-
-      if (response.data && response.data.data) {
-        allData = allData.concat(response.data.data.data);
-        totalPages = response.data.data.last_page;
-        page++;
-      } else {
-        console.error('Struktur data API tidak sesuai harapan:', response.data);
-        break;
-      }
-    } while (page <= totalPages);
-
-    ruangList.value = allData;
-    console.log('All fetched ruang:', ruangList.value);
+    const response = await api.get('/api/ruang');
+    ruangList.value = response.data.data.data;
   } catch (error) {
     console.error('Error fetching ruang:', error);
   }
@@ -304,6 +292,10 @@ const generateNewRrId = async () => {
   }
 };
 
+watch([cabangFilter, ruangFilter], async () => {
+  await fetchDataReservasi();
+});
+
 onMounted(async () => {
   fetchUserName();
   fetchDataCabang();
@@ -412,6 +404,13 @@ onMounted(async () => {
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination">
+                  <button class="btn-prev" @click="changePage(currentPage - 1)"
+                    :disabled="currentPage === 1">Previous</button>
+                  <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button class="btn-next" @click="changePage(currentPage + 1)"
+                    :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
           </div>

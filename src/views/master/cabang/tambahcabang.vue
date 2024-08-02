@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
@@ -13,13 +13,15 @@ import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 
 const isLoading = ref(true);
-
 const userName = ref(''); // Default name
 const cabang = ref([]);
 const searchQuery = ref('');
 const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
+const currentPage = ref(1); // State untuk paginasi
+const itemsPerPage = ref(5); // Disesuaikan dengan pagination dari backend
+const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
   id_cabang: '',
@@ -32,6 +34,13 @@ const editFormData = ref({
 });
 
 const currentCabangId = ref(null);
+
+const changePage = async (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchDataCabang(); // Fetch data for the new page
+  }
+};
 
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');
@@ -61,9 +70,17 @@ const fetchUserName = async () => {
 
 const fetchDataCabang = async () => {
   try {
-    const response = await api.get('/api/cabang');
-    console.log(response);
+    let url = `/api/cabang?page=${currentPage.value}`;
+
+    if (searchQuery.value) {
+      url += `&keyword=${encodeURIComponent(searchQuery.value)}`;
+    }
+
+    const response = await api.get(url);
+
     cabang.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching cabang:', error);
   }
@@ -88,19 +105,15 @@ const deleteCabang = async (id_cabang) => {
   }
 };
 
-const filteredCabang = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  if (!query) {
-    return cabang.value;
-  }
-  return cabang.value.filter(c =>
-    c.nama_cabang.toLowerCase().includes(query)
-  );
-});
-
-const handleSearch = () => {
-  searchQuery.value = tempSearchQuery.value;
-};
+// const filteredCabang = computed(() => {
+//   const query = searchQuery.value.toLowerCase();
+//   if (!query) {
+//     return cabang.value;
+//   }
+//   return cabang.value.filter(c =>
+//     c.nama_cabang.toLowerCase().includes(query)
+//   );
+// });
 
 const saveNewCabang = async () => {
   try {
@@ -154,6 +167,10 @@ const generateNewCabangId = async () => {
     console.error('Error generating new cabang ID:', error);
   }
 };
+
+watch(searchQuery, async () => {
+  await fetchDataCabang();
+});
 
 onMounted(async () => {
   fetchUserName();
@@ -213,26 +230,32 @@ onMounted(async () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="filteredCabang.length === 0">
+                    <tr v-if="cabang.length === 0">
                       <td colspan="3" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
                       </td>
                     </tr>
-                    <tr v-else v-for="(c, index) in filteredCabang" :key="index">
+                    <tr v-else v-for="(c, index) in cabang" :key="index">
                       <td class="text-center">{{ c.id_cabang }}</td>
                       <td>{{ c.nama_cabang }}</td>
                       <td class="text-center">
-                        <button @click="editCabang(c)" class="btn btn-sm btn-warning rounded-sm shadow border-0"
+                        <button @click="editCabang(c)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">EDIT</button>
-                        <button @click="deleteCabang(c.id_cabang)"
-                          class="btn btn-sm btn-danger rounded-sm shadow border-0"
+                        <button @click="deleteCabang(c.id_cabang)" class="btn btn-sm btn-danger border-0"
                           style="margin-right: 7px;">HAPUS</button>
                       </td>
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination">
+                  <button class="btn-prev" @click="changePage(currentPage - 1)"
+                    :disabled="currentPage === 1">Previous</button>
+                  <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button class="btn-next" @click="changePage(currentPage + 1)"
+                    :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
           </div>
