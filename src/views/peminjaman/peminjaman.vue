@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
@@ -24,6 +24,9 @@ const cabangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const isLoading = ref(true); // State untuk loading
+const currentPage = ref(1); // State untuk paginasi
+const itemsPerPage = ref(5); // Disesuaikan dengan pagination dari backend
+const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
   id_pinjam: '',
@@ -46,6 +49,13 @@ const editFormData = ref({
   keterangan: '',
   cabang: '',
 });
+
+const changePage = async (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    fetchDataSuratKeluar(); // Fetch data for the new page
+  }
+};
 
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');
@@ -76,9 +86,25 @@ const fetchUserName = async () => {
 
 const fetchDataPemakaian = async () => {
   try {
-    const response = await api.get('/api/pi');
-    console.log(response);
+    let response
+
+    if (cabangFilter.value === '') {
+      response = await api.get('/api/pi', {
+        params: {
+          page: currentPage.value,
+        }
+      });
+    } else {
+      response = await api.get(`/api/pi?cabang?=${cabangFilter.value}`, {
+        params: {
+          page: currentPage.value,
+        }
+      });
+    }
+
     pemakaianList.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching inventaris:', error);
   }
@@ -119,7 +145,6 @@ const editPemakaian = (p) => {
 
 const filteredPemakaian = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  const cabang = cabangFilter.value;
 
   let filtered = pemakaianList.value;
 
@@ -134,10 +159,6 @@ const filteredPemakaian = computed(() => {
       pemakaian.keterangan.toLowerCase().includes(query) ||
       getNamaCabang(pemakaian.cabang).toLowerCase().includes(query)
     );
-  }
-
-  if (cabang) {
-    filtered = filtered.filter(pemakaian => pemakaian.cabang === cabang);
   }
 
   return filtered;
@@ -252,6 +273,10 @@ const generateNewPiId = async () => {
   }
 };
 
+watch(cabangFilter, async () => {
+  await fetchDataPemakaian();
+});
+
 onMounted(async () => {
   fetchUserName();
   fetchDataCabang();
@@ -352,6 +377,13 @@ onMounted(async () => {
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination">
+                  <button class="btn-prev" @click="changePage(currentPage - 1)"
+                    :disabled="currentPage === 1">Previous</button>
+                  <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button class="btn-next" @click="changePage(currentPage + 1)"
+                    :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
           </div>

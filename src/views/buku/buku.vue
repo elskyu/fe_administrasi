@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
@@ -20,9 +20,12 @@ const cabangList = ref([]);
 const departementList = ref([]);
 const searchQuery = ref('');
 const cabangFilter = ref('');
-const departemenFilter = ref('');
+const departementFilter = ref('');
 const showAddModal = ref(false);
 const isLoading = ref(true); // State untuk loading
+const currentPage = ref(1); // State untuk paginasi
+const itemsPerPage = ref(5); // Tetap simpan ini untuk backend pagination
+const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
   id_tamu: '',
@@ -35,6 +38,13 @@ const addFormData = ref({
   keperluan: '',
   cabang: '',
 });
+
+const changePage = async (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    await fetchDataPegawai(page); // Fetch data for the new page
+  }
+};
 
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');
@@ -64,9 +74,25 @@ const fetchUserName = async () => {
 
 const fetchDataBukuTamu = async () => {
   try {
-    const response = await api.get('/api/tamu');
-    console.log(response);
+    let response;
+
+    if (cabangFilter.value === '' && departementFilter.value === '') {
+      response = await api.get('/api/tamu', {
+        params: {
+          page: currentPage.value,
+        }
+      });
+    } else {
+      response = await api.get(`/api/tamu?cabang?=${cabangFilter.value}&departement?=${departementFilter.value}`, {
+        params: {
+          page: currentPage.value,
+        }
+      });
+    }
+
     bukuTamu.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching buku tamu:', error);
   }
@@ -93,7 +119,7 @@ const fetchDataDepartement = async () => {
 const filteredBukuTamu = computed(() => {
   const query = searchQuery.value.toLowerCase();
   const cabang = cabangFilter.value;
-  const departemen = departemenFilter.value;
+  const departemen = departementFilter.value;
 
   let filtered = bukuTamu.value;
 
@@ -195,6 +221,10 @@ const generateNewBtId = async () => {
   }
 };
 
+watch([cabangFilter, departementFilter], async () => {
+  await fetchDataBukuTamu();
+});
+
 onMounted(async () => {
   await fetchUserName();
   await fetchDataDepartement();
@@ -240,7 +270,7 @@ onMounted(async () => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <select id="departemenFilter" v-model="departemenFilter" class="form-cari"
+                    <select id="departemenFilter" v-model="departementFilter" class="form-cari"
                       style="margin-right: 10px; width: 190px;">
                       <option value="">Semua Departemen</option>
                       <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{
@@ -295,6 +325,13 @@ onMounted(async () => {
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination">
+                  <button class="btn-prev" @click="changePage(currentPage - 1)"
+                    :disabled="currentPage === 1">Previous</button>
+                  <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button class="btn-next" @click="changePage(currentPage + 1)"
+                    :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
           </div>

@@ -17,7 +17,6 @@ const userName = ref(''); // Default name
 const ruang = ref([]);
 const cabangList = ref([]);
 const searchQuery = ref('');
-const tempSearchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const cabangFilter = ref('');
@@ -72,26 +71,19 @@ const fetchUserName = async () => {
 };
 
 const fetchDataRuang = async () => {
-  try { // Declare response variable in the outer scope
-    let response
+  try {
+    let url = `/api/ruang?page=${currentPage.value}`;
 
-    // const response = await api.get(`/api/ruang?keyword=${cabangFilter.value}`);
-
-    if (cabangFilter.value === '') {
-      response = await api.get('/api/ruang', {
-        params: {
-          page: currentPage.value,
-        }
-      });
-    } else {
-      response = await api.get(`/api/ruang?cabang?=${cabangFilter.value}`, {
-        params: {
-          page: currentPage.value,
-        }
-      });
+    if (cabangFilter.value) {
+      url += `&cabang?=${encodeURIComponent(cabangFilter.value)}`;
     }
 
-    // Now response is available here
+    if (searchQuery.value) {
+      url += `&keyword=${encodeURIComponent(searchQuery.value)}`;
+    }
+
+    const response = await api.get(url);
+
     ruang.value = response.data.data.data;
     currentPage.value = response.data.data.current_page;
     totalPages.value = response.data.data.last_page;
@@ -99,7 +91,6 @@ const fetchDataRuang = async () => {
     console.error('Error fetching ruang:', error);
   }
 };
-
 
 const fetchDataCabang = async () => {
   try {
@@ -133,19 +124,19 @@ const deleteRuang = async (id_ruang) => {
   }
 };
 
-const filteredRuang = computed(() => {
-  const query = searchQuery.value.toLowerCase();
+// const filteredRuang = computed(() => {
+//   const query = searchQuery.value.toLowerCase();
 
-  let filtered = ruang.value;
+//   let filtered = ruang.value;
 
-  if (query) {
-    filtered = filtered.filter(r =>
-      r.nama_ruang.toLowerCase().includes(query) ||
-      r.id_ruang.toLowerCase().includes(query)
-    );
-  }
-  return filtered;
-});
+//   if (query) {
+//     filtered = filtered.filter(r =>
+//       r.nama_ruang.toLowerCase().includes(query) ||
+//       r.id_ruang.toLowerCase().includes(query)
+//     );
+//   }
+//   return filtered;
+// });
 
 const saveNewRuang = async () => {
   try {
@@ -207,7 +198,7 @@ const generateNewRuangId = async () => {
   }
 };
 
-watch(cabangFilter, async () => {
+watch([cabangFilter, searchQuery], async () => {
   await fetchDataRuang();
 });
 
@@ -284,22 +275,21 @@ onMounted(async () => {
                         </div>
                       </td>
                     </tr>
-                    <tr v-else-if="filteredRuang.length === 0">
+                    <!-- <tr v-else-if="ruang.length === 0">
                       <td colspan="4" class="text-center">
                         <div class="alert alert-warning mb-0">
                           Data Tidak Ditemukan!
                         </div>
                       </td>
-                    </tr>
-                    <tr v-else v-for="(r, index) in filteredRuang" :key="index">
+                    </tr> -->
+                    <tr v-else v-for="(r, index) in ruang" :key="index">
                       <td class="text-center">{{ r.id_ruang }}</td>
                       <td>{{ r.nama_ruang }}</td>
                       <td>{{ getNamaCabang(r.cabang) }}</td>
                       <td class="text-center">
-                        <button @click="editRuang(r)" class="btn btn-sm btn-warning rounded-sm shadow border-0"
+                        <button @click="editRuang(r)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">EDIT</button>
-                        <button @click="deleteRuang(r.id_ruang)"
-                          class="btn btn-sm btn-danger rounded-sm shadow border-0"
+                        <button @click="deleteRuang(r.id_ruang)" class="btn btn-sm btn-danger border-0"
                           style="margin-right: 7px;">HAPUS</button>
                       </td>
                     </tr>

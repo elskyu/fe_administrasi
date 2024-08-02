@@ -50,8 +50,6 @@ const editFormData = ref({
   cabang: '',
 });
 
-// Ganti paginatedRuang dengan yang baru dari backend
-const paginatedPegawai = computed(() => pegawai.value);
 
 const changePage = async (page) => {
   if (page > 0 && page <= totalPages.value) {
@@ -88,22 +86,21 @@ const fetchUserName = async () => {
 
 const fetchDataPegawai = async () => {
   try {
-    let response;
+    let url = `/api/pegawai?page=${currentPage.value}`;
 
-    if (cabangFilter.value === '' && departementFilter.value === '') {
-      console.log(departementFilter.value)
-      response = await api.get('/api/pegawai', {
-        params: {
-          page: currentPage.value,
-        }
-      });
-    } else {
-      response = await api.get(`/api/pegawai?cabang?=${cabangFilter.value}&departement?=${departementFilter.value}`, {
-        params: {
-          page: currentPage.value,
-        }
-      });
+    if (cabangFilter.value) {
+      url += `&cabang?=${encodeURIComponent(cabangFilter.value)}`;
     }
+
+    if (departementFilter.value) {
+      url += `&departement?=${encodeURIComponent(departementFilter.value)}`;
+    }
+
+    if (searchQuery.value) {
+      url += `&keyword=${encodeURIComponent(searchQuery.value)}`;
+    }
+
+    const response = await api.get(url);
 
     pegawai.value = response.data.data.data;
     currentPage.value = response.data.data.current_page;
@@ -160,25 +157,25 @@ const deletePegawai = async (id_pegawai) => {
   }
 };
 
-const filteredPegawai = computed(() => {
-  const query = searchQuery.value.toLowerCase();
+// const filteredPegawai = computed(() => {
+//   const query = searchQuery.value.toLowerCase();
 
-  let filtered = pegawai.value;
+//   let filtered = pegawai.value;
 
-  if (query) {
-    filtered = filtered.filter(p =>
-      p.nip.toLowerCase().includes(query) ||
-      p.nama.toLowerCase().includes(query) ||
-      p.email.toLowerCase().includes(query) ||
-      p.departement.toLowerCase().includes(query) ||
-      p.alamat.toLowerCase().includes(query) ||
-      p.no_hp.toLowerCase().includes(query) ||
-      getNamaCabang(p.cabang).toLowerCase().includes(query)
-    );
-  }
+//   if (query) {
+//     filtered = filtered.filter(p =>
+//       p.nip.toLowerCase().includes(query) ||
+//       p.nama.toLowerCase().includes(query) ||
+//       p.email.toLowerCase().includes(query) ||
+//       p.departement.toLowerCase().includes(query) ||
+//       p.alamat.toLowerCase().includes(query) ||
+//       p.no_hp.toLowerCase().includes(query) ||
+//       getNamaCabang(p.cabang).toLowerCase().includes(query)
+//     );
+//   }
 
-  return filtered;
-});
+//   return filtered;
+// });
 
 const saveNewPegawai = async () => {
   try {
@@ -266,7 +263,7 @@ const generateNewPegawaiId = async () => {
   }
 };
 
-watch([cabangFilter, departementFilter], async () => {
+watch([cabangFilter, departementFilter, searchQuery], async () => {
   await fetchDataPegawai();
 });
 
@@ -345,7 +342,7 @@ onMounted(async () => {
                       <th scope="col" style="width:10%">Alamat</th>
                       <th scope="col" style="width:10%">No. HP</th>
                       <th scope="col" style="width:7%">Cabang</th>
-                      <th scope="col" style="width:10%">AKSI</th>
+                      <th scope="col" style="width:11%">AKSI</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -356,14 +353,14 @@ onMounted(async () => {
                         </div>
                       </td>
                     </tr>
-                    <tr v-else-if="filteredPegawai.length === 0">
+                    <!-- <tr v-else-if="pegawai.length === 0">
                       <td colspan="9" class="text-center">
                         <div class="alert alert-warning mb-0">
                           Data Tidak Ditemukan!
                         </div>
                       </td>
-                    </tr>
-                    <tr v-else v-for="(p, index) in filteredPegawai" :key="index">
+                    </tr> -->
+                    <tr v-else v-for="(p, index) in pegawai" :key="index">
                       <td class="text-center">{{ p.id_pegawai }}</td>
                       <td>{{ p.nip }}</td>
                       <td>{{ p.nama }}</td>
@@ -373,10 +370,9 @@ onMounted(async () => {
                       <td>{{ p.no_hp }}</td>
                       <td>{{ getNamaCabang(p.cabang) }}</td> <!-- Menampilkan nama cabang -->
                       <td class="text-center">
-                        <button @click="editPegawai(p)" class="btn btn-sm btn-warning rounded-sm shadow border-0"
+                        <button @click="editPegawai(p)" class="btn btn-sm btn-warning  border-0"
                           style="margin-right: 7px;">EDIT</button>
-                        <button @click="deletePegawai(p.id_pegawai)"
-                          class="btn btn-sm btn-danger rounded-sm shadow border-0"
+                        <button @click="deletePegawai(p.id_pegawai)" class="btn btn-sm btn-danger border-0"
                           style="margin-right: 7px;">HAPUS</button>
                       </td>
                     </tr>
