@@ -67,21 +67,17 @@ const fetchUserName = async () => {
 
 const fetchDataSuratMasuk = async () => {
   try {
-    let response
+    let url = `/api/sm?page=${currentPage.value}`;
 
-    if (cabangFilter.value === '') {
-      response = await api.get('/api/sm', {
-        params: {
-          page: currentPage.value,
-        }
-      });
-    } else {
-      response = await api.get(`/api/sm?cabang?=${cabangFilter.value}`, {
-        params: {
-          page: currentPage.value,
-        }
-      });
+    if (cabangFilter.value) {
+      url += `&cabang?=${encodeURIComponent(cabangFilter.value)}`;
     }
+
+    if (searchQuery.value) {
+      url += `&keyword=${encodeURIComponent(searchQuery.value)}`;
+    }
+
+    const response = await api.get(url);
 
     suratMasuk.value = response.data.data.data;
     currentPage.value = response.data.data.current_page;
@@ -100,23 +96,23 @@ const fetchDataCabang = async () => {
   }
 };
 
-const filteredSuratMasuk = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  const cabang = cabangFilter.value;
+// const filteredSuratMasuk = computed(() => {
+//   const query = searchQuery.value.toLowerCase();
+//   const cabang = cabangFilter.value;
 
-  let filtered = suratMasuk.value;
+//   let filtered = suratMasuk.value;
 
-  if (query) {
-    filtered = filtered.filter(s =>
-      s.nomor_surat.toLowerCase().includes(query) ||
-      s.perihal.toLowerCase().includes(query) ||
-      s.asal_surat.toLowerCase().includes(query) ||
-      getNamaCabang(s.cabang).toLowerCase().includes(query)
-    );
-  }
+//   if (query) {
+//     filtered = filtered.filter(s =>
+//       s.nomor_surat.toLowerCase().includes(query) ||
+//       s.perihal.toLowerCase().includes(query) ||
+//       s.asal_surat.toLowerCase().includes(query) ||
+//       getNamaCabang(s.cabang).toLowerCase().includes(query)
+//     );
+//   }
 
-  return filtered;
-});
+//   return filtered;
+// });
 
 const saveNewSuratMasuk = async () => {
   try {
@@ -172,7 +168,7 @@ const generateNewSmId = async () => {
   }
 };
 
-watch(cabangFilter, async () => {
+watch([cabangFilter, searchQuery], async () => {
   await fetchDataSuratMasuk();
 });
 
@@ -254,14 +250,14 @@ onMounted(async () => {
                         </div>
                       </td>
                     </tr>
-                    <tr v-else-if="filteredSuratMasuk.length === 0">
+                    <tr v-else-if="suratMasuk.length === 0">
                       <td colspan="8" class="text-center">
                         <div class="alert alert-warning mb-0">
                           Data Tidak Ditemukan!
                         </div>
                       </td>
                     </tr>
-                    <tr v-else v-for="(s, index) in filteredSuratMasuk" :key="index">
+                    <tr v-else v-for="(s, index) in suratMasuk" :key="index">
                       <td class="text-center">{{ s.id_surat_masuk }}</td>
                       <td class="text-center">{{ s.nomor_surat }}</td>
                       <td>{{ s.tanggal_surat }}</td>

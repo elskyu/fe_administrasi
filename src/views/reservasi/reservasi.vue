@@ -86,21 +86,21 @@ const fetchUserName = async () => {
 
 const fetchDataReservasi = async () => {
   try {
-    let response;
+    let url = `/api/rr?page=${currentPage.value}`;
 
-    if (cabangFilter.value === '' && ruangFilter.value === '') {
-      response = await api.get('/api/rr', {
-        params: {
-          page: currentPage.value,
-        }
-      });
-    } else {
-      response = await api.get(`/api/rr?cabang?=${cabangFilter.value}&ruang?=${ruangFilter.value}`, {
-        params: {
-          page: currentPage.value,
-        }
-      });
+    if (cabangFilter.value) {
+      url += `&cabang?=${encodeURIComponent(cabangFilter.value)}`;
     }
+
+    if (ruangFilter.value) {
+      url += `&ruang?=${encodeURIComponent(ruangFilter.value)}`;
+    }
+
+    if (searchQuery.value) {
+      url += `&keyword=${encodeURIComponent(searchQuery.value)}`;
+    }
+
+    const response = await api.get(url);
 
     reservasiList.value = response.data.data.data;
     currentPage.value = response.data.data.current_page;
@@ -152,34 +152,34 @@ const editReservasi = (r) => {
   showEditModal.value = true;
 };
 
-const filteredReservasi = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  const cabang = cabangFilter.value;
-  const ruang = ruangFilter.value;
+// const filteredReservasi = computed(() => {
+//   const query = searchQuery.value.toLowerCase();
+//   const cabang = cabangFilter.value;
+//   const ruang = ruangFilter.value;
 
-  let filtered = reservasiList.value;
-  if (query) {
-    filtered = filtered.filter(reservasi =>
-      getNamaRuang(reservasi.ruang).toLowerCase().includes(query) ||
-      reservasi.tanggal_reservasi.toLowerCase().includes(query) ||
-      reservasi.tanggal_selesai.toLowerCase().includes(query) ||
-      reservasi.durasi.toLowerCase().includes(query) ||
-      reservasi.pegawai.toLowerCase().includes(query) ||
-      reservasi.keterangan.toLowerCase().includes(query) ||
-      getNamaCabang(reservasi.cabang).toLowerCase().includes(query)
-    );
-  }
+//   let filtered = reservasiList.value;
+//   if (query) {
+//     filtered = filtered.filter(reservasi =>
+//       getNamaRuang(reservasi.ruang).toLowerCase().includes(query) ||
+//       reservasi.tanggal_reservasi.toLowerCase().includes(query) ||
+//       reservasi.tanggal_selesai.toLowerCase().includes(query) ||
+//       reservasi.durasi.toLowerCase().includes(query) ||
+//       reservasi.pegawai.toLowerCase().includes(query) ||
+//       reservasi.keterangan.toLowerCase().includes(query) ||
+//       getNamaCabang(reservasi.cabang).toLowerCase().includes(query)
+//     );
+//   }
 
-  if (cabang) {
-    filtered = filtered.filter(reservasi => reservasi.cabang === cabang);
-  }
+//   if (cabang) {
+//     filtered = filtered.filter(reservasi => reservasi.cabang === cabang);
+//   }
 
-  if (ruang) {
-    filtered = filtered.filter(reservasi => reservasi.ruang === ruang);
-  }
+//   if (ruang) {
+//     filtered = filtered.filter(reservasi => reservasi.ruang === ruang);
+//   }
 
-  return filtered;
-});
+//   return filtered;
+// });
 
 
 const saveNewReservasi = async () => {
@@ -292,7 +292,7 @@ const generateNewRrId = async () => {
   }
 };
 
-watch([cabangFilter, ruangFilter], async () => {
+watch([cabangFilter, ruangFilter, searchQuery], async () => {
   await fetchDataReservasi();
 });
 
@@ -377,14 +377,14 @@ onMounted(async () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="filteredReservasi.length === 0">
+                    <tr v-if="reservasiList.length === 0">
                       <td colspan="9" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
                       </td>
                     </tr>
-                    <tr v-else v-for="(reservasi, index) in filteredReservasi" :key="index">
+                    <tr v-else v-for="(reservasi, index) in reservasiList" :key="index">
                       <td class="text-center">{{ reservasi.id_reservasi }}</td>
                       <td>{{ getNamaRuang(reservasi.ruang) }}</td>
                       <td>{{ reservasi.tanggal_reservasi }}</td>
@@ -394,11 +394,9 @@ onMounted(async () => {
                       <td>{{ reservasi.keterangan }}</td>
                       <td>{{ getNamaCabang(reservasi.cabang) }}</td>
                       <td class="text-center">
-                        <button @click="editReservasi(reservasi)"
-                          class="btn btn-sm btn-warning rounded-sm shadow border-0"
+                        <button @click="editReservasi(reservasi)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">EDIT</button>
-                        <button @click="deleteReservasi(reservasi.id_reservasi)"
-                          class="btn btn-sm btn-danger rounded-sm shadow border-0"
+                        <button @click="deleteReservasi(reservasi.id_reservasi)" class="btn btn-sm btn-danger border-0"
                           style="margin-right: 7px;">HAPUS</button>
                       </td>
                     </tr>

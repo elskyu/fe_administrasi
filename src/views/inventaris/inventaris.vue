@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
@@ -14,8 +14,8 @@ import Loading from '/src/style/loading.vue';
 
 
 const userName = ref(''); // Default name
-
 const inventarisList = ref([]);
+const kategoriFilter = ref('');
 const cabangList = ref([]);
 const currentInventarisId = ref(null);
 const searchQuery = ref('');
@@ -23,6 +23,8 @@ const cabangFilter = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const isLoading = ref(true); // State untuk loading
+const currentPage = ref(1); // State untuk paginasi
+const totalPages = ref(1); // Total pages dari backend
 
 const addFormData = ref({
   id_inventaris: '',
@@ -49,6 +51,14 @@ const editFormData = ref({
   tanggal_beli: '',
   cabang: '',
 });
+
+const changePage = async (page) => {
+  console.log("s", page);
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    await fetchDataInventaris(page); // Fetch data for the new page
+  }
+};
 
 const fetchUserName = async () => {
   const token = localStorage.getItem('token');
@@ -78,9 +88,11 @@ const fetchUserName = async () => {
 
 const fetchDataInventaris = async () => {
   try {
-    const response = await api.get('/api/inventaris');
-    console.log(response);
+    const response = await api.get(`/api/inventaris?page=${currentPage.value}&keyword=${searchQuery.value}&cabang?=${cabangFilter.value}&kategori?=${kategoriFilter.value}`);
+
     inventarisList.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching inventaris:', error);
   }
@@ -114,7 +126,7 @@ const editInventaris = (i) => {
 
 const filteredInventaris = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  const cabang = cabangFilter.value;
+  const kategori = kategoriFilter.value;
 
   let filtered = inventarisList.value;
   if (query) {
@@ -131,8 +143,8 @@ const filteredInventaris = computed(() => {
     );
   }
 
-  if (cabang) {
-    filtered = filtered.filter(inventaris => inventaris.cabang === cabang);
+  if (kategori) {
+    filtered = filtered.filter(inventaris => inventaris.kategori === kategori);
   }
 
   return filtered;
@@ -232,6 +244,10 @@ const generateNewInvId = async () => {
   }
 };
 
+watch([cabangFilter, searchQuery, currentPage, kategoriFilter], async () => {
+  await fetchDataInventaris();
+});
+
 onMounted(async () => {
   fetchUserName();
   fetchDataCabang();
@@ -280,6 +296,12 @@ onMounted(async () => {
                       <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}
                       </option>
                     </select>
+                    <select id="kategoriFilter" v-model="kategoriFilter" class="form-cari"
+                      style="margin-right: 10px; width: 170px;">
+                      <option value="">Jenis Kendaraan</option>
+                      <option value="Mobil">Mobil</option>
+                      <option value="Motor">Motor</option>
+                    </select>
                     <div class="search-container" style="margin-right: -10px; width: 275px;">
                       <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari inventaris"
                         style="width: 100%; padding-right: 40px;" />
@@ -324,16 +346,21 @@ onMounted(async () => {
                       <td>{{ inventaris.tanggal_beli }}</td>
                       <td>{{ getNamaCabang(inventaris.cabang) }}</td>
                       <td class="text-center">
-                        <button @click="editInventaris(inventaris)"
-                          class="btn btn-sm btn-warning rounded-sm shadow border-0"
+                        <button @click="editInventaris(inventaris)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">EDIT</button>
                         <button @click="deleteInventaris(inventaris.id_inventaris)"
-                          class="btn btn-sm btn-danger rounded-sm shadow border-0"
-                          style="margin-right: 7px;">HAPUS</button>
+                          class="btn btn-sm btn-danger border-0" style="margin-right: 7px;">HAPUS</button>
                       </td>
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination">
+                  <button class="btn-prev" @click="changePage(currentPage - 1)"
+                    :disabled="currentPage === 1">Previous</button>
+                  <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button class="btn-next" @click="changePage(currentPage + 1)"
+                    :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
           </div>
@@ -420,7 +447,7 @@ onMounted(async () => {
   <!-- modal edit -->
   <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">TAMBAH INVENTARIS</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">EDIT INVENTARIS</h4>
       <div class="form-group-row">
         <div class="form-group" style="width: 195px;">
           <label for="id_inventaris">ID Inventaris</label>

@@ -367,11 +367,9 @@ onMounted(async () => {
                       <td>{{ pemakaian.keterangan }}</td>
                       <td>{{ getNamaCabang(pemakaian.cabang) }}</td>
                       <td class="text-center">
-                        <button @click="editPemakaian(pemakaian)"
-                          class="btn btn-sm btn-warning rounded-sm shadow border-0"
+                        <button @click="editPemakaian(pemakaian)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">EDIT</button>
-                        <button @click="deletePemakaian(pemakaian.id_pinjam)"
-                          class="btn btn-sm btn-danger rounded-sm shadow border-0"
+                        <button @click="deletePemakaian(pemakaian.id_pinjam)" class="btn btn-sm btn-danger border-0"
                           style="margin-right: 7px;">HAPUS</button>
                       </td>
                     </tr>
