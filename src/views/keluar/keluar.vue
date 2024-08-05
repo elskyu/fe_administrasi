@@ -222,7 +222,7 @@ onMounted(async () => {
       <div class="container mt-5 mb-5">
         <div class="flex-container" style="display: flex; justify-content: space-between;">
           <div class="card2" style="flex: 0 0 81%; margin-right: 10px; margin-left: -10px;">
-            <h2>SURAT KELUAR</h2>
+            <h2>Surat Keluar</h2>
           </div>
           <div class="card-nama" style="flex: 0 0 20%;">
             <div class="form-group-row" style="display: flex; align-items: center; margin-right: 20px;">
