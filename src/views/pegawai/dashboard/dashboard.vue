@@ -7,7 +7,7 @@ import '/src/style/font.css';
 import '/src/style/background_color.css';
 import '/src/style/modal.css';
 import '/src/style/dasboard.css';
-import '/src/style/kalender_jadwal.css';
+import '/src/style/kalender_jadwal_pegawai.css';
 import api from '../../../api';
 import { format, parseISO } from 'date-fns';
 
@@ -207,6 +207,7 @@ onMounted(() => {
             :disable-views="['years', 'week', 'day']"
             events-count-on-year-view
             :events="events"
+            events-on-month-view="short"
             @view-change="handleViewChange"
             @event-click="viewEvent"
             @cell-click="addEventForDate"

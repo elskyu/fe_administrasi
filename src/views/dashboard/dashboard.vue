@@ -7,6 +7,8 @@ import '/src/style/background_color.css';
 import '/src/style/modal.css';
 import '/src/style/dasboard.css';
 import '/src/style/kalender_jadwal.css';
+import '/src/style/table.css';
+import '/src/style/surat_masuk.css';
 import api from '../../api';
 import axios from 'axios';
 import SearchIcon from '/src/style/SearchIcon.vue';
@@ -32,6 +34,8 @@ const currentMonthYear = ref(new Date());
 const keywordFilter = ref('');
 const jadwalall = ref([]);
 const userName = ref('');
+const currentPage = ref(1);
+const totalPages = ref(1);
 
 const addFormData = ref({
   id_jadwal: '',
@@ -72,10 +76,20 @@ const fetchUserName = async () => {
   }
 };
 
+const changePage = async (page) => {
+  console.log("s", page);
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+    await fetchDataInventaris(page); // Fetch data for the new page
+  }
+};
+
 const fetchDataJadwal = async () => {
   try {
-    const response = await api.get(`/api/jadwal?tahun?=${currentYear.value}&bulan?=${currentMonth.value}&cabang?=${cabangFilter.value}&status?=${departementFilter.value}&keyword=${keywordFilter.value}`); 
+    const response = await api.get(`/api/jadwal?page=${currentPage.value}&tahun?=${currentYear.value}&bulan?=${currentMonth.value}&cabang?=${cabangFilter.value}&status?=${departementFilter.value}&keyword=${keywordFilter.value}`); 
     jadwalList.value = response.data.data.data;
+    currentPage.value = response.data.data.current_page;
+    totalPages.value = response.data.data.last_page;
     events.value = jadwalList.value.map(jadwal => ({
       start: new Date(jadwal.tanggal),
       end: new Date(jadwal.tanggal),
@@ -252,7 +266,7 @@ const generateNewJdwId = async () => {
   }
 };
 
-watch([currentMonth, currentYear, cabangFilter, departementFilter, keywordFilter], async () => {
+watch([currentMonth, currentYear, cabangFilter, departementFilter, keywordFilter, currentPage], async () => {
   currentMonthYear.value = new Date(currentYear.value, currentMonth.value - 1);
   await fetchDataJadwal();
 });
@@ -296,8 +310,8 @@ onMounted(() => {
 
       <div class="card3">
         <div class="calendar-container">
-          <div class="calendar-header">
-            <button @click="showModal = true" class="btn btn-success" style="margin-left: 1px;">Tambah</button>
+          <div class="calendar-header" style="margin-top: 5px;">
+            <button @click="showModal = true" class="btn btn-md btn-success" style="margin-left: 1px;">Tambah</button>
             <button @click="viewAllEvents" class="btn btn-warning">Lihat Jadwal</button>
           </div>
           <vue-cal
@@ -426,7 +440,14 @@ onMounted(() => {
             </tr>
           </tbody>
         </table>
-        <button @click="viewModal = false" class="btn btn-danger">Tutup</button>
+        <div class="pagination">
+          <button class="btn-prev" @click="changePage(currentPage - 1)"
+            :disabled="currentPage === 1">Previous</button>
+          <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
+          <button class="btn-next" @click="changePage(currentPage + 1)"
+            :disabled="currentPage === totalPages">Next</button>
+        </div>
+          <button @click="viewModal = false" class="btn btn-danger">Tutup</button>
       </div>
     </div>
 
