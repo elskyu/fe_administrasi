@@ -185,8 +185,8 @@ onMounted(async () => {
             <div class="card-body">
               <div class="row">
                 <div class="card-body">
-                  <h2 class="card-title" style="display: flex; justify-content: center; margin-bottom: 25px;">Detail
-                    Inventaris</h2>
+                  <h3 class="card-title" style="display: flex; justify-content: center; margin-bottom: 25px;">Detail
+                    Inventaris</h3>
                   <div class="form-group-row">
                     <div class="card-lihat" style="width: 395px;">
                       <div class="form-group-row">
@@ -235,15 +235,15 @@ onMounted(async () => {
                   </div>
                 </div>
 
-                <h2 class="card-title"
+                <h3 class="card-title"
                   style="display: flex; justify-content: center; margin-bottom: 10px; margin-top: 25px;">Detail
-                  Peminjaman</h2>
+                  Peminjaman</h3>
                 <div class="form-group-row" style=" margin-bottom: 10px;">
                   <div style="margin-top: 5px; margin-bottom: 10px;">
                     <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Pinjam
                       Inventaris</button>
                   </div>
-                  <div style="margin-top: 5px; margin-right: -10px;">
+                  <div style="margin-top: 5px; margin-right: -10px; margin-bottom: 10px;">
                     <router-link :to="{ name: 'inventaris_pegawai.inventaris' }"
                       class="btn btn-md btn-warning rounded-sm" style="right: 0;">Kembali</router-link>
                   </div>

@@ -75,13 +75,8 @@ const filteredInventaris = computed(() => {
   return filtered;
 });
 
-onBeforeMount(async() => {
-  await fetchUserName();
-  isLoading.value = false;
-});
-
-onMounted(async() => {
-  await fetchUserName();
+onMounted(async () => {
+  fetchUserName();
   await fetchDataInventaris();
   isLoading.value = false;
 });
@@ -118,57 +113,61 @@ onMounted(async() => {
                 </div>
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
-                    <select id="kategoriFilter" v-model="kategoriFilter" class="form-cari" style="margin-right: 10px; width: 155px;">
+                    <select id="kategoriFilter" v-model="kategoriFilter" class="form-cari"
+                      style="margin-right: 10px; width: 155px;">
                       <option value="">Mobil/Motor</option>
                       <option value="Mobil">Mobil</option>
                       <option value="Motor">Motor</option>
                     </select>
                     <div class="search-container" style="margin-right: -10px; width: 275px;">
-                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari inventaris" style="width: 100%; padding-right: 40px;" />
+                      <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari inventaris"
+                        style="width: 100%; padding-right: 40px;" />
                       <SearchIcon class="search-icon" />
                     </div>
                   </div>
                 </div>
-              
-              <table class="table table-bordered">
-                <thead class="bg-dark text-white text-center">
-                  <tr>
-                    <th scope="col">ID INVENTARIS</th>
-                    <th scope="col">NOPOL</th>
-                    <th scope="col">MEREK</th>
-                    <th scope="col">KATEGORI</th>
-                    <th scope="col">TAHUN</th>
-                    <th scope="col">PAJAK</th>
-                    <th scope="col">MASA PAJAK</th>
-                    <th scope="col">HARGA BELI</th>
-                    <th scope="col">TANGGAL BELI</th>
-                    <th scope="col">AKSI</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-if="filteredInventaris.length === 0">
-                    <td colspan="11" class="text-center">
-                      <div class="alert alert-danger mb-0">
-                        Data Belum Tersedia!
-                      </div>
-                    </td>
-                  </tr>
-                  <tr v-else v-for="(inventaris, index) in filteredInventaris" :key="index">
-                    <td class="text-center">{{ inventaris.id_inventaris }}</td>
-                    <td>{{ inventaris.nopol }}</td>
-                    <td>{{ inventaris.merek }}</td>
-                    <td>{{ inventaris.kategori }}</td>
-                    <td>{{ inventaris.tahun }}</td>
-                    <td>{{ inventaris.pajak }}</td>
-                    <td>{{ inventaris.masa_pajak }}</td>
-                    <td>{{ inventaris.harga_beli }}</td>
-                    <td>{{ inventaris.tanggal_beli }}</td>
-                    <td class="text-center">
-                        <router-link :to="{ name: 'inventaris_pegawai.lihat_inventaris', params: { id: inventaris.id_inventaris } }" class="btn btn-sm btn-warning rounded-sm border-0 me-2 custom-button">Lihat</router-link>
+
+                <table class="table table-bordered">
+                  <thead class="bg-dark text-white text-center">
+                    <tr>
+                      <th scope="col">ID INVENTARIS</th>
+                      <th scope="col">NOPOL</th>
+                      <th scope="col">MEREK</th>
+                      <th scope="col">KATEGORI</th>
+                      <th scope="col">TAHUN</th>
+                      <th scope="col">PAJAK</th>
+                      <th scope="col">MASA PAJAK</th>
+                      <th scope="col">HARGA BELI</th>
+                      <th scope="col">TANGGAL BELI</th>
+                      <th scope="col">AKSI</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-if="filteredInventaris.length === 0">
+                      <td colspan="11" class="text-center">
+                        <div class="alert alert-danger mb-0">
+                          Data Belum Tersedia!
+                        </div>
                       </td>
-                  </tr>
-                </tbody>
-              </table>
+                    </tr>
+                    <tr v-else v-for="(inventaris, index) in filteredInventaris" :key="index">
+                      <td class="text-center">{{ inventaris.id_inventaris }}</td>
+                      <td>{{ inventaris.nopol }}</td>
+                      <td>{{ inventaris.merek }}</td>
+                      <td>{{ inventaris.kategori }}</td>
+                      <td>{{ inventaris.tahun }}</td>
+                      <td>{{ inventaris.pajak }}</td>
+                      <td>{{ inventaris.masa_pajak }}</td>
+                      <td>{{ inventaris.harga_beli }}</td>
+                      <td>{{ inventaris.tanggal_beli }}</td>
+                      <td class="text-center">
+                        <router-link
+                          :to="{ name: 'inventaris_pegawai.lihat_inventaris', params: { id: inventaris.id_inventaris } }"
+                          class="btn btn-sm btn-warning rounded-sm border-0 me-2 custom-button">Lihat</router-link>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

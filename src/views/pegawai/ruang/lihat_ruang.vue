@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount, onMounted} from 'vue';
+import { ref, computed, onBeforeMount, onMounted } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
@@ -9,6 +9,7 @@ import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/admin.css';
 import '/src/style/loading.css';
+import '/src/style/surat_masuk.css';
 import Loading from '/src/style/loading.vue';
 
 const route = useRoute();
@@ -20,15 +21,18 @@ const userCabang = ref('');
 const userName = ref('');
 const isLoading = ref(true);
 
+const currentPage = ref(1);
+const itemsPerPage = ref(5); // Atur sesuai dengan jumlah item yang diinginkan per halaman
+
 const addFormData = ref({
-      id_reservasi: '',
-      ruang: '',
-      tanggal_reservasi: '',
-      tanggal_selesai: '',
-      durasi: '',
-      pegawai: '',
-      keterangan: '',
-      cabang: '',
+  id_reservasi: '',
+  ruang: '',
+  tanggal_reservasi: '',
+  tanggal_selesai: '',
+  durasi: '',
+  pegawai: '',
+  keterangan: '',
+  cabang: '',
 });
 
 const fetchUserName = async () => {
@@ -118,6 +122,34 @@ const generateNewRrId = async () => {
   }
 };
 
+// const paginatedRuang = computed(() => {
+//   const start = (currentPage.value - 1) * itemsPerPage.value;
+//   const end = start + itemsPerPage.value;
+//   return ruang.value.slice(start, end);
+// });
+
+const paginatedRuang = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return ruang.value[0]?.reservasi_ruang.slice(start, end) || [];
+});
+
+const totalPages = computed(() => {
+  return Math.ceil((ruang.value[0]?.reservasi_ruang.length || 0) / itemsPerPage.value);
+});
+
+const nextPage = (page) => {
+  if (page > 0 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value -= 1;
+  }
+};
+
 onBeforeMount(() => {
   fetchDataRuang();
 });
@@ -131,54 +163,64 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="background-container">
-      <div class="content">
-        <div class="container mt-5 mb-5">
-          <div class="flex-container" style="display: flex; justify-content: space-between;">
-            <div class="card2" style="flex: 0 0 81%; margin-right: 10px; margin-left: -10px;">
-              <h2>Ruang</h2>
-            </div>
-            <div class="card-nama" style="flex: 0 0 20%;">
-              <div class="form-group-row" style="display: flex; align-items: center; margin-right: 20px;">
-                <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
-                  style="align-items: center; margin-right: 5px;">
-                  <path
-                    d="M10 0C15.52 0 20 4.48 20 10C20 15.52 15.52 20 10 20C4.48 20 0 15.52 0 10C0 4.48 4.48 0 10 0ZM4.023 13.416C5.491 15.606 7.695 17 10.16 17C12.624 17 14.829 15.607 16.296 13.416C14.6317 11.8606 
+  <div class="background-container">
+    <div class="content">
+      <div class="container mt-5 mb-5">
+        <div class="flex-container" style="display: flex; justify-content: space-between;">
+          <div class="card2" style="flex: 0 0 81%; margin-right: 10px; margin-left: -15px;">
+            <h2>Ruang</h2>
+          </div>
+          <div class="card-nama" style="flex: 0 0 20%;">
+            <div class="form-group-row" style="display: flex; align-items: center; margin-right: 20px;">
+              <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
+                style="align-items: center; margin-right: 5px;">
+                <path
+                  d="M10 0C15.52 0 20 4.48 20 10C20 15.52 15.52 20 10 20C4.48 20 0 15.52 0 10C0 4.48 4.48 0 10 0ZM4.023 13.416C5.491 15.606 7.695 17 10.16 17C12.624 17 14.829 15.607 16.296 13.416C14.6317 11.8606 
                     12.4379 10.9968 10.16 11C7.88171 10.9966 5.68751 11.8604 4.023 13.416V13.416ZM10 9C10.7956 9 11.5587 8.68393 12.1213 8.12132C12.6839 7.55871 13 6.79565 13 6C13 5.20435 12.6839 4.44129 12.1213 
                     3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z"
-                    fill="#44d569" />
-                </svg>
-                <h4>{{ userName }}</h4>
-              </div>
+                  fill="#44d569" />
+              </svg>
+              <h4>{{ userName }}</h4>
             </div>
           </div>
-  
-          <div class="col-md-12" style="margin-left: -10px; width: auto;">
-            <div class="card border-0">
-              <div class="card-body">
-                <div class="row">
-                  <div class="card-body">
-                    <h3 class="card-title">Detail Ruang</h3>
-                    <div class="row">
-                      <label class="col-sm-3 col-form-label">ID Ruang :</label>
-                      <div class="col-sm-9">
-                        <p class="form-control-plaintext">{{ ruang[0].id_ruang }}</p>
+        </div>
+
+        <div class="col-md-12" style="margin-left: -10px; width: auto;">
+          <div class="card-lihat-lihatRuang border-0">
+            <div class="card-body">
+              <div class="row">
+                <div class="card-body">
+                  <h3 class="card-title" style="display: flex; justify-content: center;  margin-bottom: 25px;">Detail
+                    Ruang</h3>
+                  <div class="form-group-row">
+                    <div class="card-lihat-ruang" style="width: 605px;">
+                      <div class="form-group-row">
+                        <label class="label-lihat" style="font-size: 18px;">ID Ruang :</label>
+                        <p class="text-lihat" style="font-size: 16px;">{{ ruang[0].id_ruang }}</p>
                       </div>
                     </div>
-                    <div class="row">
-                      <label class="col-sm-3 col-form-label">Nama Ruang :</label>
-                      <div class="col-sm-9">
-                        <p class="form-control-plaintext">{{ ruang[0].nama_ruang }}</p>
+                    <div class="card-lihat-ruang" style="width: 605px;">
+                      <div class="form-group-row">
+                        <label class="label-lihat" style="font-size: 18px;">Nama Ruang :</label>
+                        <p class="text-lihat" style="font-size: 16px;">{{ ruang[0].nama_ruang }}</p>
                       </div>
                     </div>
                   </div>
-                  <h3 class="card-title">Detail Reservasi Ruang</h3>
-                  <div class="col-md-6 mb-3" style="margin-top: 5px;">
+                </div>
+
+                <h3 class="card-title"
+                  style="display: flex; justify-content: center; margin-bottom: 15px; margin-top: 25px;">Detail
+                  Reservasi Ruang</h3>
+                <div class="form-group-row">
+                  <div style="margin-top: 5px; margin-bottom: 10px;">
                     <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Reservasi</button>
                   </div>
-                  <div class="col-md-6 mb-3">
-                    <router-link :to="{ name: 'ruang_pegawai.ruang' }" class="btn btn-md btn-warning rounded-sm">Kembali</router-link>
+                  <div style="margin-top: 5px; margin-bottom: 10px; margin-right: -10px;">
+                    <router-link :to="{ name: 'ruang_pegawai.ruang' }"
+                      class="btn btn-md btn-warning rounded-sm">Kembali</router-link>
                   </div>
+                </div>
+
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
@@ -190,7 +232,14 @@ onMounted(async () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="rr in ruang[0].reservasi_ruang" :key="rr.id_reservasi">
+                    <tr v-if="!ruang.length || !ruang[0].reservasi_ruang.some(rr => rr.id_reservasi !== null)">
+                      <td colspan="11" class="text-center">
+                        <div class="alert alert-warning mb-0">
+                          Belum ada yang melakukan peminjaman.
+                        </div>
+                      </td>
+                    </tr>
+                    <tr v-else v-for="rr in paginatedRuang" :key="rr.id_reservasi">
                       <td class="text-center">{{ rr.id_reservasi }}</td>
                       <td>{{ rr.tanggal_reservasi }}</td>
                       <td>{{ rr.tanggal_selesai }}</td>
@@ -199,6 +248,10 @@ onMounted(async () => {
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination-controls">
+                  <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+                  <span>Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
                 </div>
               </div>
             </div>
@@ -206,41 +259,69 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+  </div>
 
-    <div v-if="isLoading" class="loading-overlay">
-      <Loading />
-    </div>
-  
-    <!-- Modal for adding new ruang -->
-    <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
-      <div class="modal-content">
-        <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">RESERVASI {{ ruang[0].nama_ruang }}</h4>
-          <div class="form-group">
-            <label for="id_reservasi">Id Reservasi</label>
-            <input v-model="addFormData.id_reservasi" type="text" id="id_reservasi" readonly>
-          </div>
-        <div class="form-group-row">
-          <div class="form-group" style="width: 195px;">
-            <label for="tanggal_reservasi">Tanggal Reservasi</label>
-            <input v-model="addFormData.tanggal_reservasi" type="datetime-local" id="tanggal_reservasi">
-          </div>
-          <div class="form-group" style="width: 195px;">
-            <label for="tanggal_selesai">Tanggal Selesai</label>
-            <input v-model="addFormData.tanggal_selesai" type="datetime-local" id="tanggal_selesai">
-          </div>
+  <div v-if="isLoading" class="loading-overlay">
+    <Loading />
+  </div>
+
+  <!-- Modal for adding new ruang -->
+  <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
+    <div class="modal-content">
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">RESERVASI {{
+        ruang[0].nama_ruang }}</h4>
+      <div class="form-group">
+        <label for="id_reservasi">Id Reservasi</label>
+        <input v-model="addFormData.id_reservasi" type="text" id="id_reservasi" readonly>
+      </div>
+      <div class="form-group-row">
+        <div class="form-group" style="width: 195px;">
+          <label for="tanggal_reservasi">Tanggal Reservasi</label>
+          <input v-model="addFormData.tanggal_reservasi" type="datetime-local" id="tanggal_reservasi">
         </div>
-        <div class="form-group">
-          <label for="durasi">Durasi</label>
-          <input v-model="addFormData.durasi" type="time" id="durasi">
-        </div>
-        <div class="form-group">
-          <label for="keterangan">Keterangan</label>
-          <input v-model="addFormData.keterangan" type="text" id="keterangan">
-        </div>
-        <div class="form-actions">
-          <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewReservasi">Simpan Perubahan</button>
-          <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
+        <div class="form-group" style="width: 195px;">
+          <label for="tanggal_selesai">Tanggal Selesai</label>
+          <input v-model="addFormData.tanggal_selesai" type="datetime-local" id="tanggal_selesai">
         </div>
       </div>
+      <div class="form-group">
+        <label for="durasi">Durasi</label>
+        <input v-model="addFormData.durasi" type="time" id="durasi">
+      </div>
+      <div class="form-group">
+        <label for="keterangan">Keterangan</label>
+        <input v-model="addFormData.keterangan" type="text" id="keterangan">
+      </div>
+      <div class="form-actions">
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewReservasi">Simpan Perubahan</button>
+        <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
+      </div>
     </div>
-  </template>
+  </div>
+</template>
+
+<style scoped>
+.pagination-controls {
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.pagination-controls button {
+  background-color: #44d569;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.pagination-controls button:disabled {
+  border-radius: 5px;
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+</style>

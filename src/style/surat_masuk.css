@@ -35,6 +35,17 @@ body {
   height: 591px;
 }
 
+.card-lihat-lihatRuang {
+  background-color: rgb(255, 255, 255);
+  width: 101.4%;
+  padding: 40px 40px;
+  margin-top: 15px;
+  margin-left: -5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 7px;
+  height: 591px;
+}
+
 .card2 {
   background-color: rgb(255, 255, 255);
   padding: 20px;
@@ -115,6 +126,13 @@ p {
 }
 
 .card-lihat {
+  color: rgb(255, 255, 255);
+  padding: 10px 15px;
+  border-radius: 7px;
+  background-color: #28a745;
+}
+
+.card-lihat-ruang {
   color: rgb(255, 255, 255);
   padding: 10px 15px;
   border-radius: 7px;
