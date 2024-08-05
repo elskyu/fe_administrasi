@@ -8,11 +8,13 @@ import '/src/style/modal.css';
 import '/src/style/dasboard.css';
 import '/src/style/kalender_jadwal.css';
 import '/src/style/table.css';
+import '/src/style/loading.css';
 import '/src/style/surat_masuk.css';
 import api from '../../api';
 import axios from 'axios';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import { format } from 'date-fns';
+import Loading from '/src/style/loading.vue';
 
 const events = ref([]);
 const cabangList = ref([]);
@@ -36,6 +38,7 @@ const jadwalall = ref([]);
 const userName = ref('');
 const currentPage = ref(1);
 const totalPages = ref(1);
+const isLoading = ref(true);
 
 const addFormData = ref({
   id_jadwal: '',
@@ -272,16 +275,17 @@ watch([currentMonth, currentYear, cabangFilter, departementFilter, keywordFilter
   await fetchDataJadwal();
 });
 
-onMounted(() => {
+onMounted(async() => {
   const initialView = {
     start: new Date()
   };
   handleViewChange(initialView);
+  fetchUserName();
   fetchDataJadwal();
   fetchDataCabang();
   fetchDataDepartement();
-  generateNewJdwId();
-  fetchUserName();
+  await generateNewJdwId();
+  isLoading.value = false;
 });
 </script>
 
@@ -333,6 +337,10 @@ onMounted(() => {
         </vue-cal>
         </div>
       </div>
+    </div>
+
+    <div v-if="isLoading" class="loading-overlay">
+      <Loading /> <!-- Menampilkan komponen loading -->
     </div>
 
     <!-- Create Event Modal -->

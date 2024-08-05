@@ -8,8 +8,10 @@ import '/src/style/background_color.css';
 import '/src/style/modal.css';
 import '/src/style/dasboard.css';
 import '/src/style/kalender_jadwal_pegawai.css';
+import '/src/style/loading.css';
 import api from '../../../api';
 import { format, parseISO } from 'date-fns';
+import Loading from '/src/style/loading.vue';
 
 const events = ref([]);
 const cabangList = ref([]);
@@ -24,7 +26,7 @@ const userName = ref('');
 const currentMonth = ref('');
 const currentYear = ref('');
 const currentMonthYear = ref(new Date());
-
+const isLoading = ref(true);
 
 const addFormData = ref({
   id_jadwal: '',
@@ -156,15 +158,16 @@ watch([currentMonth, currentYear], async () => {
   await fetchDataJadwal();
 });
 
-onMounted(() => {
+onMounted(async() => {
   const initialView = {
     start: new Date()
   };
   handleViewChange(initialView);
   fetchUserName();
-  fetchDataJadwal();
   fetchDataCabang();
   fetchDataDepartement();
+  await fetchDataJadwal();
+  isLoading.value = false;
 });
 </script>
 
@@ -195,7 +198,7 @@ onMounted(() => {
       <div class="card3">
         <div class="calendar-container">
           <div class="calendar-header">
-            <button @click="viewAllEvents" class="btn btn-secondary">Lihat Jadwal</button>
+            <button @click="viewAllEvents" class="btn btn-md btn-success" style="margin-left: 1px;">Lihat Jadwal</button>
           </div>
 
           <VueCal
@@ -218,7 +221,9 @@ onMounted(() => {
       </div>
     </div>
 
-   
+    <div v-if="isLoading" class="loading-overlay">
+      <Loading /> <!-- Menampilkan komponen loading -->
+    </div>
 
     <!-- View Events Modal -->
     <div v-if="viewModal" class="modal">
