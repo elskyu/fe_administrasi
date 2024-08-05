@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount, onMounted } from 'vue';
+import { ref, computed, onBeforeMount, onMounted } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
@@ -19,6 +19,10 @@ const userID = ref('');
 const userCabang = ref('');
 const userName = ref('');
 const isLoading = ref(true);
+
+// Pagination data
+const currentPage = ref(1);
+const itemsPerPage = ref(5);
 
 const addFormData = ref({
   id_pinjam: '',
@@ -118,6 +122,28 @@ const generateNewPiId = async () => {
   }
 };
 
+const paginatedPemakaian = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return inventarisList.value[0]?.pemakaian_inventaris.slice(start, end) || [];
+});
+
+const totalPages = computed(() => {
+  return Math.ceil((inventarisList.value[0]?.pemakaian_inventaris.length || 0) / itemsPerPage.value);
+});
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value += 1;
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value -= 1;
+  }
+};
+
 onBeforeMount(() => {
   fetchDataInventaris();
 });
@@ -129,6 +155,7 @@ onMounted(async () => {
   isLoading.value = false;
 });
 </script>
+
 
 <template>
   <div class="background-container">
@@ -163,45 +190,45 @@ onMounted(async () => {
                   <div class="form-group-row">
                     <div class="card-lihat" style="width: 395px;">
                       <div class="form-group-row">
-                        <label>ID Inventaris :</label>
+                        <label class="label-lihat">ID Inventaris :</label>
                         <p class="text-lihat">{{ inventarisList[0].id_inventaris }}</p>
                       </div>
                       <div class="form-group-row">
-                        <label>Merek :</label>
+                        <label class="label-lihat">Merek :</label>
                         <p class="text-lihat">{{ inventarisList[0].merek }}</p>
                       </div>
                       <div class="form-group-row">
-                        <label>Nopol :</label>
+                        <label class="label-lihat">Nopol :</label>
                         <p class="text-lihat">{{ inventarisList[0].nopol }}</p>
                       </div>
                     </div>
 
                     <div class="card-lihat" style="width: 395px;">
                       <div class="form-group-row">
-                        <label>Pajak :</label>
+                        <label class="label-lihat">Pajak :</label>
                         <p class="text-lihat">{{ inventarisList[0].pajak }}</p>
                       </div>
                       <div class="form-group-row">
-                        <label>Kategori :</label>
+                        <label class="label-lihat">Kategori :</label>
                         <p class="text-lihat">{{ inventarisList[0].kategori }}</p>
                       </div>
                       <div class="form-group-row">
-                        <label>Masa Pajak :</label>
+                        <label class="label-lihat">Masa Pajak :</label>
                         <p class="text-lihat">{{ inventarisList[0].masa_pajak }}</p>
                       </div>
                     </div>
 
                     <div class="card-lihat" style="width: 395px;">
                       <div class="form-group-row">
-                        <label>Tahun :</label>
+                        <label class="label-lihat">Tahun :</label>
                         <p class="text-lihat">{{ inventarisList[0].tahun }}</p>
                       </div>
                       <div class="form-group-row">
-                        <label>Harga Beli :</label>
+                        <label class="label-lihat">Harga Beli :</label>
                         <p class="text-lihat">{{ inventarisList[0].harga_beli }}</p>
                       </div>
                       <div class="form-group-row">
-                        <label>Tanggal Beli :</label>
+                        <label class="label-lihat">Tanggal Beli :</label>
                         <p class="text-lihat">{{ inventarisList[0].tanggal_beli }}</p>
                       </div>
                     </div>
@@ -241,8 +268,7 @@ onMounted(async () => {
                         </div>
                       </td>
                     </tr>
-                    <tr v-else v-for="pinventaris in inventarisList[0].pemakaian_inventaris"
-                      :key="pinventaris.id_pinjam">
+                    <tr v-else v-for="pinventaris in paginatedPemakaian" :key="pinventaris.id_pinjam">
                       <td class="text-center">{{ pinventaris.id_pinjam }}</td>
                       <td>{{ pinventaris.tanggal_pinjam }}</td>
                       <td>{{ pinventaris.tanggal_kembali }}</td>
@@ -251,6 +277,11 @@ onMounted(async () => {
                     </tr>
                   </tbody>
                 </table>
+                <div class="pagination-controls">
+                  <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+                  <span>Page {{ currentPage }} of {{ totalPages }}</span>
+                  <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+                </div>
               </div>
             </div>
           </div>
@@ -296,3 +327,29 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.pagination-controls {
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.pagination-controls button {
+  background-color: #44d569;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.pagination-controls button:disabled {
+  border-radius: 5px;
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+</style>

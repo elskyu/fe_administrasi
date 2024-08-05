@@ -200,6 +200,13 @@ body {
       max-width: 100%;
       min-width: 0; 
     }
+
+    .logo {
+      max-width: 50%;
+      display: flex;
+      justify-content: center;
+      margin: 0 auto;
+    }
   }
 
   .logo {
