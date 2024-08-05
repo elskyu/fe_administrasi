@@ -300,7 +300,7 @@ onMounted(() => {
             <button @click="showModal = true" class="btn btn-primary">Tambah Jadwal</button>
             <button @click="viewAllEvents" class="btn btn-secondary">Lihat Jadwal</button>
           </div>
-          <VueCal
+          <vue-cal
             hide-view-selector
             :time="false"
             active-view="month"
@@ -308,14 +308,15 @@ onMounted(() => {
             xsmall
             :disable-views="['years', 'week', 'day']"
             events-count-on-year-view
+            events-on-month-view="short"
             :events="events"
             @view-change="handleViewChange"
             @event-click="viewEvent"
             @cell-click="addEventForDate"
             @event-change="changeEvent"
-            style="width: 100%; height: 520px;"
             locale="id"
-          />
+          >
+        </vue-cal>
         </div>
       </div>
     </div>

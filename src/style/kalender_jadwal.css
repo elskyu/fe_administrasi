@@ -16,10 +16,13 @@
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* .vuecal__cell {
-  /* border: 1px solid #070707;
-  outline: auto; */
+.vuecal--month-view .vuecal__cell-content {
+  justify-content: flex-start;
+  height: 5.58rem;
+  align-items: flex-end;
+}
 
+.vuecal--month-view .vuecal__cell-date {padding: 4px;}
 
 .vuecal__header {
   background-color: #6C7698;
