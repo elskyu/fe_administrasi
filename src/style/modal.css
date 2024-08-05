@@ -220,5 +220,15 @@ h4 {
 
 .text-lihat {
   color: rgb(255, 255, 255);
-  margin-left: 10px;
+  margin-left: 5px;
+  font-size: 14px;
+}
+
+.label-lihat {
+  color: rgb(255, 255, 255);
+  font-size: 14px;
+}
+
+.card-tittle {
+  font-size: 24px;
 }
