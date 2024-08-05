@@ -1,7 +1,7 @@
 .calendar-container {
   width: auto;
-  height: auto; /* Adjust calendar height as needed */
-  overflow: auto; /* Avoid scroll bar */
+  height: auto;
+  overflow: auto;
 }
 
 .vuecal {
@@ -17,12 +17,8 @@
 }
 
 .vuecal--month-view .vuecal__cell-content {
-  justify-content: flex-start;
   height: 5.58rem;
-  align-items: flex-end;
 }
-
-.vuecal--month-view .vuecal__cell-date {padding: 4px;}
 
 .vuecal__header {
   background-color: #6C7698;

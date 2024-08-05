@@ -308,7 +308,6 @@ onMounted(() => {
             xsmall
             :disable-views="['years', 'week', 'day']"
             events-count-on-year-view
-            events-on-month-view="short"
             :events="events"
             @view-change="handleViewChange"
             @event-click="viewEvent"
