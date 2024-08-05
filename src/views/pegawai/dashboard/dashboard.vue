@@ -212,7 +212,6 @@ onMounted(() => {
             @event-click="viewEvent"
             @cell-click="addEventForDate"
             @event-change="changeEvent"
-            style="width: 100%; height: 520px;"
             locale="id"
           />
         </div>

@@ -307,7 +307,7 @@ onMounted(async () => {
                       <td>{{ tamu.jabatan }}</td>
                       <td>{{ tamu.no_hp }}</td>
                       <td>{{ getNamaDepartemen(tamu.departement_dikunjungi) }}</td>
-                      <td>{{ getNamaPegawai(tamu.org_dikunjungi) }}</td>
+                      <td>{{ tamu.org_dikunjungi }}</td>
                       <td>{{ tamu.keperluan }}</td>
                       <td>{{ getNamaCabang(tamu.cabang) }}</td>
                     </tr>

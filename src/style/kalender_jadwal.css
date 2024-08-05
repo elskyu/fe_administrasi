@@ -17,7 +17,11 @@
 }
 
 .vuecal--month-view .vuecal__cell-content {
-  height: 5.58rem;
+  height: 5.52rem;
+}
+
+.vuecal--year-view .vuecal__cell-content {
+  height: 8.89rem;
 }
 
 .vuecal__header {

@@ -109,6 +109,7 @@ const addEventForDate = async (date) => {
   try {
     const response = await api.get(`/api/showtgl/${tanggal}`);
     tanggalList.value = response.data.data;
+    console.log(tanggalList.value);
     viewModal2.value = true;
   } catch (error) {
     console.error('Error fetching jadwal list:', error);
@@ -413,7 +414,7 @@ onMounted(() => {
             <tr>
               <th scope="col" style="width: 2%;">ID</th>
               <th scope="col" style="width: 8%;">Agenda</th>
-              <th scope="col" style="width: 8%;">Departement</th>
+              <th scope="col" style="width: 8%;">Status</th>
               <th scope="col" style="width: 8%;">Cabang</th>
               <th scope="col" style="width: 8%;">Jadwal</th>
               <th scope="col" style="width: 8%;">Action</th>
@@ -462,6 +463,8 @@ onMounted(() => {
             <tr>
               <th>Jadwal</th>
               <th>Agenda</th>
+              <th>Status</th>
+              <th>Cabang</th>
             </tr>
           </thead>
           <tbody>
@@ -475,6 +478,8 @@ onMounted(() => {
             <tr v-for="tanggall in tanggalList" :key="tanggall.tanggal">
               <td>{{ formatTime(tanggall.tanggal) }}</td>
               <td>{{ tanggall.agenda }}</td>
+              <td>{{ tanggall.status === null ? 'Seluruh Departement' : "Departement " + getNamaDepartement(tanggall.status) }}</td>
+              <td class="text-center">{{ getNamaCabang(tanggall.cabang) }}</td>
             </tr>
           </tbody>
         </table>
@@ -499,7 +504,7 @@ onMounted(() => {
             <div class="form-group">
               <label for="departement" style="width:450px">Status</label>
               <select type="text" id="departement" v-model="editFormData.status">
-                <option value="">Semua Departement</option>
+                <option value="">Seluruh Departement</option>
                 <option v-for="d in departementList" :value="d.id_departement" :key="d.id_departement">{{ d.nama_departement }}</option>
               </select>
             </div>

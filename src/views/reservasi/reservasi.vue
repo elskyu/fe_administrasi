@@ -336,7 +336,7 @@ onMounted(async () => {
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
+                  <!-- <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button> -->
                 </div>
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
