@@ -10,6 +10,7 @@ body {
   margin: -33px 25px;
   position: relative;
   z-index: 1; /* Pastikan konten tetap di atas lapisan transparan */
+  
 }
 
 
@@ -20,6 +21,18 @@ body {
   margin-top: 15px;
   margin-left: -1px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+}
+
+.card-lihat-inventaris {
+  background-color: rgb(255, 255, 255);
+  width: 101.4%;
+  padding: 40px 40px;
+  margin-top: 15px;
+  margin-left: -5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 7px;
+  overflow: auto;
+  height: 591px;
 }
 
 .card2 {
@@ -99,5 +112,12 @@ p {
 .btn {
   color: #fff; /* Button text color */
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; /* Smooth transition for background and border colors */
+}
+
+.card-lihat {
+  color: rgb(255, 255, 255);
+  padding: 10px 15px;
+  border-radius: 7px;
+  background-color: #28a745;
 }
 

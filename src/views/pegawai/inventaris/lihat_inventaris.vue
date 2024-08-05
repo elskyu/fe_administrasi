@@ -122,7 +122,7 @@ onBeforeMount(() => {
   fetchDataInventaris();
 });
 
-onMounted(async() => { 
+onMounted(async () => {
   fetchUserName();
   await fetchDataInventaris();
   await generateNewPiId();
@@ -133,9 +133,9 @@ onMounted(async() => {
 <template>
   <div class="background-container">
     <div class="content">
-      <div class="container mt-5 mb-5">
+      <div class=" container mt-5 mb-5">
         <div class="flex-container" style="display: flex; justify-content: space-between;">
-          <div class="card2" style="flex: 0 0 81%; margin-right: 10px; margin-left: -10px;">
+          <div class="card2" style="flex: 0 0 81%; margin-right: 15px; margin-left: -15px;">
             <h2>Inventaris</h2>
           </div>
           <div class="card-nama" style="flex: 0 0 20%;">
@@ -154,100 +154,103 @@ onMounted(async() => {
         </div>
 
         <div class="col-md-12" style="margin-left: -10px; width: auto;">
-          <div class="card border-0">
+          <div class="card-lihat-inventaris border-0">
             <div class="card-body">
               <div class="row">
                 <div class="card-body">
-                  <h3 class="card-title">Detail Inventaris</h3>
-                  <div class="row">
-                    <label class="col-sm-3 col-form-label">ID Inventaris :</label>
-                    <div class="col-sm-9">
-                      <p class="form-control-plaintext">{{ inventarisList[0].id_inventaris }}</p>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <label class="col-sm-3 col-form-label">Nopol :</label>
-                    <div class="col-sm-9">
-                      <p class="form-control-plaintext">{{ inventarisList[0].nopol }}</p>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <label class="col-sm-3 col-form-label">Merek :</label>
-                    <div class="col-sm-9">
-                      <p class="form-control-plaintext">{{ inventarisList[0].merek }}</p>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <label class="col-sm-3 col-form-label">Kategori :</label>
-                    <div class="col-sm-9">
-                      <p class="form-control-plaintext">{{ inventarisList[0].kategori }}</p>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <label class="col-sm-3 col-form-label">Tahun :</label>
-                    <div class="col-sm-9">
-                      <p class="form-control-plaintext">{{ inventarisList[0].tahun }}</p>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <label class="col-sm-3 col-form-label">Pajak :</label>
-                    <div class="col-sm-9">
-                      <p class="form-control-plaintext">{{ inventarisList[0].pajak }}</p>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <label class="col-sm-3 col-form-label">Masa Pajak :</label>
-                    <div class="col-sm-9">
-                      <p class="form-control-plaintext">{{ inventarisList[0].masa_pajak }}</p>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <label class="col-sm-3 col-form-label">Harga Beli :</label>
-                    <div class="col-sm-9">
-                      <p class="form-control-plaintext">{{ inventarisList[0].harga_beli }}</p>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <label class="col-sm-3 col-form-label">Tanggal Beli :</label>
-                    <div class="col-sm-9">
-                      <p class="form-control-plaintext">{{ inventarisList[0].tanggal_beli }}</p>
-                    </div>
-                  </div>
-                </div>
-                <h3 class="card-title">Detail Peminjaman</h3>
-                <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Pinjam Inventaris</button>
-                </div>
-                <div class="col-md-6 mb-3" style="margin-top: 5px; margin-right: -10px;">
-                  <router-link :to="{ name: 'inventaris_pegawai.inventaris' }" class="btn btn-md btn-warning rounded-sm" style="right: 0;">Kembali</router-link>
-                </div>
-              <table class="table table-bordered">
-                <thead class="bg-dark text-white text-center">
-                  <tr>
-                    <th scope="col">ID Pinjam</th>
-                    <th scope="col">pinjam</th>
-                    <th scope="col">kembali</th>
-                    <th scope="col">Durasi Pinjam</th>
-                    <th scope="col">Keterangan</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-if="!inventarisList.length || !inventarisList[0].pemakaian_inventaris.some(pinventaris => pinventaris.id_pinjam !== null)">
-                    <td colspan="11" class="text-center">
-                      <div class="alert alert-warning mb-0">
-                        Belum ada yang melakukan peminjaman.
+                  <h2 class="card-title" style="display: flex; justify-content: center; margin-bottom: 25px;">Detail
+                    Inventaris</h2>
+                  <div class="form-group-row">
+                    <div class="card-lihat" style="width: 395px;">
+                      <div class="form-group-row">
+                        <label>ID Inventaris :</label>
+                        <p class="text-lihat">{{ inventarisList[0].id_inventaris }}</p>
                       </div>
-                    </td>
-                  </tr>
-                  <tr v-else v-for="pinventaris in inventarisList[0].pemakaian_inventaris" :key="pinventaris.id_pinjam">
-                    <td class="text-center">{{ pinventaris.id_pinjam }}</td>
-                    <td>{{ pinventaris.tanggal_pinjam }}</td>
-                    <td>{{ pinventaris.tanggal_kembali }}</td>
-                    <td>{{ pinventaris.durasi_pinjam }}</td>
-                    <td>{{ pinventaris.keterangan }}</td>
-                  </tr>
-                </tbody>
-              </table>
+                      <div class="form-group-row">
+                        <label>Merek :</label>
+                        <p class="text-lihat">{{ inventarisList[0].merek }}</p>
+                      </div>
+                      <div class="form-group-row">
+                        <label>Nopol :</label>
+                        <p class="text-lihat">{{ inventarisList[0].nopol }}</p>
+                      </div>
+                    </div>
+
+                    <div class="card-lihat" style="width: 395px;">
+                      <div class="form-group-row">
+                        <label>Pajak :</label>
+                        <p class="text-lihat">{{ inventarisList[0].pajak }}</p>
+                      </div>
+                      <div class="form-group-row">
+                        <label>Kategori :</label>
+                        <p class="text-lihat">{{ inventarisList[0].kategori }}</p>
+                      </div>
+                      <div class="form-group-row">
+                        <label>Masa Pajak :</label>
+                        <p class="text-lihat">{{ inventarisList[0].masa_pajak }}</p>
+                      </div>
+                    </div>
+
+                    <div class="card-lihat" style="width: 395px;">
+                      <div class="form-group-row">
+                        <label>Tahun :</label>
+                        <p class="text-lihat">{{ inventarisList[0].tahun }}</p>
+                      </div>
+                      <div class="form-group-row">
+                        <label>Harga Beli :</label>
+                        <p class="text-lihat">{{ inventarisList[0].harga_beli }}</p>
+                      </div>
+                      <div class="form-group-row">
+                        <label>Tanggal Beli :</label>
+                        <p class="text-lihat">{{ inventarisList[0].tanggal_beli }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <h2 class="card-title"
+                  style="display: flex; justify-content: center; margin-bottom: 10px; margin-top: 25px;">Detail
+                  Peminjaman</h2>
+                <div class="form-group-row" style=" margin-bottom: 10px;">
+                  <div style="margin-top: 5px; margin-bottom: 10px;">
+                    <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Pinjam
+                      Inventaris</button>
+                  </div>
+                  <div style="margin-top: 5px; margin-right: -10px;">
+                    <router-link :to="{ name: 'inventaris_pegawai.inventaris' }"
+                      class="btn btn-md btn-warning rounded-sm" style="right: 0;">Kembali</router-link>
+                  </div>
+                </div>
+
+                <table class="table table-bordered">
+                  <thead class="bg-dark text-white text-center">
+                    <tr>
+                      <th scope="col">ID Pinjam</th>
+                      <th scope="col">pinjam</th>
+                      <th scope="col">kembali</th>
+                      <th scope="col">Durasi Pinjam</th>
+                      <th scope="col">Keterangan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-if="!inventarisList.length || !inventarisList[0].pemakaian_inventaris.some(pinventaris => pinventaris.id_pinjam !== null)">
+                      <td colspan="11" class="text-center">
+                        <div class="alert alert-warning mb-0">
+                          Belum ada yang melakukan peminjaman.
+                        </div>
+                      </td>
+                    </tr>
+                    <tr v-else v-for="pinventaris in inventarisList[0].pemakaian_inventaris"
+                      :key="pinventaris.id_pinjam">
+                      <td class="text-center">{{ pinventaris.id_pinjam }}</td>
+                      <td>{{ pinventaris.tanggal_pinjam }}</td>
+                      <td>{{ pinventaris.tanggal_kembali }}</td>
+                      <td>{{ pinventaris.durasi_pinjam }}</td>
+                      <td>{{ pinventaris.keterangan }}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -264,17 +267,17 @@ onMounted(async() => {
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
       <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Pinjam {{ inventarisList[0].merek }}</h4>
-        <div class="form-group">
-          <label for="id_pinjam" style="width: 195px;">ID</label>
-          <input type="text" id="id_pinjam" v-model="addFormData.id_pinjam" readonly />
-        </div>
+      <div class="form-group">
+        <label for="id_pinjam" style="width: 195px;">ID</label>
+        <input type="text" id="id_pinjam" v-model="addFormData.id_pinjam" readonly />
+      </div>
       <div class="form-group-row">
-        <div class="form-group">
-          <label for="tanggal_pinjam" style="width: 195px;">Tanggal Pinjam</label>
+        <div class="form-group" style="width: 195px;">
+          <label for="tanggal_pinjam" style="width: 175px;">Tanggal Pinjam</label>
           <input type="datetime-local" id="tanggal_pinjam" v-model="addFormData.tanggal_pinjam" />
         </div>
-        <div class="form-group">
-          <label for="tanggal_kembali" style="width: 195px;">Tanggal Kembali</label>
+        <div class="form-group" style="width: 195px;">
+          <label for="tanggal_kembali">Tanggal Kembali</label>
           <input type="datetime-local" id="tanggal_kembali" v-model="addFormData.tanggal_kembali" />
         </div>
       </div>
