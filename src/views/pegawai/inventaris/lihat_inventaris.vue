@@ -3,6 +3,7 @@ import { ref, computed, onBeforeMount, onMounted } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
+import { useToast } from 'vue-toastification';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
@@ -11,6 +12,7 @@ import '/src/style/surat_masuk.css';
 import '/src/style/loading.css';
 import Loading from '/src/style/loading.vue';
 
+const toast = useToast();
 const route = useRoute();
 const id = ref(route.params.id);
 const inventarisList = ref([]);
@@ -20,7 +22,7 @@ const userCabang = ref('');
 const userName = ref('');
 const isLoading = ref(true);
 
-// Pagination data
+// Data untuk paginasi
 const currentPage = ref(1);
 const itemsPerPage = ref(5);
 
@@ -69,8 +71,29 @@ const fetchDataInventaris = async () => {
   }
 };
 
+const isAvailable = (tanggal_pinjam, tanggal_kembali) => {
+  const existingPemakaian = inventarisList.value[0]?.pemakaian_inventaris || [];
+  for (const pemakaian of existingPemakaian) {
+    const start = new Date(pemakaian.tanggal_pinjam);
+    const end = new Date(pemakaian.tanggal_kembali);
+    const newStart = new Date(tanggal_pinjam);
+    const newEnd = new Date(tanggal_kembali);
+
+    if ((newStart >= start && newStart <= end) || (newEnd >= start && newEnd <= end) ||
+      (start >= newStart && start <= newEnd) || (end >= newStart && end <= newEnd)) {
+      return false;
+    }
+  }
+  return true;
+};
+
 const saveNewPemakaian = async () => {
   try {
+    if (!isAvailable(addFormData.value.tanggal_pinjam, addFormData.value.tanggal_kembali)) {
+      toast.error('Inventaris Sudah Digunakan!');
+      return;
+    }
+
     addFormData.value.pegawai = userID.value;
     addFormData.value.cabang = userCabang.value;
     addFormData.value.inventaris = id.value;
@@ -162,7 +185,7 @@ onMounted(async () => {
     <div class="content">
       <div class=" container mt-5 mb-5">
         <div class="flex-container" style="display: flex; justify-content: space-between;">
-          <div class="card2" style="flex: 0 0 81%; margin-right: 15px; margin-left: -15px;">
+          <div class="card2" style="flex: 0 0 81%; margin-right: 15px; margin-left: -10px;">
             <h2>Inventaris</h2>
           </div>
           <div class="card-nama" style="flex: 0 0 20%;">
@@ -175,7 +198,7 @@ onMounted(async () => {
                   3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z"
                   fill="#44d569" />
               </svg>
-              <h4>{{ userName }}</h4>
+              <h4>Halo {{ userName }}</h4>
             </div>
           </div>
         </div>
@@ -253,8 +276,8 @@ onMounted(async () => {
                   <thead class="bg-dark text-white text-center">
                     <tr>
                       <th scope="col">ID Pinjam</th>
-                      <th scope="col">pinjam</th>
-                      <th scope="col">kembali</th>
+                      <th scope="col">Tanggal Pinjam</th>
+                      <th scope="col">Tanggal Kembali</th>
                       <th scope="col">Durasi Pinjam</th>
                       <th scope="col">Keterangan</th>
                     </tr>

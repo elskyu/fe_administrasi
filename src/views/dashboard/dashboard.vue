@@ -30,8 +30,8 @@ const activeView = ref('month');
 const clickedDate = ref(null);
 const cabangFilter = ref('');
 const departementFilter = ref('');
-const currentMonth = ref ('');
-const currentYear = ref ('');
+const currentMonth = ref('');
+const currentYear = ref('');
 const currentMonthYear = ref(new Date());
 const keywordFilter = ref('');
 const jadwalall = ref([]);
@@ -89,7 +89,7 @@ const changePage = async (page) => {
 
 const fetchDataJadwal = async () => {
   try {
-    const response = await api.get(`/api/jadwal?page=${currentPage.value}&tahun?=${currentYear.value}&bulan?=${currentMonth.value}&cabang?=${cabangFilter.value}&status?=${departementFilter.value}&keyword=${keywordFilter.value}`); 
+    const response = await api.get(`/api/jadwal?page=${currentPage.value}&tahun?=${currentYear.value}&bulan?=${currentMonth.value}&cabang?=${cabangFilter.value}&status?=${departementFilter.value}&keyword=${keywordFilter.value}`);
     jadwalList.value = response.data.data.data;
     currentPage.value = response.data.data.current_page;
     totalPages.value = response.data.data.last_page;
@@ -226,7 +226,7 @@ const changeEvent = (event) => {
 
 const handleViewChange = (view) => {
   let startDate;
-  
+
   if (view.startDate) {
     startDate = view.startDate;
   } else if (view.start) {
@@ -275,7 +275,7 @@ watch([currentMonth, currentYear, cabangFilter, departementFilter, keywordFilter
   await fetchDataJadwal();
 });
 
-onMounted(async() => {
+onMounted(async () => {
   const initialView = {
     start: new Date()
   };
@@ -307,7 +307,7 @@ onMounted(async() => {
                   3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z"
                   fill="#44d569" />
               </svg>
-              <h4>Hello {{ userName }}</h4>
+              <h4>Halo {{ userName }}</h4>
             </div>
           </div>
         </div>
@@ -319,22 +319,11 @@ onMounted(async() => {
             <button @click="showModal = true" class="btn btn-md btn-success" style="margin-left: 1px;">Tambah</button>
             <button @click="viewAllEvents" class="btn btn-warning">Lihat Jadwal</button>
           </div>
-          <vue-cal
-            hide-view-selector
-            :time="false"
-            active-view="month"
-            v-model:active-view="activeView"
-            xsmall
-            :disable-views="['years', 'week', 'day']"
-            events-count-on-year-view
-            :events="events"
-            @view-change="handleViewChange"
-            @event-click="viewEvent"
-            @cell-click="addEventForDate"
-            @event-change="changeEvent"
-            locale="id"
-          >
-        </vue-cal>
+          <vue-cal hide-view-selector :time="false" active-view="month" v-model:active-view="activeView" xsmall
+            :disable-views="['years', 'week', 'day']" events-count-on-year-view :events="events"
+            @view-change="handleViewChange" @event-click="viewEvent" @cell-click="addEventForDate"
+            @event-change="changeEvent" locale="id">
+          </vue-cal>
         </div>
       </div>
     </div>
@@ -361,7 +350,8 @@ onMounted(async() => {
               <label for="departement" style="width:450px;">Status</label>
               <select type="text" id="departement" v-model="addFormData.status">
                 <option value="">Semua Departement</option>
-                <option v-for="d in departementList" :value="d.id_departement" :key="d.id_departement">{{ d.nama_departement }}</option>
+                <option v-for="d in departementList" :value="d.id_departement" :key="d.id_departement">{{
+                  d.nama_departement }}</option>
               </select>
             </div>
             <div class="form-group">
@@ -415,7 +405,7 @@ onMounted(async() => {
             </div>
           </div>
         </div>
-        
+
 
         <table class="table table-bordered">
           <thead class="text-center">
@@ -439,9 +429,13 @@ onMounted(async() => {
             <tr v-else v-for="jadwal in jadwalList" :key="jadwal.id_jadwal">
               <td class="text-center">{{ jadwal.id_jadwal }}</td>
               <td>{{ jadwal.agenda }}</td>
-              <td>{{ jadwal.status === null ? 'Seluruh Departement' : "Departement " + getNamaDepartement(jadwal.status) }}</td>
+              <td>{{ jadwal.status === null ? 'Seluruh Departement' : "Departement " + getNamaDepartement(jadwal.status)
+                }}</td>
               <td class="text-center">{{ getNamaCabang(jadwal.cabang) }}</td>
-              <td>{{ new Date(jadwal.tanggal).toLocaleString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</td>
+              <td>{{ new Date(jadwal.tanggal).toLocaleString('id-ID', {
+                weekday: 'long', year: 'numeric', month: 'long',
+                day: 'numeric', hour: '2-digit', minute: '2-digit'
+              }) }}</td>
               <td class="text-center">
                 <button @click="editJadwal(jadwal)" class="btn btn-warning">Ubah</button>
                 <button @click="deleteJadwal(jadwal.id_jadwal)" class="btn btn-danger">Hapus</button>
@@ -450,13 +444,12 @@ onMounted(async() => {
           </tbody>
         </table>
         <div class="pagination">
-          <button class="btn-prev" @click="changePage(currentPage - 1)"
-            :disabled="currentPage === 1">Previous</button>
+          <button class="btn-prev" @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Previous</button>
           <span class="pagination">Page {{ currentPage }} of {{ totalPages }}</span>
           <button class="btn-next" @click="changePage(currentPage + 1)"
             :disabled="currentPage === totalPages">Next</button>
         </div>
-          <button @click="viewModal = false" class="btn btn-danger">Tutup</button>
+        <button @click="viewModal = false" class="btn btn-danger">Tutup</button>
       </div>
     </div>
 
@@ -464,7 +457,10 @@ onMounted(async() => {
     <div v-if="viewModal2" class="modal">
       <div class="modal-content-kalendar">
         <h2 style="text-align: center">
-          {{ new Date(clickedDate ?? new Date()).toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}
+          {{ new Date(clickedDate ?? new Date()).toLocaleString('id-ID', {
+            weekday: 'long', day: 'numeric', month:
+              'long', year: 'numeric'
+          }) }}
         </h2>
         <table class="table table-bordered">
           <thead class="text-center">
@@ -486,7 +482,8 @@ onMounted(async() => {
             <tr v-for="tanggall in tanggalList" :key="tanggall.tanggal">
               <td>{{ formatTime(tanggall.tanggal) }}</td>
               <td>{{ tanggall.agenda }}</td>
-              <td>{{ tanggall.status === null ? 'Seluruh Departement' : "Departement " + getNamaDepartement(tanggall.status) }}</td>
+              <td>{{ tanggall.status === null ? 'Seluruh Departement' : "Departement " +
+                getNamaDepartement(tanggall.status) }}</td>
               <td class="text-center">{{ getNamaCabang(tanggall.cabang) }}</td>
             </tr>
           </tbody>
@@ -513,7 +510,8 @@ onMounted(async() => {
               <label for="departement" style="width:450px">Status</label>
               <select type="text" id="departement" v-model="editFormData.status">
                 <option value="">Seluruh Departement</option>
-                <option v-for="d in departementList" :value="d.id_departement" :key="d.id_departement">{{ d.nama_departement }}</option>
+                <option v-for="d in departementList" :value="d.id_departement" :key="d.id_departement">{{
+                  d.nama_departement }}</option>
               </select>
             </div>
             <div class="form-group">

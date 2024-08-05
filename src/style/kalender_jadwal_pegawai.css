@@ -18,12 +18,12 @@
 
 .vuecal--month-view .vuecal__cell-content {
   justify-content: flex-start;
-  height: 5.60rem;
+  height: 4.49rem;
   align-items: flex-end;
 }
 
 .vuecal--year-view .vuecal__cell-content {
-  height: 9rem;
+  height: 7.35rem;
 }
 
 .vuecal--month-view .vuecal__cell-date {padding: 4px;}

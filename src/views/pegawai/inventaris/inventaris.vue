@@ -100,13 +100,13 @@ onMounted(async () => {
                   3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z"
                   fill="#44d569" />
               </svg>
-              <h4>{{ userName }}</h4>
+              <h4>Halo {{ userName }}</h4>
             </div>
           </div>
         </div>
 
         <div class="col-md-12" style="margin-left: -10px; width: auto;">
-          <div class="card border-0">
+          <div class="card-ruang border-0">
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
@@ -130,16 +130,16 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col">ID INVENTARIS</th>
-                      <th scope="col">NOPOL</th>
-                      <th scope="col">MEREK</th>
-                      <th scope="col">KATEGORI</th>
-                      <th scope="col">TAHUN</th>
-                      <th scope="col">PAJAK</th>
-                      <th scope="col">MASA PAJAK</th>
-                      <th scope="col">HARGA BELI</th>
-                      <th scope="col">TANGGAL BELI</th>
-                      <th scope="col">AKSI</th>
+                      <th scope="col">Id Inventaris</th>
+                      <th scope="col">Nopol</th>
+                      <th scope="col">Merek</th>
+                      <th scope="col">Kategori</th>
+                      <th scope="col">Tahun</th>
+                      <th scope="col">Pajak</th>
+                      <th scope="col">Masa Pajak</th>
+                      <th scope="col">Harga Beli</th>
+                      <th scope="col">Tanggal Beli</th>
+                      <th scope="col">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>

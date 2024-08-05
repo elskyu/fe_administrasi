@@ -138,7 +138,7 @@ const changeEvent = (event) => {
 
 const handleViewChange = (view) => {
   let startDate;
-  
+
   if (view.startDate) {
     startDate = view.startDate;
   } else if (view.start) {
@@ -158,7 +158,7 @@ watch([currentMonth, currentYear], async () => {
   await fetchDataJadwal();
 });
 
-onMounted(async() => {
+onMounted(async () => {
   const initialView = {
     start: new Date()
   };
@@ -189,34 +189,23 @@ onMounted(async() => {
                   3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z"
                   fill="#44d569" />
               </svg>
-              <h4>{{ userName }}</h4>
+              <h4>Halo {{ userName }}</h4>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="card3">
+      <div class="card3" style="margin-left: 3px;">
         <div class="calendar-container">
           <div class="calendar-header">
-            <button @click="viewAllEvents" class="btn btn-md btn-success" style="margin-left: 1px;">Lihat Jadwal</button>
+            <button @click="viewAllEvents" class="btn btn-md btn-success" style="margin-left: 1px;">Lihat
+              Jadwal</button>
           </div>
 
-          <VueCal
-            hide-view-selector
-            :time="false"
-            active-view="month"
-            v-model:active-view="activeView"
-            xsmall
-            :disable-views="['years', 'week', 'day']"
-            events-count-on-year-view
-            :events="events"
-            events-on-month-view="short"
-            @view-change="handleViewChange"
-            @event-click="viewEvent"
-            @cell-click="addEventForDate"
-            @event-change="changeEvent"
-            locale="id"
-          />
+          <VueCal hide-view-selector :time="false" active-view="month" v-model:active-view="activeView" xsmall
+            :disable-views="['years', 'week', 'day']" events-count-on-year-view :events="events"
+            events-on-month-view="short" @view-change="handleViewChange" @event-click="viewEvent"
+            @cell-click="addEventForDate" @event-change="changeEvent" locale="id" />
         </div>
       </div>
     </div>
@@ -252,8 +241,12 @@ onMounted(async() => {
             <tr v-else v-for="(jadwal, index) in jadwalList" :key="jadwal.id_jadwal">
               <td>{{ index + 1 }}</td>
               <td>{{ jadwal.agenda }}</td>
-              <td>{{ jadwal.status === null ? 'Seluruh Departement' : "Departement " + getNamaDepartement(jadwal.status) }}</td>
-              <td>{{ new Date(jadwal.tanggal).toLocaleString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</td>
+              <td>{{ jadwal.status === null ? 'Seluruh Departement' : "Departement " + getNamaDepartement(jadwal.status)
+                }}</td>
+              <td>{{ new Date(jadwal.tanggal).toLocaleString('id-ID', {
+                weekday: 'long', year: 'numeric', month: 'long',
+                day: 'numeric', hour: '2-digit', minute: '2-digit'
+              }) }}</td>
             </tr>
           </tbody>
         </table>
@@ -265,7 +258,10 @@ onMounted(async() => {
     <div v-if="viewModal2" class="modal">
       <div class="modal-content-kalendar">
         <h2 style="text-align: center;">
-          {{ new Date(clickedDate ?? new Date()).toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }}
+          {{ new Date(clickedDate ?? new Date()).toLocaleString('id-ID', {
+            weekday: 'long', day: 'numeric', month:
+              'long', year: 'numeric'
+          }) }}
         </h2>
         <table class="table table-bordered">
           <thead class="text-center">

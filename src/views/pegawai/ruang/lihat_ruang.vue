@@ -3,6 +3,7 @@ import { ref, computed, onBeforeMount, onMounted } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
+import { useToast } from 'vue-toastification';
 import '/src/style/background_color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
@@ -12,6 +13,7 @@ import '/src/style/loading.css';
 import '/src/style/surat_masuk.css';
 import Loading from '/src/style/loading.vue';
 
+const toast = useToast();
 const route = useRoute();
 const id = ref(route.params.id);
 const ruang = ref([]);
@@ -20,9 +22,8 @@ const userID = ref('');
 const userCabang = ref('');
 const userName = ref('');
 const isLoading = ref(true);
-
 const currentPage = ref(1);
-const itemsPerPage = ref(5); // Atur sesuai dengan jumlah item yang diinginkan per halaman
+const itemsPerPage = ref(5);
 
 const addFormData = ref({
   id_reservasi: '',
@@ -69,7 +70,32 @@ const fetchDataRuang = async () => {
   }
 };
 
+const checkAvailability = () => {
+  const startNew = new Date(addFormData.value.tanggal_reservasi).getTime();
+  const endNew = new Date(addFormData.value.tanggal_selesai).getTime();
+
+  for (const reservasi of ruang.value[0]?.reservasi_ruang || []) {
+    const startExisting = new Date(reservasi.tanggal_reservasi).getTime();
+    const endExisting = new Date(reservasi.tanggal_selesai).getTime();
+
+    if (
+      (startNew >= startExisting && startNew < endExisting) ||
+      (endNew > startExisting && endNew <= endExisting) ||
+      (startNew <= startExisting && endNew >= endExisting)
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 const saveNewReservasi = async () => {
+  if (!checkAvailability()) {
+    toast.error('Ruang Sudah Digunakan!');
+    return;
+  }
+
   try {
     addFormData.value.pegawai = userID.value;
     addFormData.value.cabang = userCabang.value;
@@ -122,12 +148,6 @@ const generateNewRrId = async () => {
   }
 };
 
-// const paginatedRuang = computed(() => {
-//   const start = (currentPage.value - 1) * itemsPerPage.value;
-//   const end = start + itemsPerPage.value;
-//   return ruang.value.slice(start, end);
-// });
-
 const paginatedRuang = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
@@ -138,9 +158,9 @@ const totalPages = computed(() => {
   return Math.ceil((ruang.value[0]?.reservasi_ruang.length || 0) / itemsPerPage.value);
 });
 
-const nextPage = (page) => {
-  if (page > 0 && page <= totalPages.value) {
-    currentPage.value = page;
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value += 1;
   }
 };
 
@@ -162,12 +182,13 @@ onMounted(async () => {
 });
 </script>
 
+
 <template>
   <div class="background-container">
     <div class="content">
       <div class="container mt-5 mb-5">
         <div class="flex-container" style="display: flex; justify-content: space-between;">
-          <div class="card2" style="flex: 0 0 81%; margin-right: 10px; margin-left: -15px;">
+          <div class="card2" style="flex: 0 0 81%; margin-right: 10px; margin-left: -10px;">
             <h2>Ruang</h2>
           </div>
           <div class="card-nama" style="flex: 0 0 20%;">
@@ -180,7 +201,7 @@ onMounted(async () => {
                     3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z"
                   fill="#44d569" />
               </svg>
-              <h4>{{ userName }}</h4>
+              <h4>Halo {{ userName }}</h4>
             </div>
           </div>
         </div>
@@ -196,13 +217,13 @@ onMounted(async () => {
                     <div class="card-lihat-ruang" style="width: 605px;">
                       <div class="form-group-row">
                         <label class="label-lihat" style="font-size: 18px;">ID Ruang :</label>
-                        <p class="text-lihat" style="font-size: 16px;">{{ ruang[0].id_ruang }}</p>
+                        <h6 class="text-lihat" style="font-size: 16px;">{{ ruang[0].id_ruang }}</h6>
                       </div>
                     </div>
                     <div class="card-lihat-ruang" style="width: 605px;">
                       <div class="form-group-row">
                         <label class="label-lihat" style="font-size: 18px;">Nama Ruang :</label>
-                        <p class="text-lihat" style="font-size: 16px;">{{ ruang[0].nama_ruang }}</p>
+                        <h6 class="text-lihat" style="font-size: 16px;">{{ ruang[0].nama_ruang }}</h6>
                       </div>
                     </div>
                   </div>
@@ -216,8 +237,8 @@ onMounted(async () => {
                     <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Reservasi</button>
                   </div>
                   <div style="margin-top: 5px; margin-bottom: 10px; margin-right: -10px;">
-                    <router-link :to="{ name: 'ruang_pegawai.ruang' }"
-                      class="btn btn-md btn-warning rounded-sm">Kembali</router-link>
+                    <router-link :to="{ name: 'ruang_pegawai.ruang' }" class="btn btn-md btn-warning rounded-sm"
+                      style="right: 0;">Kembali</router-link>
                   </div>
                 </div>
 
@@ -227,7 +248,7 @@ onMounted(async () => {
                       <th scope="col">ID Reservasi</th>
                       <th scope="col">Tanggal Reservasi</th>
                       <th scope="col">Tanggal Selesai</th>
-                      <th scope="col">Durasi Resrvasi</th>
+                      <th scope="col">Durasi Reservasi</th>
                       <th scope="col">Keterangan</th>
                     </tr>
                   </thead>

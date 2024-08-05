@@ -234,7 +234,7 @@ onMounted(async () => {
                   3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z"
                   fill="#44d569" />
               </svg>
-              <h4>Hello {{ userName }}</h4>
+              <h4>Halo {{ userName }}</h4>
             </div>
           </div>
         </div>
@@ -323,7 +323,8 @@ onMounted(async () => {
   <!-- Modal untuk menambah surat keluar baru -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">Tambah Data Surat Keluar</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">Tambah Data Surat Keluar
+      </h4>
       <div class="form-group">
         <label for="id_surat_keluar">ID Surat Keluar</label>
         <input type="text" id="id_surat_keluar" v-model="addFormData.id_surat_keluar" />
