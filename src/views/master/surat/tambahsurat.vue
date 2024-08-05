@@ -173,7 +173,7 @@ onMounted(async () => {
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
                 </div>
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
@@ -189,9 +189,9 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:10%">KODE SURAT</th>
-                      <th scope="col" style="width:15%">JENIS SURAT</th>
-                      <th scope="col" style="width:3%">AKSI</th>
+                      <th scope="col" style="width:10%">Kode Surat</th>
+                      <th scope="col" style="width:15%">Jenis Surat</th>
+                      <th scope="col" style="width:3%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -207,9 +207,9 @@ onMounted(async () => {
                       <td>{{ s.jenis_surat }}</td>
                       <td class="text-center">
                         <button @click="editSurat(s)" class="btn btn-sm btn-warning border-0"
-                          style="margin-right: 7px;">EDIT</button>
+                          style="margin-right: 7px;">Ubah</button>
                         <button @click="deleteSurat(s.kode_surat)" class="btn btn-sm btn-danger border-0"
-                          style="margin-right: 7px;">HAPUS</button>
+                          style="margin-right: 7px;">Hapus</button>
                       </td>
                     </tr>
                   </tbody>
@@ -236,7 +236,7 @@ onMounted(async () => {
   <!-- Modal for adding new surat -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH SURAT</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Tambah Data Surat</h4>
       <div class="form-group">
         <label for="kode_surat">Kode Surat</label>
         <input type="text" id="kode_surat" v-model="addFormData.kode_surat" />
@@ -255,7 +255,7 @@ onMounted(async () => {
   <!-- Modal for editing surat -->
   <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">EDIT SURAT</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Data Suratx</h4>
       <div class="form-group">
         <label for="kode_surat">Kode Surat</label>
         <input type="text" id="kode_surat" v-model="editFormData.kode_surat" />
@@ -265,7 +265,7 @@ onMounted(async () => {
         <input type="text" id="jenis_surat" v-model="editFormData.jenis_surat" />
       </div>
       <div class="form-actions">
-        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditSurat">Update Perubahan</button>
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditSurat">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
       </div>
     </div>

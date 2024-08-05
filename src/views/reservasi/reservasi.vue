@@ -336,7 +336,7 @@ onMounted(async () => {
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
                 </div>
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
@@ -365,15 +365,15 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col">ID RESERVASI</th>
-                      <th scope="col">RUANG</th>
-                      <th scope="col">TANGGAL RESERVASI</th>
-                      <th scope="col">TANGGAL SELESAI</th>
-                      <th scope="col">DURASI</th>
-                      <th scope="col">PEGAWAI</th>
-                      <th scope="col">KETERANGAN</th>
-                      <th scope="col">CABANG</th>
-                      <th scope="col">AKSI</th>
+                      <th scope="col">ID Reservasi</th>
+                      <th scope="col">Ruang</th>
+                      <th scope="col">Tanggal Reservasi</th>
+                      <th scope="col">Tanggal Selesai</th>
+                      <th scope="col">Durasi</th>
+                      <th scope="col">Pegawai</th>
+                      <th scope="col">Keterangan</th>
+                      <th scope="col">Cabang</th>
+                      <th scope="col">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -395,9 +395,9 @@ onMounted(async () => {
                       <td>{{ getNamaCabang(reservasi.cabang) }}</td>
                       <td class="text-center">
                         <button @click="editReservasi(reservasi)" class="btn btn-sm btn-warning border-0"
-                          style="margin-right: 7px;">EDIT</button>
+                          style="margin-right: 7px;">Ubah</button>
                         <button @click="deleteReservasi(reservasi.id_reservasi)" class="btn btn-sm btn-danger border-0"
-                          style="margin-right: 7px;">HAPUS</button>
+                          style="margin-right: 7px;">Hapus</button>
                       </td>
                     </tr>
                   </tbody>
@@ -424,7 +424,7 @@ onMounted(async () => {
   <!-- Modal untuk menambah reservasi baru -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">TAMBAH RESERVASI</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">Tambah Data Reservasi</h4>
       <div class="form-group-row">
         <div class="form-group" style="width: 195px;">
           <label for="id_reservasi">Id Reservasi</label>
@@ -477,7 +477,7 @@ onMounted(async () => {
   <!-- Modal untuk mengedit reservasi -->
   <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">TAMBAH RESERVASI</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">Ubah Data Reservasi</h4>
       <div class="form-group-row">
         <div class="form-group" style="width: 195px;">
           <label for="id_reservasi">Id Reservasi</label>
@@ -521,7 +521,7 @@ onMounted(async () => {
       </div>
 
       <div class="form-actions">
-        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditReservasi">Update Perubahan</button>
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditReservasi">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
       </div>
     </div>

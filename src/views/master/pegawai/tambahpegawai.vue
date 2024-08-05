@@ -309,14 +309,14 @@ onMounted(async () => {
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
                 </div>
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
                     <select id="departemenFilter" v-model="departementFilter" class="form-cari"
                       style="margin-right: 10px; width: 190px;">
-                      <option value="">Semua Departemen</option>
+                      <option value="">Semua Departement</option>
                       <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{
                         dep.nama_departement }}</option>
                     </select>
@@ -337,15 +337,15 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:8%">ID PEGAWAI</th>
+                      <th scope="col" style="width:8%">ID Pegawai</th>
                       <th scope="col" style="width:8%">NIP</th>
-                      <th scope="col" style="width:10%">NAMA</th>
+                      <th scope="col" style="width:10%">Nama</th>
                       <th scope="col" style="width:15%">Email</th>
                       <th scope="col" style="width:10%">Departemen</th>
                       <th scope="col" style="width:10%">Alamat</th>
-                      <th scope="col" style="width:10%">No. HP</th>
+                      <th scope="col" style="width:10%">No HP</th>
                       <th scope="col" style="width:7%">Cabang</th>
-                      <th scope="col" style="width:11%">AKSI</th>
+                      <th scope="col" style="width:11%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -374,9 +374,9 @@ onMounted(async () => {
                       <td>{{ getNamaCabang(p.cabang) }}</td> <!-- Menampilkan nama cabang -->
                       <td class="text-center">
                         <button @click="editPegawai(p)" class="btn btn-sm btn-warning  border-0"
-                          style="margin-right: 7px;">EDIT</button>
+                          style="margin-right: 7px;">Ubah</button>
                         <button @click="deletePegawai(p.id_pegawai)" class="btn btn-sm btn-danger border-0"
-                          style="margin-right: 7px;">HAPUS</button>
+                          style="margin-right: 7px;">Hapus</button>
                       </td>
                     </tr>
                   </tbody>
@@ -402,7 +402,7 @@ onMounted(async () => {
     <!-- Modal for adding new pegawai -->
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
       <div class="modal-content">
-        <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH PEGAWAI</h4>
+        <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Tambah Data Pegawai</h4>
         <div class="form-group-row">
           <div class="form-group" style="width: 175px;">
             <label for="id_pegawai">ID Pegawai</label>
@@ -429,7 +429,7 @@ onMounted(async () => {
         </div>
         <div class="form-group-row">
           <div class="form-group" style="width: 200px;">
-            <label for="departement">Departemen</label>
+            <label for="departement">Departement</label>
             <select id="departement" v-model="addFormData.departement">
               <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{
                 dep.nama_departement }}</option>
@@ -447,7 +447,7 @@ onMounted(async () => {
           <input type="text" id="alamat" v-model="addFormData.alamat" />
         </div>
         <div class="form-group">
-          <label for="no_hp">No. HP</label>
+          <label for="no_hp">No HP</label>
           <input type="text" id="no_hp" v-model="addFormData.no_hp" />
         </div>
         <div class="form-actions">
@@ -460,7 +460,7 @@ onMounted(async () => {
     <!-- Modal for editing pegawai -->
     <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
       <div class="modal-content">
-        <h4 style="text-align: center; color: #28a745; font-weight: bolder;">EDIT PEGAWAI</h4>
+        <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Data Pegawai</h4>
         <div class="form-group-row">
           <div class="form-group" style="width: 175px;">
             <label for="id_pegawai">ID Pegawai</label>
@@ -505,11 +505,11 @@ onMounted(async () => {
           <input type="text" id="alamat" v-model="editFormData.alamat" />
         </div>
         <div class="form-group">
-          <label for="no_hp">No. HP</label>
+          <label for="no_hp">No HP</label>
           <input type="text" id="no_hp" v-model="editFormData.no_hp" />
         </div>
         <div class="form-actions">
-          <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditPegawai">Update Perubahan</button>
+          <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditPegawai">Simpan Perubahan</button>
           <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
         </div>
       </div>

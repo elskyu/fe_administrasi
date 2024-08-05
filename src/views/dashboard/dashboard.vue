@@ -297,8 +297,8 @@ onMounted(() => {
       <div class="card3">
         <div class="calendar-container">
           <div class="calendar-header">
-            <button @click="showModal = true" class="btn btn-primary">Tambah Jadwal</button>
-            <button @click="viewAllEvents" class="btn btn-secondary">Lihat Jadwal</button>
+            <button @click="showModal = true" class="btn btn-success" style="margin-left: 1px;">Tambah</button>
+            <button @click="viewAllEvents" class="btn btn-warning">Lihat Jadwal</button>
           </div>
           <vue-cal
             hide-view-selector
@@ -323,7 +323,7 @@ onMounted(() => {
     <!-- Create Event Modal -->
     <div v-if="showModal" class="modal">
       <div class="modal-content-kalendar">
-        <h2 style="text-align: center;">Tambah Jadwal</h2>
+        <h2 style="text-align: center;">Tambah Data Jadwal</h2>
         <form @submit.prevent="saveNewJadwal" class="form-container">
           <div class="form-group">
             <label for="id_jadwal" style="width: 195px;">ID</label>
@@ -353,8 +353,8 @@ onMounted(() => {
             <input type="datetime-local" id="tanggal" v-model="addFormData.tanggal">
           </div>
           <div class="form-group">
-            <button type="submit" class="btn btn-primary">Simpan</button>
-            <button type="button" @click="showModal = false" class="btn btn-secondary">Batal</button>
+            <button type="submit" class="btn btn-success" style="margin-left: 1px;">Simpan</button>
+            <button type="button" @click="showModal = false" class="btn btn-danger">Batal</button>
           </div>
         </form>
       </div>
@@ -420,7 +420,7 @@ onMounted(() => {
               <td class="text-center">{{ getNamaCabang(jadwal.cabang) }}</td>
               <td>{{ new Date(jadwal.tanggal).toLocaleString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</td>
               <td class="text-center">
-                <button @click="editJadwal(jadwal)" class="btn btn-primary">Edit</button>
+                <button @click="editJadwal(jadwal)" class="btn btn-warning">Ubah</button>
                 <button @click="deleteJadwal(jadwal.id_jadwal)" class="btn btn-danger">Hapus</button>
               </td>
             </tr>
@@ -464,11 +464,11 @@ onMounted(() => {
     <!-- Edit Event Modal -->
     <div v-if="editModal" class="modal">
       <div class="modal-content-kalendar">
-        <h2>Ubah Jadwal</h2>
+        <h2 style="text-align: center;">Ubah Data Jadwal</h2>
         <form @submit.prevent="saveEditJadwal" class="form-container">
           <div class="form-group">
             <label for="id_jadwal">ID</label>
-            <input type="text" id="id_jadwal" v-model="editFormData.id_jadwal" />
+            <input type="text" id="id_jadwal" v-model="editFormData.id_jadwal" readonly />
           </div>
           <div class="form-group">
             <label for="agenda">Agenda</label>
@@ -494,8 +494,8 @@ onMounted(() => {
             <input type="datetime-local" id="tanggal" v-model="editFormData.tanggal">
           </div>
           <div class="form-group">
-            <button type="submit" class="btn btn-primary">Simpan</button>
-            <button type="button" @click="editModal = false" class="btn btn-secondary">Batal</button>
+            <button type="submit" class="btn btn-success" style="margin-left: 1px;">Simpan Perubahan</button>
+            <button type="button" @click="editModal = false" class="btn btn-danger">Batal</button>
           </div>
         </form>
       </div>

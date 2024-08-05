@@ -207,7 +207,7 @@ onMounted(async () => {
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
                 </div>
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
@@ -224,9 +224,9 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:10%">ID</th>
-                      <th scope="col" style="width:15%">NAMA</th>
-                      <th scope="col" style="width:3%">AKSI</th>
+                      <th scope="col" style="width:10%">ID Departement</th>
+                      <th scope="col" style="width:15%">Nama</th>
+                      <th scope="col" style="width:3%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -242,9 +242,9 @@ onMounted(async () => {
                       <td>{{ department.nama_departement }}</td>
                       <td class="text-center">
                         <button @click="editDepartment(department)" class="btn btn-sm btn-warning border-0"
-                          style="margin-right: 7px;">EDIT</button>
+                          style="margin-right: 7px;">Ubah</button>
                         <button @click="deleteDepartment(department.id_departement)"
-                          class="btn btn-sm btn-danger border-0" style="margin-right: 7px;">HAPUS</button>
+                          class="btn btn-sm btn-danger border-0" style="margin-right: 7px;">Hapus</button>
                       </td>
                     </tr>
                   </tbody>
@@ -271,9 +271,9 @@ onMounted(async () => {
   <!-- Modal for adding new department -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH DEPARTEMEN</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Tambah Data Departement</h4>
       <div class="form-group">
-        <label for="id_departement">ID</label>
+        <label for="id_departement">ID Departement</label>
         <input type="text" id="id_departement" v-model="addFormData.id_departement" />
       </div>
       <div class="form-group">
@@ -290,9 +290,9 @@ onMounted(async () => {
   <!-- Modal for editing department -->
   <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">EDIT DEPARTEMEN</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Data Departemnt</h4>
       <div class="form-group">
-        <label for="id_departement">ID</label>
+        <label for="id_departement">ID Departement</label>
         <input type="text" id="id_departement" v-model="editFormData.id_departement" />
       </div>
       <div class="form-group">
@@ -300,7 +300,7 @@ onMounted(async () => {
         <input type="text" id="nama_departement" v-model="editFormData.nama_departement" />
       </div>
       <div class="form-actions">
-        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditDepartment">Update Perubahan</button>
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditDepartment">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
       </div>
     </div>

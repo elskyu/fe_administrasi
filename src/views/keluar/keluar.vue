@@ -244,7 +244,7 @@ onMounted(async () => {
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
                 </div>
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
@@ -266,13 +266,13 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:13%">ID SURAT KELUAR</th>
-                      <th scope="col" style="width:13%">NOMOR SURAT</th>
-                      <th scope="col" style="width:13%">TANGGAL SURAT</th>
-                      <th scope="col" style="width:13%">TANGGAL KIRIM</th>
-                      <th scope="col" style="width:15%">TUJUAN SURAT</th>
-                      <th scope="col" style="width:15%">PERIHAL</th>
-                      <th scope="col" style="width:20%">CABANG</th>
+                      <th scope="col" style="width:13%">ID Surat Keluar</th>
+                      <th scope="col" style="width:13%">Nomor Surat</th>
+                      <th scope="col" style="width:13%">Tanggal Surat</th>
+                      <th scope="col" style="width:13%">Tanggal Kirim</th>
+                      <th scope="col" style="width:15%">Tujuan Surat</th>
+                      <th scope="col" style="width:15%">Perihal</th>
+                      <th scope="col" style="width:20%">Cabang</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -323,7 +323,7 @@ onMounted(async () => {
   <!-- Modal untuk menambah surat keluar baru -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">TAMBAH SURAT KELUAR</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">Tambah Data Surat Keluar</h4>
       <div class="form-group">
         <label for="id_surat_keluar">ID Surat Keluar</label>
         <input type="text" id="id_surat_keluar" v-model="addFormData.id_surat_keluar" />

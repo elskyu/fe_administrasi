@@ -208,7 +208,7 @@ onMounted(async () => {
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
                 </div>
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
@@ -224,9 +224,9 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:10%">ID CABANG</th>
-                      <th scope="col" style="width:15%">NAMA CABANG</th>
-                      <th scope="col" style="width:3%">AKSI</th>
+                      <th scope="col" style="width:10%">ID Cabang</th>
+                      <th scope="col" style="width:15%">Nama Cabang</th>
+                      <th scope="col" style="width:3%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -242,9 +242,9 @@ onMounted(async () => {
                       <td>{{ c.nama_cabang }}</td>
                       <td class="text-center">
                         <button @click="editCabang(c)" class="btn btn-sm btn-warning border-0"
-                          style="margin-right: 7px;">EDIT</button>
+                          style="margin-right: 7px;">Ubah</button>
                         <button @click="deleteCabang(c.id_cabang)" class="btn btn-sm btn-danger border-0"
-                          style="margin-right: 7px;">HAPUS</button>
+                          style="margin-right: 7px;">Hapus</button>
                       </td>
                     </tr>
                   </tbody>
@@ -271,7 +271,7 @@ onMounted(async () => {
   <!-- Modal for adding new cabang -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH CABANG</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Tambah Data Cabang</h4>
       <div class="form-group">
         <label for="id_cabang">ID Cabang</label>
         <input type="text" id="id_cabang" v-model="addFormData.id_cabang" />
@@ -290,7 +290,7 @@ onMounted(async () => {
   <!-- Modal for editing cabang -->
   <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">EDIT CABANG</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Data Cabang</h4>
       <div class="form-group">
         <label for="id_cabang">ID Cabang</label>
         <input type="text" id="id_cabang" v-model="editFormData.id_cabang" />
@@ -300,7 +300,7 @@ onMounted(async () => {
         <input type="text" id="nama_cabang" v-model="editFormData.nama_cabang" />
       </div>
       <div class="form-actions">
-        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditCabang">Update Perubahan</button>
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditCabang">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
       </div>
     </div>

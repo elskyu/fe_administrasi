@@ -294,7 +294,7 @@ onMounted(async () => {
       <div class="container mt-5 mb-5">
         <div class="flex-container" style="display: flex; justify-content: space-between;">
           <div class="card2" style="flex: 0 0 81%; margin-right: 10px; margin-left: -10px;">
-            <h2>PEMAKAIAN INVENTARIS</h2>
+            <h2>PEMINJAMAN INVENTARIS</h2>
           </div>
           <div class="card-nama" style="flex: 0 0 20%;">
             <div class="form-group-row" style="display: flex; align-items: center; margin-right: 20px;">
@@ -316,7 +316,7 @@ onMounted(async () => {
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
                 </div>
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
@@ -338,15 +338,15 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:8%">ID PINJAM</th>
-                      <th scope="col" style="width:7%">INVENTARIS</th>
-                      <th scope="col" style="width:15%">TANGGAL PINJAM</th>
-                      <th scope="col" style="width:15%">TANGGAL KEMBALI</th>
-                      <th scope="col" style="width:12%">DURASI PINJAM</th>
-                      <th scope="col" style="width:10%">PEGAWAI</th>
-                      <th scope="col" style="width:13%">KETERANGAN</th>
-                      <th scope="col" style="width:8%">CABANG</th>
-                      <th scope="col" style="width:15%">AKSI</th>
+                      <th scope="col" style="width:8%">ID Peminjaman</th>
+                      <th scope="col" style="width:7%">Inventaris</th>
+                      <th scope="col" style="width:15%">Tanggal Pinjam</th>
+                      <th scope="col" style="width:15%">Tanggal Kembali</th>
+                      <th scope="col" style="width:12%">Durasi Pinjam</th>
+                      <th scope="col" style="width:10%">Pegawai</th>
+                      <th scope="col" style="width:13%">Keterangan</th>
+                      <th scope="col" style="width:8%">Cabang</th>
+                      <th scope="col" style="width:15%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -368,9 +368,9 @@ onMounted(async () => {
                       <td>{{ getNamaCabang(pemakaian.cabang) }}</td>
                       <td class="text-center">
                         <button @click="editPemakaian(pemakaian)" class="btn btn-sm btn-warning border-0"
-                          style="margin-right: 7px;">EDIT</button>
+                          style="margin-right: 7px;">Ubah</button>
                         <button @click="deletePemakaian(pemakaian.id_pinjam)" class="btn btn-sm btn-danger border-0"
-                          style="margin-right: 7px;">HAPUS</button>
+                          style="margin-right: 7px;">Hapus</button>
                       </td>
                     </tr>
                   </tbody>
@@ -397,7 +397,7 @@ onMounted(async () => {
   <!-- Simple Pop-up Modal -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH PEMAKAIAN INVENTARIS</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Tambah Data Peminjaman Inventaris</h4>
       <div class="form-group-row">
         <div class="form-group">
           <label for="id_pinjam" style="width: 195px;">ID</label>
@@ -451,11 +451,11 @@ onMounted(async () => {
   <!-- Simple Pop-up Modal -->
   <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH PEMAKAIAN INVENTARIS</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Data Peminjaman Inventaris</h4>
       <div class="form-group-row">
         <div class="form-group">
           <label for="id_pinjam" style="width: 195px;">ID Inven</label>
-          <input type="text" id="id_pinjam" v-model="editFormData.id_pinjam" />
+          <input type="text" id="id_pinjam" v-model="editFormData.id_pinjam" readonly/>
         </div>
         <div class="form-group">
           <label for="inventaris" style="width: 195px;">Nama Inven</label>

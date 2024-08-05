@@ -253,7 +253,7 @@ onMounted(async () => {
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
                 </div>
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
@@ -281,15 +281,15 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width: 7%;">ID TAMU</th>
-                      <th scope="col" style="width: 16%;">TANGGAL KUNJUNGAN</th>
-                      <th scope="col" style="width: 5%;">NAMA</th>
-                      <th scope="col" style="width: 5%;">JABATAN</th>
-                      <th scope="col" style="width: 7%;">NO HP</th>
-                      <th scope="col" style="width: 18%;">DEPARTEMEN DIKUNJUNGI</th>
-                      <th scope="col" style="width: 15%;">ORANG DIKUNJUNGI</th>
-                      <th scope="col" style="width: 15%;">KEPERLUAN</th>
-                      <th scope="col" style="width: 7%;">CABANG</th>
+                      <th scope="col" style="width: 7%;">ID Tamu</th>
+                      <th scope="col" style="width: 16%;">Tanggal Kunjungan</th>
+                      <th scope="col" style="width: 5%;">Nama</th>
+                      <th scope="col" style="width: 5%;">Jabatan</th>
+                      <th scope="col" style="width: 7%;">No HP</th>
+                      <th scope="col" style="width: 18%;">Departement Dikunjungi</th>
+                      <th scope="col" style="width: 15%;">Orang Dikunjungi</th>
+                      <th scope="col" style="width: 15%;">Keperluan</th>
+                      <th scope="col" style="width: 7%;">Cabang</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -335,7 +335,7 @@ onMounted(async () => {
   <!-- Modal untuk menambah tamu baru -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">TAMBAH TAMU</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">Tambah Data Tamu</h4>
       <div class="form-group-row">
         <div class="form-group" style="width: 195px;">
           <label for="id_tamu">ID Tamu</label>

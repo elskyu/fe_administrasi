@@ -239,7 +239,7 @@ onMounted(async () => {
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
                 </div>
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
@@ -261,10 +261,10 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:10%">ID RUANG</th>
-                      <th scope="col" style="width:15%">NAMA RUANG</th>
-                      <th scope="col" style="width:15%">CABANG</th>
-                      <th scope="col" style="width:5%">AKSI</th>
+                      <th scope="col" style="width:10%">ID Ruang</th>
+                      <th scope="col" style="width:15%">Nama Ruang</th>
+                      <th scope="col" style="width:15%">Cabang</th>
+                      <th scope="col" style="width:5%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -288,9 +288,9 @@ onMounted(async () => {
                       <td>{{ getNamaCabang(r.cabang) }}</td>
                       <td class="text-center">
                         <button @click="editRuang(r)" class="btn btn-sm btn-warning border-0"
-                          style="margin-right: 7px;">EDIT</button>
+                          style="margin-right: 7px;">Ubah</button>
                         <button @click="deleteRuang(r.id_ruang)" class="btn btn-sm btn-danger border-0"
-                          style="margin-right: 7px;">HAPUS</button>
+                          style="margin-right: 7px;">Hapus</button>
                       </td>
                     </tr>
                   </tbody>
@@ -317,7 +317,7 @@ onMounted(async () => {
   <!-- Modal for adding new ruang -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH RUANG</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Tambah Data Ruang</h4>
       <div class="form-group">
         <label for="id_ruang">ID Ruang</label>
         <input type="text" id="id_ruang" v-model="addFormData.id_ruang" />
@@ -343,7 +343,7 @@ onMounted(async () => {
   <!-- Modal for editing ruang -->
   <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">EDIT RUANG</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Data Ruang</h4>
       <div class="form-group">
         <label for="id_ruang">ID Ruang</label>
         <input type="text" id="id_ruang" v-model="editFormData.id_ruang" />
@@ -359,7 +359,7 @@ onMounted(async () => {
         </select>
       </div>
       <div class="form-actions">
-        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditRuang">Update perubahan</button>
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditRuang">Simpan perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
       </div>
     </div>

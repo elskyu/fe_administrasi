@@ -213,7 +213,7 @@ onMounted(async () => {
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">TAMBAH</button>
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
                 </div>
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
@@ -230,12 +230,12 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:10%">ID</th>
-                      <th scope="col" style="width:10%">NAMA</th>
-                      <th scope="col" style="width:15%">NO TELEPON</th>
-                      <th scope="col" style="width:15%">EMAIL</th>
-                      <th scope="col" style="width:10%">PASSWORD</th>
-                      <th scope="col" style="width:15%">AKSI</th>
+                      <th scope="col" style="width:10%">ID Admin</th>
+                      <th scope="col" style="width:10%">Nama</th>
+                      <th scope="col" style="width:15%">No HP</th>
+                      <th scope="col" style="width:15%">Email</th>
+                      <th scope="col" style="width:10%">Password</th>
+                      <th scope="col" style="width:15%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -254,9 +254,9 @@ onMounted(async () => {
                       <td>{{ admin.password }}</td>
                       <td class="text-center">
                         <button @click="editAdmin(admin)" class="btn btn-sm btn-warning border-0"
-                          style="margin-right: 7px;">EDIT</button>
+                          style="margin-right: 7px;">Ubah</button>
                         <button @click="deleteAdmin(admin.id_admin)" class="btn btn-sm btn-danger border-0"
-                          style="margin-right: 7px;">HAPUS</button>
+                          style="margin-right: 7px;">Hapus</button>
                       </td>
                     </tr>
                   </tbody>
@@ -283,9 +283,9 @@ onMounted(async () => {
   <!-- Modal for adding new admin -->
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">TAMBAH ADMIN</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Tambah Data Admin</h4>
       <div class="form-group">
-        <label for="id_admin">ID</label>
+        <label for="id_admin">ID Admin</label>
         <input type="text" id="id_admin" v-model="addFormData.id_admin" />
       </div>
       <div class="form-group">
@@ -293,7 +293,7 @@ onMounted(async () => {
         <input type="text" id="nama" v-model="addFormData.nama" />
       </div>
       <div class="form-group">
-        <label for="no_hp">No Hp</label>
+        <label for="no_hp">No HP</label>
         <input type="text" id="no_hp" v-model="addFormData.no_hp" />
       </div>
       <div class="form-group">
@@ -314,9 +314,9 @@ onMounted(async () => {
   <!-- Modal for editing admin -->
   <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">EDIT ADMIN</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Data Admin</h4>
       <div class="form-group">
-        <label for="id_admin">ID</label>
+        <label for="id_admin">ID Admin</label>
         <input type="text" id="id_admin" v-model="editFormData.id_admin" />
       </div>
       <div class="form-group">
@@ -324,7 +324,7 @@ onMounted(async () => {
         <input type="text" id="nama" v-model="editFormData.nama" />
       </div>
       <div class="form-group">
-        <label for="no_hp">No Hp</label>
+        <label for="no_hp">No HP</label>
         <input type="text" id="no_hp" v-model="editFormData.no_hp" />
       </div>
       <div class="form-group">
@@ -336,7 +336,7 @@ onMounted(async () => {
         <input type="password" id="password" v-model="editFormData.password" />
       </div>
       <div class="form-actions">
-        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditAdmin">Update Perubahan</button>
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditAdmin">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
       </div>
     </div>
