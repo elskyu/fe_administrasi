@@ -211,7 +211,7 @@ onMounted(async () => {
                   <h3 class="card-title" style="display: flex; justify-content: center; margin-bottom: 25px;">Detail
                     Inventaris</h3>
                   <div class="form-group-row">
-                    <div class="card-lihat" style="width: 395px;">
+                    <div class="card-lihat" style="width: 940px;">
                       <div class="form-group-row">
                         <label class="label-lihat">ID Inventaris :</label>
                         <p class="text-lihat">{{ inventarisList[0].id_inventaris }}</p>
@@ -226,7 +226,7 @@ onMounted(async () => {
                       </div>
                     </div>
 
-                    <div class="card-lihat" style="width: 395px;">
+                    <!-- <div class="card-lihat" style="width: 395px;">
                       <div class="form-group-row">
                         <label class="label-lihat">Pajak :</label>
                         <p class="text-lihat">{{ inventarisList[0].pajak }}</p>
@@ -254,6 +254,10 @@ onMounted(async () => {
                         <label class="label-lihat">Tanggal Beli :</label>
                         <p class="text-lihat">{{ inventarisList[0].tanggal_beli }}</p>
                       </div>
+                    </div> -->
+
+                    <div class="card-lihat" style="width: 250px;">
+
                     </div>
                   </div>
                 </div>

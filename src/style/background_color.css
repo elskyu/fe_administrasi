@@ -27,6 +27,7 @@ body::after {
     z-index: 0;
 } */
 
+
 body, html {
     overflow: hidden;
     height: 100%;
@@ -38,7 +39,7 @@ body, html {
       content: '';
       width: 110%;
       height: 100%;
-      background: #f8f9fa;
+      background: var(--primary);
       position: absolute;
       left: 50%;
       transform: skewX(-40deg) translateX(-50%);

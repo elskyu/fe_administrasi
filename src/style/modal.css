@@ -233,3 +233,96 @@ h4 {
 .card-tittle {
   font-size: 24px;
 }
+
+/* modal profil */
+
+.modal-profil {
+  background: rgb(255, 255, 255);
+  padding: 20px 10px 50px 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 350px;
+  height: 450px;
+  text-align: left;
+  transform: translateY(-50px);
+  border-radius: 5px;
+  animation: zoomInBounce 0.6s forwards;
+  /* border: 4px solid rgb(2, 131, 145); */
+}
+
+ .upper{
+  width: 40vh;
+  height: 100px;
+  background-color: #28A745;
+  border: 1px solid #ccc; /* Border tipis di sekitar kotak */
+ }
+
+ .upper img{
+  width: 100%;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+ }
+
+ .user{
+  position: relative;
+ }
+
+ .profile img{  
+  height: 90px;
+  width: 90px;
+  margin-top:2px; 
+  background-color: rgb(190, 190, 190);
+  
+ }
+
+ .profile{
+  position: absolute;
+  top:-55px;
+  left: 33%;
+  height: 100px;
+  width: 100px;
+  border:3.5px solid #ffffff;
+  border-radius: 50%;
+  background-color: white;
+ }
+
+ .follow{
+  border-radius: 15px;
+  padding-left: 20px;
+  padding-right: 20px;
+  height: 35px;
+ }
+
+ .stats span{
+  font-size: 29px;
+ }
+
+ .btn-ubah-password {
+  background-color: #28A745;
+  color: white;
+  padding: 7px;
+  border-radius: 3px;
+  width: 18vw;
+ }
+
+ .btn-batal-ubah-password {
+  background-color: red;
+  width: 18vw;
+  color: white;
+  border: white;
+  padding: 7px;
+  cursor: pointer;
+  margin-left: 0;
+  display: flex;
+  justify-content: center;
+}
+
+ .text-profil {
+  margin-bottom: 5px;
+ }
+
+ .button-group-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; /* Jarak antara tombol secara vertikal */
+}

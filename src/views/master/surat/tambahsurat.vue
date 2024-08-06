@@ -3,6 +3,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
+import '/src/style/color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
@@ -11,7 +12,10 @@ import '/src/style/surat_masuk.css';
 import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
+import ProfileModal from '/src/components/profil.vue';
+import logo23 from '/src/style/logo2.vue';
 
+const showProfileModal = ref(false);
 const isLoading = ref(true);
 const userName = ref(''); // Default name
 const surat = ref([]);
@@ -98,31 +102,6 @@ const saveNewSurat = async () => {
   }
 };
 
-const fetchUserName = async () => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    try {
-      const response = await axios.get('http://localhost:8000/api/useradmin', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      console.log("nama : ", response.data); // Tambahkan log ini
-      const user = response.data;
-      if (user && user.nama) {
-        userName.value = user.nama;
-      } else {
-        console.error('Nama pengguna tidak ditemukan dalam respons');
-      }
-    } catch (error) {
-      console.error('Gagal mengambil data pengguna:', error);
-      // Tangani error, misalnya dengan mengarahkan ke halaman login jika token tidak valid
-    }
-  } else {
-    console.error('Token tidak ditemukan');
-    // Tangani kasus di mana token tidak ditemukan
-  }
-};
 
 const saveEditSurat = async () => {
   try {
@@ -140,7 +119,6 @@ watch(searchQuery, async () => {
 });
 
 onMounted(async () => {
-  fetchUserName();
   await fetchDataSurat();
   isLoading.value = false;
 });
@@ -155,17 +133,7 @@ onMounted(async () => {
             <h2>Surat</h2>
           </div>
           <div class="card-nama" style="flex: 0 0 20%;">
-            <div class="form-group-row" style="display: flex; align-items: center; margin-right: 20px;">
-              <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
-                style="align-items: center; margin-right: 5px;">
-                <path
-                  d="M10 0C15.52 0 20 4.48 20 10C20 15.52 15.52 20 10 20C4.48 20 0 15.52 0 10C0 4.48 4.48 0 10 0ZM4.023 13.416C5.491 15.606 7.695 17 10.16 17C12.624 17 14.829 15.607 16.296 13.416C14.6317 11.8606 
-                  12.4379 10.9968 10.16 11C7.88171 10.9966 5.68751 11.8604 4.023 13.416V13.416ZM10 9C10.7956 9 11.5587 8.68393 12.1213 8.12132C12.6839 7.55871 13 6.79565 13 6C13 5.20435 12.6839 4.44129 12.1213 
-                  3.87868C11.5587 3.31607 10.7956 3 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z"
-                  fill="#44d569" />
-              </svg>
-              <h4>Halo {{ userName }}</h4>
-            </div>
+            <logo23 class="logo" style="margin-bottom: -50px; margin-top: -55px;">Login</logo23>
           </div>
         </div>
         <div class="col-md-12" style="margin-left: -10px; width: auto;">
@@ -226,6 +194,8 @@ onMounted(async () => {
           </div>
         </div>
       </div>
+      <!-- Modal for Profile -->
+      <ProfileModal v-if="showProfileModal" />
     </div>
   </div>
 
@@ -270,4 +240,7 @@ onMounted(async () => {
       </div>
     </div>
   </div>
+
+
+
 </template>

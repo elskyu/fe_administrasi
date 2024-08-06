@@ -15,6 +15,7 @@ import axios from 'axios';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import { format } from 'date-fns';
 import Loading from '/src/style/loading.vue';
+import ProfileModal from '/src/components/profil.vue';
 
 const events = ref([]);
 const cabangList = ref([]);
@@ -39,6 +40,8 @@ const userName = ref('');
 const currentPage = ref(1);
 const totalPages = ref(1);
 const isLoading = ref(true);
+
+const showProfileModal = ref(false);
 
 const addFormData = ref({
   id_jadwal: '',
@@ -299,8 +302,8 @@ onMounted(async () => {
           </div>
           <div class="card-nama" style="flex: 0 0 20%;">
             <div class="form-group-row" style="display: flex; align-items: center; margin-right: 20px;">
-              <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
-                style="align-items: center; margin-right: 5px;">
+              <svg @click="showProfileModal = true" width="32" height="32" viewBox="0 0 20 20" fill="none"
+                xmlns="http://www.w3.org/2000/svg" style="align-items: center; margin-right: 5px; cursor: pointer;">
                 <path
                   d="M10 0C15.52 0 20 4.48 20 10C20 15.52 15.52 20 10 20C4.48 20 0 15.52 0 10C0 4.48 4.48 0 10 0ZM4.023 13.416C5.491 15.606 7.695 17 10.16 17C12.624 17 14.829 15.607 16.296 13.416C14.6317 11.8606 
                   12.4379 10.9968 10.16 11C7.88171 10.9966 5.68751 11.8604 4.023 13.416V13.416ZM10 9C10.7956 9 11.5587 8.68393 12.1213 8.12132C12.6839 7.55871 13 6.79565 13 6C13 5.20435 12.6839 4.44129 12.1213 
@@ -530,6 +533,33 @@ onMounted(async () => {
             <button type="button" @click="editModal = false" class="btn btn-danger">Batal</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Modal for Profile -->
+    <ProfileModal v-if="showProfileModal" @close="showProfileModal = false" />
+
+    <!-- Profil modal -->
+    <div v-if="showProfileModal" class="modal card-profil">
+      <div class="modal-profil">
+
+        <div class="upper">
+          <img src="" class="img-fluid">
+        </div>
+        <div class="user text-center">
+          <div class="profile">
+            <img src="https://bootdey.com/img/Content/avatar/avatar7.png" class="rounded-circle" width="180">
+          </div>
+        </div>
+        <div class="text-center" style="margin-top: 65px;">
+          <h5 class="mb-0">Pegawai 1</h5>
+          <span class="text-profil">Back End Developer, Sidoarjo</span>
+          <span class="text-profil d-block mb-2">Nip. 9876543</span>
+          <div class="button-group-vertical">
+            <button class="btn-ubah-password">Ubah Password</button>
+            <button @click="showProfileModal = false" class="btn-batal-ubah-password">Batal</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

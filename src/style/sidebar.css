@@ -9,7 +9,7 @@
     height: 95.5vh; /* Tinggi penuh */
     position: fixed;  
     background: #fff; /* Warna sidebar */
-    padding-top: 20px;
+    padding-top: 15px;
     margin-left: 2.3vh;
     margin-top: 2vh;
     margin-bottom: 2vh;
@@ -166,8 +166,30 @@
   }
   
   .logo { 
-    max-width: 70%;
+    max-width: 100%;
     display: flex;
     justify-content: center;
     margin: 0 auto;
   }
+
+  .profil {
+    background-color: rgb(255, 255, 255);
+    padding: 4px;
+    
+  }
+
+  .text-profil {
+    color: #3a416e;
+    font-size: 17px;
+  }
+
+  .profil::after {
+    justify-content: center;
+    margin: 0 auto;
+    content: "";
+    display: block;
+    width: 85%;
+    height: 0.7px; /* Adjust the thickness of the line */
+    background-color: #44d569; /* Color of the line */
+    margin-top: 10px; /* Space between the text and the line */
+  }  
