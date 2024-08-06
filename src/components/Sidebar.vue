@@ -5,7 +5,6 @@ import '../style/sidebar.css';
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
-
 const router = useRouter();
 const route = useRoute(); // Get the current route
 const userName = ref(''); // Default name

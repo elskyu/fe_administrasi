@@ -3,9 +3,9 @@
     <!-- Conditionally render the Sidebar -->
     <Sidebar v-if="showSidebar && userType === 'admin'"></Sidebar>
     <sidebar2 v-else-if="showSidebar && userType === 'pegawai'"></sidebar2>
-    
+
     <!-- Main content area -->
-    <div :class="{'content-area-with-sidebar': showSidebar}">
+    <div :class="{ 'content-area-with-sidebar': showSidebar }">
       <router-view></router-view>
     </div>
   </div>
@@ -18,6 +18,7 @@ import Sidebar from './components/Sidebar.vue';
 import sidebar2 from './components/sidebar2.vue';
 import { isTokenExpired } from './utils/auth';
 import store from './store';
+import '/src/style/color.css';
 
 export default {
   name: 'App',
@@ -42,16 +43,16 @@ export default {
     onMounted(() => {
       const interval = setInterval(() => {
         const token = localStorage.getItem('token');
-        if (!isLoginRoute.value){
+        if (!isLoginRoute.value) {
           if (isTokenExpired(token)) {
-          store.dispatch('auth/clearToken');
-          router.push({ name: 'error' });
-          window.location.reload();
-        }else{
-          // tidak apa-apa
+            store.dispatch('auth/clearToken');
+            router.push({ name: 'error' });
+            window.location.reload();
+          } else {
+            // tidak apa-apa
+          }
         }
-        }
-        
+
       }, 25000);
 
       onUnmounted(() => {

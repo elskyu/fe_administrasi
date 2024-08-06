@@ -1,9 +1,8 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import api from '../../../api';
 import axios from 'axios';
 import '/src/style/background_color.css';
-import '/src/style/color.css';
 import '/src/style/font.css';
 import '/src/style/table.css';
 import '/src/style/modal.css';
@@ -12,12 +11,10 @@ import '/src/style/surat_masuk.css';
 import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
-import ProfileModal from '/src/components/profil.vue';
 import logo23 from '/src/style/logo2.vue';
 
 const showProfileModal = ref(false);
 const isLoading = ref(true);
-const userName = ref(''); // Default name
 const surat = ref([]);
 const searchQuery = ref('');
 const showAddModal = ref(false);
@@ -79,17 +76,6 @@ const deleteSurat = async (kode_surat) => {
     }
   }
 };
-
-// const filteredSurat = computed(() => {
-//   const query = searchQuery.value.toLowerCase();
-//   if (!query) {
-//     return surat.value;
-//   }
-//   return surat.value.filter(s =>
-//     s.jenis_surat.toLowerCase().includes(query) ||
-//     s.kode_surat.toLowerCase().includes(query)
-//   );
-// });
 
 const saveNewSurat = async () => {
   try {
