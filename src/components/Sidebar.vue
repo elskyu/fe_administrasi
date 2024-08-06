@@ -1,12 +1,12 @@
-ui
 <script setup>
 import axios from 'axios';
 import '../style/sidebar.css';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import logo23 from '/src/style/logo2.vue';
 
-const router = useRouter(); // Initialize the router
+const router = useRouter();
+const route = useRoute(); // Get the current route
 
 const showDropdown = ref(false);
 const toggleDropdown = () => {
@@ -16,10 +16,9 @@ const toggleDropdown = () => {
 
 const logoutAndReload = async () => {
     try {
-        // Adjust the URL as needed
         const response = await axios.post('http://localhost:8000/api/logout', {}, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}` // Adjust if using another method of storing tokens
+                Authorization: `Bearer ${localStorage.getItem('token')}`
             }
         });
         if (response.data.success) {
@@ -33,6 +32,10 @@ const logoutAndReload = async () => {
         console.error('An error occurred during logout:', error);
     }
 };
+
+const isActive = (name) => {
+    return route.name === name ? 'active' : '';
+};
 </script>
 
 
@@ -41,8 +44,10 @@ const logoutAndReload = async () => {
         <nav class="sidebar custom-sidebar" style="box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);">
             <ul class="navbar-nav">
                 <logo23 class="logo" style="margin-bottom: -50px; margin-top: -55px;">Login</logo23>
+
                 <li class="nav-item">
-                    <router-link :to="{ name: 'dashboard.dashboard' }" class="nav-link active"
+                    <router-link :to="{ name: 'dashboard.dashboard' }"
+                        :class="['nav-link', isActive('dashboard.dashboard')]"
                         style="margin-left: 15px; margin-right: 15px;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                             <path
@@ -50,11 +55,12 @@ const logoutAndReload = async () => {
                             <path
                                 d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z" />
                         </svg>
-                        <span span>Dashboard</span>
+                        <span>Dashboard</span>
                     </router-link>
                 </li>
+
                 <li class="nav-item">
-                    <router-link :to="{ name: 'buku.buku' }" class="nav-link active" aria-current="page"
+                    <router-link :to="{ name: 'buku.buku' }" :class="['nav-link', isActive('buku.buku')]"
                         style="margin-left: 15px; margin-right: 15px;">
                         <svg fill="#000000" class="icon" viewBox="0 0 32 32" version="1.1"
                             xmlns="http://www.w3.org/2000/svg">
@@ -65,8 +71,10 @@ const logoutAndReload = async () => {
                         <span>Buku Tamu</span>
                     </router-link>
                 </li>
+
                 <li class="nav-item">
-                    <router-link :to="{ name: 'inventaris.inventaris' }" class="nav-link active" aria-current="page"
+                    <router-link :to="{ name: 'inventaris.inventaris' }"
+                        :class="['nav-link', isActive('inventaris.inventaris')]"
                         style="margin-left: 15px; margin-right: 15px;">
                         <svg fill="#000000" class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -76,8 +84,10 @@ const logoutAndReload = async () => {
                         <span>Inventaris</span>
                     </router-link>
                 </li>
+
                 <li class="nav-item">
-                    <router-link :to="{ name: 'peminjaman.peminjaman' }" class="nav-link active" aria-current="page"
+                    <router-link :to="{ name: 'peminjaman.peminjaman' }"
+                        :class="['nav-link', isActive('peminjaman.peminjaman')]"
                         style=" margin-left: 15px; margin-right: 15px;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                             <path fill-rule="evenodd"
@@ -87,8 +97,9 @@ const logoutAndReload = async () => {
                         <span>Peminjaman</span>
                     </router-link>
                 </li>
+
                 <li class="nav-item">
-                    <router-link :to="{ name: 'masuk.masuk' }" class="nav-link active" aria-current="page"
+                    <router-link :to="{ name: 'masuk.masuk' }" :class="['nav-link', isActive('masuk.masuk')]"
                         style="margin-left: 15px; margin-right: 15px;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                             <path
@@ -99,8 +110,9 @@ const logoutAndReload = async () => {
                         <span>Surat Masuk</span>
                     </router-link>
                 </li>
+
                 <li class="nav-item">
-                    <router-link :to="{ name: 'keluar.keluar' }" class="nav-link active" aria-current="page"
+                    <router-link :to="{ name: 'keluar.keluar' }" :class="['nav-link', isActive('keluar.keluar')]"
                         style="margin-left: 15px; margin-right: 15px;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                             <path
@@ -111,8 +123,10 @@ const logoutAndReload = async () => {
                         <span>Surat Keluar</span>
                     </router-link>
                 </li>
+
                 <li class="nav-item">
-                    <router-link :to="{ name: 'reservasi.reservasi' }" class="nav-link active" aria-current="page"
+                    <router-link :to="{ name: 'reservasi.reservasi' }"
+                        :class="['nav-link', isActive('reservasi.reservasi')]"
                         style="margin-left: 15px; margin-right: 15px;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                             <path
@@ -122,8 +136,9 @@ const logoutAndReload = async () => {
                         <span>Reservasi</span>
                     </router-link>
                 </li>
+
                 <li class="nav-item">
-                    <div @click="toggleDropdown" class="nav-link active" aria-current="page"
+                    <div @click="toggleDropdown" class="nav-link" aria-current="page"
                         style="margin-left: 15px; margin-right: 15px; cursor: pointer;">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
                             id="Capa_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;"
@@ -144,7 +159,8 @@ const logoutAndReload = async () => {
                     </div>
                     <ul v-if="showDropdown" class="dropdown-menu" style="margin-left: 45px; border: none;">
 
-                        <li><router-link :to="{ name: 'surat.tambahsurat' }" class="dropdown-item"><svg
+                        <li><router-link :to="{ name: 'surat.tambahsurat' }"
+                                :class="['dropdown-item', isActive('surat.tambahsurat')]"><svg
                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                                     class="icon">
                                     <path
@@ -152,7 +168,9 @@ const logoutAndReload = async () => {
                                     <path
                                         d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
                                 </svg>Surat</router-link></li>
-                        <li><router-link :to="{ name: 'admin.tambahadmin' }" class="dropdown-item"><svg
+
+                        <li><router-link :to="{ name: 'admin.tambahadmin' }"
+                                :class="['dropdown-item', isActive('admin.tambahadmin')]"><svg
                                     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                     version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512 512"
                                     style="enable-background:new 0 0 512 512;" xml:space="preserve" class="icon">
@@ -163,28 +181,35 @@ const logoutAndReload = async () => {
                                         </path>
                                     </g>
                                 </svg>Admin</router-link></li>
-                        <li><router-link :to="{ name: 'ruang.tambahruang' }" class="dropdown-item"><svg
+
+                        <li><router-link :to="{ name: 'ruang.tambahruang' }"
+                                :class="['dropdown-item', isActive('ruang.tambahruang')]"><svg
                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                                     class="icon">
                                     <path
                                         d="M20,22V5c0-1.654-1.346-3-3-3h-1.19c-.18-.507-.48-.968-.908-1.319C14.205,.109,13.298-.115,12.412,.059L6.411,1.259c-1.397,.28-2.411,1.518-2.411,2.941V22H0v2H24v-2h-4Zm-7.5-8.75c-.828,0-1.5-.672-1.5-1.5s.672-1.5,1.5-1.5,1.5,.672,1.5,1.5-.672,1.5-1.5,1.5Zm5.5,8.75h-2V4h1c.551,0,1,.448,1,1V22Z">
                                     </path>
                                 </svg>Ruang</router-link></li>
-                        <li><router-link :to="{ name: 'cabang.tambahcabang' }" class="dropdown-item"><svg
+
+                        <li><router-link :to="{ name: 'cabang.tambahcabang' }"
+                                :class="['dropdown-item', isActive('cabang.tambahcabang')]"><svg
                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                                     class="icon">
                                     <path
                                         d="M14.081,11.41l-3-2.349c-1.814-1.418-4.348-1.419-6.162,0l-3,2.348c-1.22,.955-1.919,2.39-1.919,3.938v4.152c0,2.481,2.019,4.5,4.5,4.5h7c2.481,0,4.5-2.019,4.5-4.5v-4.152c0-1.548-.699-2.982-1.919-3.938Zm-4.081,6.59c0,.552-.448,1-1,1h-2c-.552,0-1-.448-1-1v-2c0-.552,.448-1,1-1h2c.552,0,1,.448,1,1v2ZM19,0h-4c-2.757,0-5,2.243-5,5v1.306c.819,.245,1.606,.627,2.312,1.179l3.002,2.351c1.707,1.336,2.686,3.346,2.686,5.512v2.652c0-.553,.447-1,1-1h1c.553,0,1,.447,1,1s-.447,1-1,1h-1c-.553,0-1-.447-1-1v1.5c0,1.746-.696,3.331-1.821,4.5h2.821c2.757,0,5-2.243,5-5V5c0-2.757-2.243-5-5-5Zm-4,7h-1c-.553,0-1-.447-1-1s.447-1,1-1h1c.553,0,1,.447,1,1s-.447,1-1,1Zm5,8h-1c-.553,0-1-.447-1-1s.447-1,1-1h1c.553,0,1,.447,1,1s-.447,1-1,1Zm0-4h-1c-.553,0-1-.447-1-1s.447-1,1-1h1c.553,0,1,.447,1,1s-.447,1-1,1Zm0-4h-1c-.553,0-1-.447-1-1s.447-1,1-1h1c.553,0,1,.447,1,1s-.447,1-1,1Z">
                                     </path>
                                 </svg>Cabang</router-link></li>
-                        <li><router-link :to="{ name: 'pegawai.tambahpegawai' }" class="dropdown-item"><svg
-                                    viewBox="0 0 24 24" fill="currentColor" class="icon"
-                                    xmlns="http://www.w3.org/2000/svg">
+
+                        <li><router-link :to="{ name: 'pegawai.tambahpegawai' }"
+                                :class="['dropdown-item', isActive('pegawai.tambahpegawai')]"><svg viewBox="0 0 24 24"
+                                    fill="currentColor" class="icon" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="m7.5 13a4.5 4.5 0 1 1 4.5-4.5 4.505 4.505 0 0 1 -4.5 4.5zm7.5 7a5.006 5.006 0 0 0 -5-5h-5a5.006 5.006 0 0 0 -5 5v4h15zm2.5-11a4.5 4.5 0 1 1 4.5-4.5 4.505 4.505 0 0 1 -4.5 4.5zm1.5 2h-5a4.793 4.793 0 0 0 -.524.053 6.514 6.514 0 0 1 -1.576 2.216 7.008 7.008 0 0 1 5.1 6.731h7v-4a5.006 5.006 0 0 0 -5-5z">
                                     </path>
                                 </svg>Pegawai</router-link></li>
-                        <li><router-link :to="{ name: 'departemen.tambahdepartemen' }" class="dropdown-item"><svg
+
+                        <li><router-link :to="{ name: 'departemen.tambahdepartemen' }"
+                                :class="['dropdown-item', isActive('departemen.tambahdepartemen')]"><svg
                                     viewBox="0 0 24 24" fill="currentColor" class="icon"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -194,7 +219,7 @@ const logoutAndReload = async () => {
                     </ul>
                 </li>
                 <li class="nav-item" style="position: absolute; bottom: 20px; width: 100%;">
-                    <a href="javascript:void(0)" @click="logoutAndReload" class="nav-link active" aria-current="page"
+                    <a href="javascript:void(0)" @click="logoutAndReload" class="nav-link" aria-current="page"
                         style="margin-left: 15px; margin-right: 15px;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                             <path

@@ -1,15 +1,19 @@
 <script setup>
 import '../style/sidebar.css';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import logo23 from '/src/style/logo2.vue';
 
 const router = useRouter(); // Initialize the router
+const route = useRoute(); // Get the current route
 
 const logoutAndReload = () => {
     router.push({ name: 'login' }).then(() => {
         window.location.reload();
     });
+};
+const isActive = (name) => {
+    return route.name === name ? 'active' : '';
 };
 </script>
 
@@ -18,8 +22,10 @@ const logoutAndReload = () => {
         <nav class="sidebar custom-sidebar" style="box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);">
             <ul class="navbar-nav">
                 <logo23 class="logo" style="margin-bottom: -50px; margin-top: -55px;">Login</logo23>
+
                 <li class="nav-item">
-                    <router-link :to="{ name: 'dashboard_pegawai.dashboard' }" class="nav-link active"
+                    <router-link :to="{ name: 'dashboard_pegawai.dashboard' }"
+                        :class="['nav-link', isActive('dashboard_pegawai.dashboard')]"
                         style="margin-left: 15px; margin-right: 15px;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                             <path
@@ -30,9 +36,11 @@ const logoutAndReload = () => {
                         <span span>Dashboard</span>
                     </router-link>
                 </li>
+
                 <li class="nav-item">
-                    <router-link :to="{ name: 'inventaris_pegawai.inventaris' }" class="nav-link active"
-                        aria-current="page" style="margin-left: 15px; margin-right: 15px;">
+                    <router-link :to="{ name: 'inventaris_pegawai.inventaris' }"
+                        :class="['nav-link', isActive('inventaris_pegawai.inventaris')]"
+                        style="margin-left: 15px; margin-right: 15px;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                             <path
                                 d="M4.78 10.34L5.87 5.75C6.26 4.18 7.69 3 9.3 3h5.4c1.61 0 3.04 1.18 3.43 2.75l1.09 4.59c.92.27 1.6 1.12 1.6 2.14v3c0 1.11-.89 2-2 2v1c0 .55-.45 1-1 1s-1-.45-1-1v-1H6v1c0 .55-.45 1-1 1s-1-.45-1-1v-1c-1.11 0-2-.89-2-2v-3c0-1.02.68-1.87 1.6-2.14zM16.28 5.75C16.04 4.84 15.21 4 14.3 4h-5.4c-.91 0-1.74.84-1.98 1.75L5.81 10h12.38l-1.91-4.25zM6 14c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm12 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" />
@@ -40,8 +48,10 @@ const logoutAndReload = () => {
                         <span>Inventaris</span>
                     </router-link>
                 </li>
+
                 <li class="nav-item">
-                    <router-link :to="{ name: 'ruang_pegawai.ruang' }" class="nav-link active" aria-current="page"
+                    <router-link :to="{ name: 'ruang_pegawai.ruang' }"
+                        :class="['nav-link', isActive('ruang_pegawai.ruang')]"
                         style="margin-left: 15px; margin-right: 15px;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                             <path
@@ -51,8 +61,9 @@ const logoutAndReload = () => {
                         <span>Ruang</span>
                     </router-link>
                 </li>
+
                 <li class="nav-item" style="position: absolute; bottom: 20px; width: 100%;">
-                    <a href="javascript:void(0)" @click="logoutAndReload" class="nav-link active" aria-current="page"
+                    <a href="javascript:void(0)" @click="logoutAndReload" class="nav-link" aria-current="page"
                         style="margin-left: 15px; margin-right: 15px;">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon">
                             <path

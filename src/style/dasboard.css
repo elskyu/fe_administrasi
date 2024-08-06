@@ -95,5 +95,12 @@ body {
     color: #fff; /* Button text color */
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; /* Smooth transition for background and border colors */
   }
-  
+
+  .btn-lihatjadwal {
+    background-color: #eeff00; /* Success button background color */
+    border-color: #eeff00; /* Success button border color */
+    padding-left: 30px;
+    padding-right: 30px;
+    margin-left: -13px;
+  }
   

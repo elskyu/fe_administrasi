@@ -198,7 +198,7 @@ onMounted(async () => {
       <div class="card3" style="margin-left: 3px;">
         <div class="calendar-container">
           <div class="calendar-header">
-            <button @click="viewAllEvents" class="btn btn-md btn-success" style="margin-left: 1px;">Lihat
+            <button @click="viewAllEvents" class="btn btn-md btn-success" style="margin-left: 0px;">Lihat
               Jadwal</button>
           </div>
 
