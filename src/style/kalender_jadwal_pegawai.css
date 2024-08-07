@@ -10,7 +10,7 @@
 }
 
 .card-nama {
-  background-color: rgb(255, 255, 255);
+  background-color: var(--white);
   padding: 20px;
   border-radius: 7px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
@@ -31,41 +31,41 @@
 .vuecal--month-view .vuecal__no-event {display: none;}
 
 .vuecal__header {
-  background-color: #6C7698;
-  color: #ffffff;
+  background-color: var(--jadwalheader);
+  color: var(--white);
 }
 
 .vuecal__weekdays, .vuecal__weekdays__day {
-  background-color: #323131;
+  background-color: var(--dark);
 }
 
 .vuecal__week__cell {
-  background-color: #fafafa;
+  background-color: var(--white);
 }
 
 .vuecal__event {
-  color: #3a416e;
+  color: var(--event);
   padding: 2px 6px;
   background-color: rgba(0, 0, 0, 0);
 }
 
 .vuecal__cell-events-count{
-  background-color: #0ad12e;
+  background-color: var(--green1);
 }
 
 .vuecal__cell--today {
-  background-color: #e3f2fd;
-  border-color: #0b0b0b;
+  background-color: var(--whitee3);
+  border-color: var(--black);
 }
 
 .vuecal__cell--past {
-  background-color: #f5f5f5;
-  color:  #9e9e9e;
+  background-color: var(--whitef5);
+  color:  var(--white9e9e);
 }
 
 .vuecal__time-cell {
-  background-color: #e5b15d62;
-  color: #000000;
+  background-color: var(--brown1);
+  color: var(--black);
 }  
 
 .calendar-header {
@@ -80,22 +80,22 @@
 }
 
 .btn-primary {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--blue);
+  color: var(--white);
   border: none;
   cursor: pointer;
 }
 
 .btn-secondary {
-  background-color: #0ad12e;
-  color: white;
+  background-color: var(--green1);
+  color: var(--white);
   border: none;
   cursor: pointer;
 }
 
 .btn-danger {
-  background-color: #dc3545;
-  color: white;
+  background-color: var(--red);
+  color: var(--white);
   border: none;
   cursor: pointer;
 }
@@ -118,8 +118,8 @@
 }
 
 .table thead th {
-  background-color: #6C7698; /* Ganti dengan warna yang diinginkan */
-  color: white;
+  background-color: var(--jadwalheader); /* Ganti dengan warna yang diinginkan */
+  color: var(--white);
 }
 
 .crud-table {
@@ -129,13 +129,13 @@
 }
 
 .crud-table th, .crud-table td {
-  border: 1px solid #000000;
+  border: 1px solid var(--black);
   padding: 10px;
   text-align: center;
 }
 
 .crud-table th {
-  background-color: #6C7698;
+  background-color: var(--jadwalheader);
 }
 
 .crud-table td {
@@ -143,7 +143,7 @@
 }
 
 .modal-content-kalendar {
-  background: #ffffff;
+  background: var(--white);
   padding: 20px;
   border-radius: 8px;
   width: 80%;
@@ -201,7 +201,7 @@
 }
 
 .form-group-dashboard input:focus {
-  outline-color: #28a745; /* Change outline color on focus */
+  outline-color: var(--green2); /* Change outline color on focus */
   outline-width: 2px; /* Increase outline width on focus */
   border-radius: 0px;
 }
@@ -213,16 +213,16 @@ label {
 }
 
 button {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--blue);
+  color: var(--white);
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #9794943f;
-  color: white;
+  background-color: var(--btnhover);
+  color: var(--white);
 }
 
 .event-list {
@@ -233,7 +233,7 @@ button:hover {
 .event-item {
   margin-bottom: 0px;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--whiteddd);
   border-radius: 5px;
 }
 

@@ -4,20 +4,20 @@
   }
   
   .table th, .table td {
-    border: 1px solid #dee2e6; /* Default border color */
+    border: 1px solid var(--whitede); /* Default border color */
     padding: 5px 5px; /* Padding inside cells */
     text-align: center; /* Align text to the left */
   }
   
   .table th {
-    background-color: #6C7698; /* Header background color */
-    color: #fff; /* Header text color */
+    background-color: var(--jadwalheader); /* Header background color */
+    color: var(--white); /* Header text color */
     font-weight: normal;
   }
   
   .table td {
-    background-color: #E6EFFF; /* Cell background color */
-    color: #3a416e; /* Cell text color */
+    background-color: var(--whitee6); /* Cell background color */
+    color: var(--event); /* Cell text color */
   }
   
   .table-bordered {
@@ -59,30 +59,30 @@
   padding: 0.5rem 0.75rem;
   margin: 0;
   line-height: 1.25;
-  color: #44d569;
+  color: var(--green3);
   text-decoration: none;
-  background-color: #fff;
-  border: 1px solid #dee2e6;
+  background-color: var(--white);
+  border: 1px solid var(--whitede);
   border-radius: 0.25rem;
 }
 
 .page-item.disabled .page-link {
-  color: #44d569;
+  color: var(--green3);
   pointer-events: none;
-  background-color: #fff;
-  border-color: #dee2e6;
+  background-color: var(--white);
+  border-color: var(--whitede);
 }
 
 .page-item.active .page-link {
   z-index: 1;
-  color: #fff;
-  background-color: #44d569;
-  border-color: #44d569;
+  color: var(--white);
+  background-color: var(--green3);
+  border-color: var(--green3);
 }
 
 .btn-next {
-  color: #ffffff;
-  background-color: #44d569;
+  color: var(--white);
+  background-color: var(--green3);
   padding-left: 10px;
   padding-right: 10px;
   border-radius: 2px;
@@ -90,13 +90,13 @@
 }
 
 .btn-next:hover {
-  color: #ffff;
-  background-color: #288840;
+  color: var(--white);
+  background-color: var(--green5);
 }
 
 .btn-prev {
-  color: #ffffff;
-  background-color: #44d569;
+  color: var(--white);
+  background-color: var(--green3);
   padding-left: 10px;
   padding-right: 10px;
   border-radius: 2px;
@@ -104,6 +104,6 @@
 }
 
 .btn-prev:hover {
-  color: #ffff;
-  background-color: #288840;
+  color: var(--white);
+  background-color: var(--green5);
 }

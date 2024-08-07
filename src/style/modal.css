@@ -14,7 +14,7 @@
   }
   
   .modal-content {
-    background: rgb(255, 255, 255);
+    background: var(--white);
     padding: 65px 50px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     max-width: 500px;
@@ -89,7 +89,7 @@
   }
   
   .form-group input:focus {
-    outline-color: #28a745; /* Change outline color on focus */
+    outline-color: var(--green2); /* Change outline color on focus */
     outline-width: 2px; /* Increase outline width on focus */
     border-radius: 0px;
   }
@@ -100,18 +100,18 @@
   }
 
   .btn-modal-save {
-    background-color: #28a745; /* Success button background color */
-    border-color: #28a745; /* Success button border color */
+    background-color: var(--green2); /* Success button background color */
+    border-color: var(--green2); /* Success button border color */
     padding: 10px 30px;
-    color: white;
+    color: var(--white);
     border-radius: 3px;
     transition: transform 0.2s ease-in-out;
   }
 
   .btn-modal-save:hover {
-    background-color: #1b8f36; /* Success button background color */
+    background-color: var(--green4); /* Success button background color */
     padding: 10px 30px;
-    color: #ffffff;
+    color: var(--white);
     border-radius: 3px;
     transition: transform 0.2s ease-in-out;
   }
@@ -121,18 +121,18 @@
   }
   
   .btn-modal-batal {
-    background-color: #dc3545; /* Danger button background color */
-    border-color: #dc3545; /* Danger button border color */
+    background-color: var(--red); /* Danger button background color */
+    border-color: var(--red); /* Danger button border color */
     padding: 10px 30px;
-    color: white;
+    color: var(--white);
     border-radius: 3px;
     transition: transform 0.2s ease-in-out;
   }
 
   .btn-modal-batal:hover {
-    background-color: #a02431; /* Success button background color */
+    background-color: var(--red4); /* Success button background color */
     padding: 10px 30px;
-    color: #ffffff;
+    color: var(--white);
     border-radius: 3px;
     transition: transform 0.2s ease-in-out;
   }
@@ -182,17 +182,17 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  color: #007bff;
-  fill: #007bff;
+  color: var(--blue);
+  fill: var(--blue);
 }
 
 .btn-icon svg {
-  fill: #ffffff; /* Warna ikon */
+  fill: var(--white); /* Warna ikon */
   transition: fill 0.3s ease;
 }
 
 .btn-icon:hover svg {
-  fill: #007bff; /* Warna ikon saat hover */
+  fill: var(--blue); /* Warna ikon saat hover */
 }
 
 .search-container {
@@ -207,26 +207,26 @@
   right: 10px;
   width: 32px;
   height: 32px;
-  fill: black;
+  fill: var(--black);
   z-index: 300;
 }
 
 h4 {
-  color: #44d569; 
+  color: var(--green3); 
   font-weight: 450;
   margin-top: 7px;
   text-align: right;
 }
 
 .text-lihat {
-  color: rgb(255, 255, 255);
+  color: var(--white);
   margin-left: 5px;
   font-size: 14px;
   margin-top: auto;
 }
 
 .label-lihat {
-  color: rgb(255, 255, 255);
+  color: var(--white);
   font-size: 14px;
 }
 
@@ -237,7 +237,7 @@ h4 {
 /* modal profil */
 
 .modal-profil {
-  background: rgb(255, 255, 255);
+  background: var(--white);
   padding: 20px 10px 50px 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   max-width: 350px;
@@ -252,8 +252,8 @@ h4 {
  .upper{
   width: 40vh;
   height: 100px;
-  background-color: #28A745;
-  border: 1px solid #ccc; /* Border tipis di sekitar kotak */
+  background-color: var(--green2);
+  border: 1px solid var(--grey3); /* Border tipis di sekitar kotak */
  }
 
  .upper img{
@@ -280,9 +280,9 @@ h4 {
   left: 33%;
   height: 100px;
   width: 100px;
-  border:3.5px solid #ffffff;
+  border:3.5px solid var(--white);
   border-radius: 50%;
-  background-color: white;
+  background-color: var(--white);
  }
 
  .follow{
@@ -297,18 +297,18 @@ h4 {
  }
 
  .btn-ubah-password {
-  background-color: #28A745;
-  color: white;
+  background-color: var(--green2);
+  color: var(--white);
   padding: 7px;
   border-radius: 3px;
   width: 18vw;
  }
 
  .btn-batal-ubah-password {
-  background-color: red;
+  background-color: var(--red);
   width: 18vw;
-  color: white;
-  border: white;
+  color: var(--white);
+  border: var(--white);
   padding: 7px;
   cursor: pointer;
   margin-left: 0;

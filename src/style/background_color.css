@@ -31,7 +31,7 @@ body::after {
 body, html {
     overflow: hidden;
     height: 100%;
-    background-image: linear-gradient(135deg, #44d569, #44d569);
+    background-image: linear-gradient(135deg, var(--green3), var(--green3));
     position: relative;
     z-index: 1;
       

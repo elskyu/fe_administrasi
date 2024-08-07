@@ -8,7 +8,7 @@
     width: 210px; /* Lebar sidebar */
     height: 95.5vh; /* Tinggi penuh */
     position: fixed;  
-    background: #fff; /* Warna sidebar */
+    background: var(--white); /* Warna sidebar */
     padding-top: 15px;
     margin-left: 2.3vh;
     margin-top: 2vh;
@@ -30,7 +30,7 @@
     font-size: small;
     font-weight: lighter;
     margin-left: 50px;
-    color: #3a416e;
+    color: var(--event);
     padding: 10px; /* Atur padding untuk ruang hover */
     transition: background-color 0.5s ease;
     border-radius: 5px;
@@ -50,21 +50,21 @@
   }
 
   .nav-item {
-    color: #44d569;
+    color: var(--green3);
     font-weight: 10;
   }
 
   .nav-item.active {
-    color: #44d569;
+    color: var(--green3);
     font-weight: 10;
   }
 
   .nav-item:hover {
-    color: #44d569;
+    color: var(--green3);
   }
 
   .icon:hover {
-    color:#44d569; 
+    color:var(--green3); 
   }
   
   .icon {
@@ -78,7 +78,7 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    background-color: #fff;
+    background-color: var(--white);
     position: absolute;
     left: 150px;
     top: 100%;
@@ -97,7 +97,7 @@
     text-decoration: none;
     font-size: small;
     font-weight: lighter; 
-    color: #3a416e;
+    color: var(--event);
   }
 
   .dropdown-item.active {
@@ -109,14 +109,14 @@
     text-decoration: none;
     font-size: small;
     font-weight: lighter; 
-    color:#44d569;
+    color: var(--green3);
   }
   
   .dropdown-item:hover {
     background-color: rgba(255, 255, 255, 0.8);
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    color:#44d569;
+    color: var(--green3);
     display: block;
   }
 
@@ -173,13 +173,13 @@
   }
 
   .profil {
-    background-color: rgb(255, 255, 255);
+    background-color: var(--white);
     padding: 4px;
     
   }
 
   .text-profil {
-    color: #3a416e;
+    color: var(--fontcolor);
     font-size: 17px;
   }
 
@@ -190,6 +190,6 @@
     display: block;
     width: 85%;
     height: 0.7px; /* Adjust the thickness of the line */
-    background-color: #44d569; /* Color of the line */
+    background-color: var(--green3); /* Color of the line */
     margin-top: 10px; /* Space between the text and the line */
   }  
