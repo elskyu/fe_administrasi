@@ -8,7 +8,6 @@ import { useRouter, useRoute } from 'vue-router';
 const router = useRouter();
 const route = useRoute(); // Get the current route
 const userName = ref(''); // Default name
-
 const showProfileModal = ref(false);
 
 const showDropdown = ref(false);
@@ -293,7 +292,7 @@ onMounted(async () => {
                     </div>
                 </div>
                 <div class="text-center" style="margin-top: 65px;">
-                    <h5 class="mb-0">Pegawai 1</h5>
+                    <h5 class="mb-0">Admin</h5>
                     <span class="text-profil">Back End Developer, Sidoarjo</span>
                     <span class="text-profil d-block mb-2">Nip. 9876543</span>
                     <div class="button-group-vertical">
