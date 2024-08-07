@@ -84,17 +84,6 @@ const deleteAdmin = async (id_admin) => {
   }
 };
 
-// const filteredAdmins = computed(() => {
-//   const query = searchQuery.value.toLowerCase();
-//   if (!query) {
-//     return admins.value;
-//   }
-//   return admins.value.filter(admin =>
-//     admin.nama.toLowerCase().includes(query) ||
-//     admin.email.toLowerCase().includes(query)
-//   );
-// });
-
 const saveNewAdmin = async () => {
   try {
     await api.post('/api/admin', addFormData.value);
