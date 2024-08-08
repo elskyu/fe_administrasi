@@ -166,8 +166,8 @@ const saveEditRuang = async () => {
     });
 
     // Menambahkan foto jika ada
-    if (editFotoFile.value) {
-      formData.append('foto', editFotoFile.value);
+    if (addFotoFile.value) {
+      formData.append('foto', addFotoFile.value);
     }
 
     // Menambahkan _method untuk menyimulasikan metode PUT
@@ -181,7 +181,7 @@ const saveEditRuang = async () => {
     });
 
     editFormData.value = { id_ruang: '', nama_ruang: '', cabang: '', foto: '' };
-    editFotoFile.value = null; // Reset file foto jika ada
+    addFotoFile.value = null; // Reset file foto jika ada
     showEditModal.value = false;
     fetchDataRuang();
     generateNewRuangId();
@@ -293,7 +293,7 @@ onMounted(async () => {
                       <td class="text-center">{{ r.id_ruang }}</td>
                       <td>{{ r.nama_ruang }}</td>
                       <td>{{ getNamaCabang(r.cabang) }}</td>
-                      <td><img :src="r.foto" width="70" class="rounded-3" /></td>
+                      <td><img :src="r.foto" width="80" class="rounded-3" /></td>
                       <td class="text-center">
                         <button @click="editRuang(r)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">Ubah</button>
@@ -341,9 +341,9 @@ onMounted(async () => {
           </option>
         </select>
       </div>
-      <div style="width: 185px; margin: 0px 10px 20px 0px;">
+      <div style="margin: 0px 10px 20px 0px;">
         <label for="foto">Upload Foto Anda</label>
-        <input type="file" @change="handleFileChange" class="form-control">
+        <input style="margin-top: 5px;" type="file" @change="handleFileChange" class="form-control">
       </div>
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewRuang">Simpan Perubahan</button>
@@ -370,9 +370,9 @@ onMounted(async () => {
           <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
         </select>
       </div>
-      <div style="width: 185px; margin: 0px 10px 20px 0px;">
+      <div style=" margin: 0px 10px 20px 0px;">
         <label for="foto">Upload Foto Anda</label>
-        <input type="file" @change="handleFileChange" class="form-control">
+        <input style="margin-top: 5px;" type="file" @change="handleFileChange" class="form-control">
       </div>
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditRuang">Simpan perubahan</button>

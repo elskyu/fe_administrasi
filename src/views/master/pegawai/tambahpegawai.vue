@@ -11,7 +11,7 @@ import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 import logo23 from '/src/style/logo2.vue';
-import defaultImage from '/src/images/potoprofil.png';
+import defaultImage from '/src/images/potoprofil2.png';
 
 
 const isLoading = ref(true);
@@ -183,7 +183,7 @@ const saveNewPegawai = async () => {
       // Menggunakan gambar default dari folder images
       const defaultFile = await fetch(defaultImage)
         .then(res => res.blob())
-        .then(blob => new File([blob], "potoprofil.png", { type: "image/png" }));
+        .then(blob => new File([blob], "potoprofil2.png", { type: "image/png" }));
       formData.append('foto', defaultFile);
     }
 

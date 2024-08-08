@@ -36,6 +36,7 @@ const addFormData = ref({
   harga_beli: '',
   tanggal_beli: '',
   cabang: '',
+  foto: '',
 });
 
 const editFormData = ref({
@@ -49,7 +50,22 @@ const editFormData = ref({
   harga_beli: '',
   tanggal_beli: '',
   cabang: '',
+  foto: '',
 });
+
+const addFotoFile = ref(null);
+const editFotoFile = ref(null);
+
+const handleFileChange = (event, isEdit = false) => {
+  const file = event.target.files[0];
+  if (file) {
+    if (isEdit) {
+      editFotoFile.value = file;
+    } else {
+      addFotoFile.value = file;
+    }
+  }
+};
 
 const changePage = async (page) => {
   console.log("s", page);
@@ -61,9 +77,29 @@ const changePage = async (page) => {
 
 const fetchDataInventaris = async () => {
   try {
-    const response = await api.get(`/api/inventaris?page=${currentPage.value}&keyword=${searchQuery.value}&cabang?=${cabangFilter.value}&kategori?=${kategoriFilter.value}`);
+    let url = `/api/inventaris?page=${currentPage.value}`;
 
-    inventarisList.value = response.data.data.data;
+    if (cabangFilter.value) {
+      url += `&cabang?=${encodeURIComponent(cabangFilter.value)}`;
+    }
+
+    if (kategoriFilter.value) {
+      url += `&kategori?=${encodeURIComponent(kategoriFilter.value)}`;
+    }
+
+    if (searchQuery.value) {
+      url += `&keyword=${encodeURIComponent(searchQuery.value)}`;
+    }
+
+    const response = await api.get(url);
+
+    inventarisList.value = response.data.data.data.map(inventaris => {
+      return {
+        ...inventaris,
+        foto: inventaris.foto // Pastikan URL gambar sudah lengkap dari backend
+      };
+    });
+
     currentPage.value = response.data.data.current_page;
     totalPages.value = response.data.data.last_page;
   } catch (error) {
@@ -93,6 +129,7 @@ const editInventaris = (i) => {
     harga_beli: i.harga_beli,
     tanggal_beli: i.tanggal_beli,
     cabang: i.cabang,
+    foto: i.foto,
   };
   showEditModal.value = true;
 };
@@ -126,7 +163,29 @@ const filteredInventaris = computed(() => {
 
 const saveNewInventaris = async () => {
   try {
-    await api.post('/api/inventaris', addFormData.value);
+    if (!addFormData.value.cabang) {
+      console.error('Cabang harus dipilih');
+      return;
+    }
+
+    // Membuat instance FormData
+    const formData = new FormData();
+    Object.keys(addFormData.value).forEach(key => {
+      formData.append(key, addFormData.value[key]);
+    });
+
+    // Menambahkan foto jika ada
+    if (addFotoFile.value) {
+      formData.append('foto', addFotoFile.value);
+    }
+
+    // Mengirim data menggunakan FormData
+    await api.post('/api/inventaris', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
     addFormData.value = {
       id_inventaris: '',
       nopol: '',
@@ -138,8 +197,10 @@ const saveNewInventaris = async () => {
       harga_beli: '',
       tanggal_beli: '',
       cabang: '',
+      foto: '',
     };
     showAddModal.value = false;
+    addFotoFile.value = null; // Reset file foto jika ada
     fetchDataInventaris();
     generateNewInvId();
   } catch (error) {
@@ -149,7 +210,26 @@ const saveNewInventaris = async () => {
 
 const saveEditInventaris = async () => {
   try {
-    await api.put(`/api/inventaris/${currentInventarisId.value}`, editFormData.value);
+    const formData = new FormData();
+    Object.keys(editFormData.value).forEach(key => {
+      formData.append(key, editFormData.value[key]);
+    });
+
+    // Menambahkan foto jika ada
+    if (addFotoFile.value) {
+      formData.append('foto', addFotoFile.value);
+    }
+
+    // Menambahkan _method untuk menyimulasikan metode PUT
+    formData.append('_method', 'PUT');
+
+    // Mengirim data menggunakan FormData
+    await api.post(`/api/inventaris/${currentInventarisId.value}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
     editFormData.value = {
       id_inventaris: '',
       nopol: '',
@@ -161,8 +241,11 @@ const saveEditInventaris = async () => {
       harga_beli: '',
       tanggal_beli: '',
       cabang: '',
+      foto: '',
     };
+
     showEditModal.value = false;
+    addFotoFile.value = null; // Reset file foto jika ada
     fetchDataInventaris();
     generateNewInvId();
   } catch (error) {
@@ -235,7 +318,7 @@ onMounted(async () => {
       <div class="container mt-5 mb-5">
         <div class="flex-container" style="display: flex; justify-content: space-between;">
           <div class="card2" style="flex: 0 0 81%; margin-right: 10px; margin-left: -10px;">
-            <h2>Inventaris</h2>
+            <h2>Inventaris Kendaraan</h2>
           </div>
           <div class="card-nama" style="flex: 0 0 20%;">
             <logo23 class="logo" style="margin-bottom: -50px; margin-top: -55px;">Login</logo23>
@@ -285,6 +368,7 @@ onMounted(async () => {
                       <th scope="col">Harga Beli</th>
                       <th scope="col">Tanggal Beli</th>
                       <th scope="col">Cabang</th>
+                      <th scope="col">Foto</th>
                       <th scope="col">Aksi</th>
                     </tr>
                   </thead>
@@ -307,6 +391,7 @@ onMounted(async () => {
                       <td>{{ inventaris.harga_beli }}</td>
                       <td>{{ inventaris.tanggal_beli }}</td>
                       <td>{{ getNamaCabang(inventaris.cabang) }}</td>
+                      <td><img :src="inventaris.foto" width="80" class="rounded-3" /></td>
                       <td class="text-center">
                         <button @click="editInventaris(inventaris)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">Ubah</button>
@@ -467,7 +552,10 @@ onMounted(async () => {
           </select>
         </div>
       </div>
-
+      <div style=" margin: 0px 10px 20px 0px;">
+        <label for="foto">Upload Foto Anda</label>
+        <input style="margin-top: 5px;" type="file" @change="handleFileChange" class="form-control">
+      </div>
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditInventaris">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>

@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios';
-import '../style/sidebar.css';
 import api from '../api'; // Pastikan api ini digunakan jika diperlukan
+import '../style/sidebar.css';
 import '../style/modal.css';
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
@@ -10,11 +10,14 @@ const router = useRouter(); // Initialize the router
 const route = useRoute(); // Get the current route
 
 const showProfileModal = ref(false);
+const showModalPassword = ref(false);
+const showModalUbahProfil = ref(false);
 
 const userName = ref(''); // Default name
 const userDepartemen = ref('');
 const userCabang = ref('');
 const userNIP = ref('');
+const userId = ref('');
 const userPhoto = ref(''); // Default photo
 
 const cabangList = ref([]);
@@ -39,7 +42,8 @@ const fetchAllData = async () => {
                 userDepartemen.value = getNamaDepartemen(user.departement) || 'Departemen tidak ditemukan';
                 userCabang.value = getNamaCabang(user.cabang) || 'Cabang tidak ditemukan';
                 userPhoto.value = user.foto || 'https://bootdey.com/img/Content/avatar/avatar7.png'; // Default image if no photo
-                userNIP.value = user.nip || 'NIP tidak ditemukan';
+                userId.value = user.id_pegawai || '';
+                userNIP.value = user.nip || '';
             } else {
                 console.error('Data pengguna tidak ditemukan dalam respons');
             }
@@ -50,10 +54,6 @@ const fetchAllData = async () => {
         console.error('Token tidak ditemukan');
     }
 };
-
-onMounted(async () => {
-    await fetchAllData();
-});
 
 const getNamaCabang = (idCabang) => {
     const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
@@ -75,6 +75,50 @@ const isActive = (name) => {
     return route.name === name ? 'active' : '';
 };
 
+const newProfilePhoto = ref(null);
+
+// Fungsi untuk menangani perubahan foto profil
+const handleProfilePhotoChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        newProfilePhoto.value = file;
+    }
+};
+
+// Fungsi untuk menyimpan foto profil
+const saveFotoProfil = async () => {
+    const token = localStorage.getItem('token');
+
+    if (newProfilePhoto.value) {
+        const formData = new FormData();
+        formData.append('foto', newProfilePhoto.value);
+        formData.append('_method', 'PUT'); // Simulasi PUT request
+
+        try {
+            const response = await api.post(`http://localhost:8000/api/updatep/${userId.value}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.data.success) {
+                userPhoto.value = response.data.data.foto; // Update foto di front-end
+                showModalUbahProfil.value = false; // Tutup modal
+                fetchAllData();
+            } else {
+                console.error('Error updating profile photo:', response.data.message);
+            }
+        } catch (error) {
+            console.error('Error updating profile photo:', error);
+        }
+    } else {
+        console.log('No new photo to update');
+        showModalUbahProfil.value = false; // Tutup modal jika tidak ada foto baru
+    }
+};
+
+
 onMounted(async () => {
     fetchAllData();
 });
@@ -90,7 +134,7 @@ onMounted(async () => {
                     <div class="form-group-row" style="display: flex; align-items: center; margin-right: 35px;">
                         <div>
                             <img :src="userPhoto" @click="showProfileModal = true" width="24" height="24"
-                                style="border-radius: 50%; cursor: pointer; margin-left: 25px;" alt="User Photo" />
+                                style="border-radius: 50%; cursor: pointer; margin-left: 25px;" />
                         </div>
 
                         <p class="text-profil" style="margin: 0 auto; font-size: 15px;">Halo {{ userName }}</p>
@@ -159,7 +203,8 @@ onMounted(async () => {
                 </div>
                 <div class="user text-center">
                     <div class="profile">
-                        <img :src="userPhoto" class="rounded-circle" width="180">
+                        <img :src="userPhoto" @click="showModalUbahProfil = true" class="rounded-circle" width="180"
+                            style="cursor: pointer;">
                     </div>
                 </div>
                 <div class="text-center" style="margin-top: 65px;">
@@ -167,10 +212,45 @@ onMounted(async () => {
                     <span class="text-profil" style="font-size: 16px;">{{ userDepartemen }}, {{ userCabang }}</span>
                     <span class="text-profil d-block mb-2" style="font-size: 14px;">Nip. {{ userNIP }}</span>
                     <div class="button-group-vertical">
-                        <button class="btn-ubah-password">Ubah Password</button>
+                        <button @click="showModalPassword = true" class="btn-ubah-password">Ubah Password</button>
                         <button @click="showProfileModal = false" class="btn-batal-ubah-password">Batal</button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Modal Ubah Password -->
+        <div v-if="showModalPassword" class="modal card-profil">
+            <div class="modal-profil">
+                <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">Ubah Password
+                </h4>
+                <div class="form-group" style="margin-left: 0px;">
+                    <label for="password">Password Lama</label>
+                    <input type="password" id="password" />
+                </div>
+                <div class="form-group" style="margin-left: 0px;">
+                    <label for="password">Password Baru</label>
+                    <input type="password" id="password" />
+                </div>
+                <button @click="showModalPassword = false" class="btn-batal-ubah-password"
+                    style="margin: 20px 10px 10px 10px;">Batal</button>
+            </div>
+        </div>
+
+        <!-- Modal Ubah foto -->
+        <div v-if="showModalUbahProfil" class="modal card-profil">
+            <div class="modal-profil">
+                <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">Ubah Profil
+                </h4>
+                <div style="width: 275px; margin: 0px 10px 20px 10px;">
+                    <label for="foto">Upload Foto Anda</label>
+                    <input type="file" @change="handleProfilePhotoChange" class="form-control">
+                </div>
+                <button class="btn-simpan-ubah-profil" @click="saveFotoProfil"
+                    style="margin: 20px 10px 10px 10px;">Simpan
+                    Perubahan</button>
+                <button @click="showModalUbahProfil = false" class="btn-batal-ubah-password"
+                    style="margin: 20px 10px 10px 10px;">Batal</button>
             </div>
         </div>
     </div>
