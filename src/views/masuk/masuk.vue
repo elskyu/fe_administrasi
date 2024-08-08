@@ -25,12 +25,26 @@ const totalPages = ref(1); // Total pages dari backend
 const addFormData = ref({
   id_surat_masuk: '',
   nomor_surat: '',
-  tanggal_surat: '',
   tanggal_terima: '',
   asal_surat: '',
   perihal: '',
   cabang: '',
+  foto: '',
 });
+
+const addFotoFile = ref(null);
+const editFotoFile = ref(null);
+
+const handleFileChange = (event, isEdit = false) => {
+  const file = event.target.files[0];
+  if (file) {
+    if (isEdit) {
+      editFotoFile.value = file;
+    } else {
+      addFotoFile.value = file;
+    }
+  }
+};
 
 const changePage = async (page) => {
   if (page > 0 && page <= totalPages.value) {
@@ -53,7 +67,13 @@ const fetchDataSuratMasuk = async () => {
 
     const response = await api.get(url);
 
-    suratMasuk.value = response.data.data.data;
+    suratMasuk.value = response.data.data.data.map(suratMasuk => {
+      return {
+        ...suratMasuk,
+        foto: suratMasuk.foto // Pastikan URL gambar sudah lengkap dari backend
+      };
+    });
+
     currentPage.value = response.data.data.current_page;
     totalPages.value = response.data.data.last_page;
   } catch (error) {
@@ -72,17 +92,41 @@ const fetchDataCabang = async () => {
 
 const saveNewSuratMasuk = async () => {
   try {
-    await api.post('/api/sm', addFormData.value);
+    if (!addFormData.value.cabang) {
+      console.error('Cabang harus dipilih');
+      return;
+    }
+
+    // Membuat instance FormData
+    const formData = new FormData();
+    Object.keys(addFormData.value).forEach(key => {
+      formData.append(key, addFormData.value[key]);
+    });
+
+    // Menambahkan foto jika ada
+    if (addFotoFile.value) {
+      formData.append('foto', addFotoFile.value);
+    }
+
+    // Mengirim data menggunakan FormData
+    await api.post('/api/sm', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
     addFormData.value = {
       id_surat_masuk: '',
       nomor_surat: '',
-      tanggal_surat: '',
       tanggal_terima: '',
       asal_surat: '',
       perihal: '',
       cabang: '',
+      foto: '',
     };
+
     showAddModal.value = false;
+    addFotoFile.value = null; // Reset file foto jika ada
     fetchDataSuratMasuk();
     generateNewSmId();
   } catch (error) {
@@ -180,11 +224,11 @@ onMounted(async () => {
                     <tr>
                       <th scope="col" style="width:13%">ID Surat Masuk</th>
                       <th scope="col" style="width:13%">Nomor Surat</th>
-                      <th scope="col" style="width:13%">Tanggal Surat</th>
                       <th scope="col" style="width:13%">Tanggal Terima</th>
                       <th scope="col" style="width:15%">Asal Surat</th>
                       <th scope="col" style="width:15%">Perihal</th>
-                      <th scope="col" style="width:20%">Cabang</th>
+                      <th scope="col" style="width:10%">Cabang</th>
+                      <th scope="col" style="width:20%">Foto</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -196,7 +240,7 @@ onMounted(async () => {
                       </td>
                     </tr>
                     <tr v-else-if="suratMasuk.length === 0">
-                      <td colspan="8" class="text-center">
+                      <td colspan="9" class="text-center">
                         <div class="alert alert-warning mb-0">
                           Data Tidak Ditemukan!
                         </div>
@@ -205,11 +249,11 @@ onMounted(async () => {
                     <tr v-else v-for="(s, index) in suratMasuk" :key="index">
                       <td class="text-center">{{ s.id_surat_masuk }}</td>
                       <td class="text-center">{{ s.nomor_surat }}</td>
-                      <td>{{ s.tanggal_surat }}</td>
                       <td>{{ s.tanggal_terima }}</td>
                       <td>{{ s.asal_surat }}</td>
                       <td>{{ s.perihal }}</td>
                       <td>{{ getNamaCabang(s.cabang) }}</td>
+                      <td><img :src="s.foto" width="125" class="rounded-3" /></td>
                     </tr>
                   </tbody>
                 </table>
@@ -247,12 +291,14 @@ onMounted(async () => {
       </div>
       <div class="form-group-row">
         <div class="form-group">
-          <label for="tanggal_surat" style="width: 195px;">Tanggal Surat</label>
-          <input type="date" id="tanggal_surat" v-model="addFormData.tanggal_surat" />
-        </div>
-        <div class="form-group">
           <label for="tanggal_terima" style="width: 195px;">Tanggal Terima</label>
           <input type="date" id="tanggal_terima" v-model="addFormData.tanggal_terima" />
+        </div>
+        <div class="form-group" style="width: 200px;">
+          <label for="cabang">Cabang</label>
+          <select id="cabang" v-model="addFormData.cabang">
+            <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+          </select>
         </div>
       </div>
       <div class="form-group">
@@ -263,11 +309,9 @@ onMounted(async () => {
         <label for="perihal">Perihal</label>
         <input type="text" id="perihal" v-model="addFormData.perihal" />
       </div>
-      <div class="form-group">
-        <label for="cabang">Cabang</label>
-        <select id="cabang" v-model="addFormData.cabang">
-          <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-        </select>
+      <div style=" margin: 0px 10px 20px 0px;">
+        <label for="foto">Upload Foto Anda</label>
+        <input style="margin-top: 5px;" type="file" @change="handleFileChange" class="form-control">
       </div>
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewSuratMasuk">Simpan Perubahan</button>

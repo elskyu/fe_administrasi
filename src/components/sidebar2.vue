@@ -133,10 +133,9 @@ onMounted(async () => {
                 <div class="profil" style="flex: 0 0 20%;">
                     <div class="form-group-row" style="display: flex; align-items: center; margin-right: 35px;">
                         <div>
-                            <img :src="userPhoto" @click="showProfileModal = true" width="24" height="24"
+                            <img :src="userPhoto" @click="showProfileModal = true" width="28" height="28"
                                 style="border-radius: 50%; cursor: pointer; margin-left: 25px;" />
                         </div>
-
                         <p class="text-profil" style="margin: 0 auto; font-size: 15px;">Halo {{ userName }}</p>
                     </div>
                 </div>
@@ -197,14 +196,20 @@ onMounted(async () => {
         <!-- Profil modal -->
         <div v-if="showProfileModal" class="modal card-profil">
             <div class="modal-profil">
-
                 <div class="upper">
                     <img src="" class="img-fluid">
                 </div>
                 <div class="user text-center">
                     <div class="profile">
-                        <img :src="userPhoto" @click="showModalUbahProfil = true" class="rounded-circle" width="180"
-                            style="cursor: pointer;">
+                        <!-- Foto Profil -->
+                        <img :src="userPhoto" class="rounded-circle profile-photo" width="180">
+                        <!-- SVG di depan foto profil -->
+                        <svg style="cursor: pointer;" @click="showModalUbahProfil = true" class="profile-icon"
+                            width="20" height="20" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1"
+                            viewBox="0 0 24 24">
+                            <path
+                                d="m15.5,9h-7c-.275,0-.5.225-.5.5v5.5h8v-5.5c0-.275-.225-.5-.5-.5Zm-3.5,5c-1.105,0-2-.895-2-2s.895-2,2-2,2,.895,2,2-.895,2-2,2Zm0-14C5.383,0,0,5.383,0,12s5.383,12,12,12,12-5.383,12-12S18.617,0,12,0Zm6,17H6v-7.5c0-1.379,1.121-2.5,2.5-2.5h.454l1.285-2h3.521l1.285,2h.454c1.379,0,2.5,1.121,2.5,2.5v7.5Z" />
+                        </svg>
                     </div>
                 </div>
                 <div class="text-center" style="margin-top: 65px;">
@@ -212,7 +217,8 @@ onMounted(async () => {
                     <span class="text-profil" style="font-size: 16px;">{{ userDepartemen }}, {{ userCabang }}</span>
                     <span class="text-profil d-block mb-2" style="font-size: 14px;">Nip. {{ userNIP }}</span>
                     <div class="button-group-vertical">
-                        <button @click="showModalPassword = true" class="btn-ubah-password">Ubah Password</button>
+                        <button style="margin-top: 15px;" @click="showModalPassword = true"
+                            class="btn-ubah-password">Ubah Password</button>
                         <button @click="showProfileModal = false" class="btn-batal-ubah-password">Batal</button>
                     </div>
                 </div>
@@ -255,3 +261,20 @@ onMounted(async () => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.profile-photo {
+    z-index: 1;
+    /* Foto profil berada di bawah SVG */
+}
+
+.profile-icon {
+    position: absolute;
+    bottom: 2px;
+    /* Jarak dari bawah */
+    right: 10px;
+    /* Jarak dari kanan */
+    z-index: 2;
+    /* SVG berada di atas foto profil */
+}
+</style>

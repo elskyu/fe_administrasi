@@ -178,17 +178,19 @@ onMounted(async () => {
                   <h3 class="card-title" style="display: flex; justify-content: center;  margin-bottom: 25px;">Detail
                     Ruang</h3>
                   <div class="form-group-row">
-                    <div class="card-lihat-ruang" style="width: 605px;">
+                    <div class="card-lihat-ruang" style="width: 940px;">
                       <div class="form-group-row">
                         <label class="label-lihat" style="font-size: 18px;">ID Ruang :</label>
                         <h6 class="text-lihat" style="font-size: 16px;">{{ ruang[0].id_ruang }}</h6>
                       </div>
-                    </div>
-                    <div class="card-lihat-ruang" style="width: 605px;">
                       <div class="form-group-row">
                         <label class="label-lihat" style="font-size: 18px;">Nama Ruang :</label>
                         <h6 class="text-lihat" style="font-size: 16px;">{{ ruang[0].nama_ruang }}</h6>
                       </div>
+                    </div>
+                    <div class="card-lihat-ruang" style="width: 250px;">
+                      <img :src="ruang[0].foto" width="220" class="rounded-3" alt="Inventaris Foto"
+                        style="display: flex; margin: 0 auto;" />
                     </div>
                   </div>
                 </div>

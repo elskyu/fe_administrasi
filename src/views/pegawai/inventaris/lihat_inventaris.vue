@@ -189,39 +189,9 @@ onMounted(async () => {
                         <p class="text-lihat">{{ inventarisList[0].nopol }}</p>
                       </div>
                     </div>
-
-                    <!-- <div class="card-lihat" style="width: 395px;">
-                      <div class="form-group-row">
-                        <label class="label-lihat">Pajak :</label>
-                        <p class="text-lihat">{{ inventarisList[0].pajak }}</p>
-                      </div>
-                      <div class="form-group-row">
-                        <label class="label-lihat">Kategori :</label>
-                        <p class="text-lihat">{{ inventarisList[0].kategori }}</p>
-                      </div>
-                      <div class="form-group-row">
-                        <label class="label-lihat">Masa Pajak :</label>
-                        <p class="text-lihat">{{ inventarisList[0].masa_pajak }}</p>
-                      </div>
-                    </div>
-
-                    <div class="card-lihat" style="width: 395px;">
-                      <div class="form-group-row">
-                        <label class="label-lihat">Tahun :</label>
-                        <p class="text-lihat">{{ inventarisList[0].tahun }}</p>
-                      </div>
-                      <div class="form-group-row">
-                        <label class="label-lihat">Harga Beli :</label>
-                        <p class="text-lihat">{{ inventarisList[0].harga_beli }}</p>
-                      </div>
-                      <div class="form-group-row">
-                        <label class="label-lihat">Tanggal Beli :</label>
-                        <p class="text-lihat">{{ inventarisList[0].tanggal_beli }}</p>
-                      </div>
-                    </div> -->
-
                     <div class="card-lihat" style="width: 250px;">
-
+                      <img :src="inventarisList[0].foto" width="220" class="rounded-3" alt="Inventaris Foto"
+                        style="display: flex; margin: 0 auto;" />
                     </div>
                   </div>
                 </div>

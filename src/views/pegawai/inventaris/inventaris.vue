@@ -102,6 +102,7 @@ onMounted(async () => {
                       <th scope="col">Kategori</th>
                       <th scope="col">Tahun</th>
                       <th scope="col">Aksi</th>
+
                     </tr>
                   </thead>
                   <tbody>
