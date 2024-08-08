@@ -286,7 +286,7 @@ onMounted(async () => {
             <button @click="showModal = true" class="btn btn-md btn-success" style="margin-left: 1px;">Tambah</button>
             <button @click="viewAllEvents" class="btn btn-warning" style="margin-right: 0px;">Lihat Jadwal</button>
           </div>
-          <vue-cal hide-view-selector :time="false" active-view="month" v-model:active-view="activeView" xsmall
+          <vue-cal hide-view-selector :time="false" active-view="month" v-model:active-view="activeView"
             :disable-views="['years', 'week', 'day']" events-count-on-year-view :events="events"
             @view-change="handleViewChange" @event-click="viewEvent" @cell-click="addEventForDate"
             @event-change="changeEvent" locale="id">
