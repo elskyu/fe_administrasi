@@ -28,15 +28,31 @@ const addFormData = ref({
   id_ruang: '',
   nama_ruang: '',
   cabang: '',
+  foto: '',
 });
 
 const editFormData = ref({
   id_ruang: '',
   nama_ruang: '',
   cabang: '',
+  foto: '',
 });
 
 const currentRuangId = ref(null);
+
+const addFotoFile = ref(null);
+const editFotoFile = ref(null);
+
+const handleFileChange = (event, isEdit = false) => {
+  const file = event.target.files[0];
+  if (file) {
+    if (isEdit) {
+      editFotoFile.value = file;
+    } else {
+      addFotoFile.value = file;
+    }
+  }
+};
 
 const changePage = async (page) => {
   if (page > 0 && page <= totalPages.value) {
@@ -59,7 +75,13 @@ const fetchDataRuang = async () => {
 
     const response = await api.get(url);
 
-    ruang.value = response.data.data.data;
+    ruang.value = response.data.data.data.map(ruang => {
+      return {
+        ...ruang,
+        foto: ruang.foto // Pastikan URL gambar sudah lengkap dari backend
+      };
+    });
+
     currentPage.value = response.data.data.current_page;
     totalPages.value = response.data.data.last_page;
   } catch (error) {
@@ -82,6 +104,7 @@ const editRuang = (r) => {
     id_ruang: r.id_ruang,
     nama_ruang: r.nama_ruang,
     cabang: r.cabang,
+    foto: r.foto, // Pastikan URL gambar sudah lengkap dari backend
   };
   showEditModal.value = true;
 };
@@ -99,29 +122,34 @@ const deleteRuang = async (id_ruang) => {
   }
 };
 
-// const filteredRuang = computed(() => {
-//   const query = searchQuery.value.toLowerCase();
-
-//   let filtered = ruang.value;
-
-//   if (query) {
-//     filtered = filtered.filter(r =>
-//       r.nama_ruang.toLowerCase().includes(query) ||
-//       r.id_ruang.toLowerCase().includes(query)
-//     );
-//   }
-//   return filtered;
-// });
-
 const saveNewRuang = async () => {
   try {
     if (!addFormData.value.cabang) {
       console.error('Cabang harus dipilih');
       return;
     }
-    await api.post('/api/ruang', addFormData.value);
-    addFormData.value = { id_ruang: '', nama_ruang: '', cabang: '' };
+
+    // Membuat instance FormData
+    const formData = new FormData();
+    Object.keys(addFormData.value).forEach(key => {
+      formData.append(key, addFormData.value[key]);
+    });
+
+    // Menambahkan foto jika ada
+    if (addFotoFile.value) {
+      formData.append('foto', addFotoFile.value);
+    }
+
+    // Mengirim data menggunakan FormData
+    await api.post('/api/ruang', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    addFormData.value = { id_ruang: '', nama_ruang: '', cabang: '', foto: '' };
     showAddModal.value = false;
+    addFotoFile.value = null; // Reset file foto jika ada
     fetchDataRuang();
     generateNewRuangId();
   } catch (error) {
@@ -131,8 +159,29 @@ const saveNewRuang = async () => {
 
 const saveEditRuang = async () => {
   try {
-    await api.put(`/api/ruang/${currentRuangId.value}`, editFormData.value);
-    editFormData.value = { id_ruang: '', nama_ruang: '', cabang: '' };
+    // Membuat instance FormData
+    const formData = new FormData();
+    Object.keys(editFormData.value).forEach(key => {
+      formData.append(key, editFormData.value[key]);
+    });
+
+    // Menambahkan foto jika ada
+    if (editFotoFile.value) {
+      formData.append('foto', editFotoFile.value);
+    }
+
+    // Menambahkan _method untuk menyimulasikan metode PUT
+    formData.append('_method', 'PUT');
+
+    // Mengirim data menggunakan FormData
+    await api.post(`/api/ruang/${currentRuangId.value}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    editFormData.value = { id_ruang: '', nama_ruang: '', cabang: '', foto: '' };
+    editFotoFile.value = null; // Reset file foto jika ada
     showEditModal.value = false;
     fetchDataRuang();
     generateNewRuangId();
@@ -228,28 +277,23 @@ onMounted(async () => {
                       <th scope="col" style="width:10%">ID Ruang</th>
                       <th scope="col" style="width:15%">Nama Ruang</th>
                       <th scope="col" style="width:15%">Cabang</th>
+                      <th scope="col" style="width:15%">Foto</th>
                       <th scope="col" style="width:5%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-if="ruang.length === 0">
-                      <td colspan="4" class="text-center">
+                      <td colspan="5" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
                       </td>
                     </tr>
-                    <!-- <tr v-else-if="ruang.length === 0">
-                      <td colspan="4" class="text-center">
-                        <div class="alert alert-warning mb-0">
-                          Data Tidak Ditemukan!
-                        </div>
-                      </td>
-                    </tr> -->
                     <tr v-else v-for="(r, index) in ruang" :key="index">
                       <td class="text-center">{{ r.id_ruang }}</td>
                       <td>{{ r.nama_ruang }}</td>
                       <td>{{ getNamaCabang(r.cabang) }}</td>
+                      <td><img :src="r.foto" width="70" class="rounded-3" /></td>
                       <td class="text-center">
                         <button @click="editRuang(r)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">Ubah</button>
@@ -297,6 +341,10 @@ onMounted(async () => {
           </option>
         </select>
       </div>
+      <div style="width: 185px; margin: 0px 10px 20px 0px;">
+        <label for="foto">Upload Foto Anda</label>
+        <input type="file" @change="handleFileChange" class="form-control">
+      </div>
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewRuang">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
@@ -321,6 +369,10 @@ onMounted(async () => {
         <select id="cabang" v-model="editFormData.cabang">
           <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
         </select>
+      </div>
+      <div style="width: 185px; margin: 0px 10px 20px 0px;">
+        <label for="foto">Upload Foto Anda</label>
+        <input type="file" @change="handleFileChange" class="form-control">
       </div>
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditRuang">Simpan perubahan</button>

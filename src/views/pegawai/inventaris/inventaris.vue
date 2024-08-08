@@ -101,10 +101,6 @@ onMounted(async () => {
                       <th scope="col">Merek</th>
                       <th scope="col">Kategori</th>
                       <th scope="col">Tahun</th>
-                      <th scope="col">Pajak</th>
-                      <th scope="col">Masa Pajak</th>
-                      <th scope="col">Harga Beli</th>
-                      <th scope="col">Tanggal Beli</th>
                       <th scope="col">Aksi</th>
                     </tr>
                   </thead>
@@ -122,10 +118,6 @@ onMounted(async () => {
                       <td>{{ inventaris.merek }}</td>
                       <td>{{ inventaris.kategori }}</td>
                       <td>{{ inventaris.tahun }}</td>
-                      <td>{{ inventaris.pajak }}</td>
-                      <td>{{ inventaris.masa_pajak }}</td>
-                      <td>{{ inventaris.harga_beli }}</td>
-                      <td>{{ inventaris.tanggal_beli }}</td>
                       <td class="text-center">
                         <router-link
                           :to="{ name: 'inventaris_pegawai.lihat_inventaris', params: { id: inventaris.id_inventaris } }"

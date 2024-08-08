@@ -28,6 +28,9 @@ const addFormData = ref({
   no_hp: '',
   email: '',
   password: '',
+  foto: '',
+  jenkel: '',
+  status: '',
 });
 
 const editFormData = ref({
@@ -36,7 +39,24 @@ const editFormData = ref({
   no_hp: '',
   email: '',
   password: '',
+  foto: '',
+  jenkel: '',
+  status: '',
 });
+
+const addFotoFile = ref(null);
+const editFotoFile = ref(null);
+
+const handleFileChange = (event, isEdit = false) => {
+  const file = event.target.files[0];
+  if (file) {
+    if (isEdit) {
+      editFotoFile.value = file;
+    } else {
+      addFotoFile.value = file;
+    }
+  }
+};
 
 const currentAdminId = ref(null);
 
@@ -56,8 +76,12 @@ const fetchDataAdmins = async () => {
     }
 
     const response = await api.get(url);
-
-    admins.value = response.data.data.data;
+    admins.value = response.data.data.data.map(admin => {
+      return {
+        ...admin,
+        foto: admin.foto // Pastikan URL gambar sudah lengkap dari backend
+      };
+    });
     currentPage.value = response.data.data.current_page;
     totalPages.value = response.data.data.last_page;
   } catch (error) {
@@ -86,9 +110,25 @@ const deleteAdmin = async (id_admin) => {
 
 const saveNewAdmin = async () => {
   try {
-    await api.post('/api/admin', addFormData.value);
-    addFormData.value = { id_admin: '', nama: '', no_hp: '', email: '', password: '' };
+    const formData = new FormData();
+    Object.keys(addFormData.value).forEach(key => {
+      formData.append(key, addFormData.value[key]);
+    });
+    if (addFotoFile.value) {
+      formData.append('foto', addFotoFile.value);
+    } else {
+      alert('Foto file is required');
+      return;
+    }
+    await api.post('/api/admin', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    addFormData.value = { id_admin: '', nama: '', no_hp: '', email: '', password: '', foto: '', jenkel: '', status: '', };
     showAddModal.value = false;
+    addFotoFile.value = null; // Reset file foto
     fetchDataAdmins();
     generateNewAdminId();
   } catch (error) {
@@ -98,8 +138,24 @@ const saveNewAdmin = async () => {
 
 const saveEditAdmin = async () => {
   try {
-    await api.put(`/api/admin/${currentAdminId.value}`, editFormData.value);
-    editFormData.value = null;
+    const formData = new FormData();
+    Object.keys(editFormData.value).forEach(key => {
+      formData.append(key, editFormData.value[key]);
+    });
+    if (addFotoFile.value) {
+      formData.append('foto', addFotoFile.value);
+    }
+    // Tambahkan _method untuk menyimulasikan metode PUT
+    formData.append('_method', 'PUT');
+
+    await api.post(`/api/admin/${currentAdminId.value}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    editFormData.value = { id_admin: '', nama: '', no_hp: '', email: '', password: '', foto: '', jenkel: '', status: '' };
+    addFotoFile.value = null; // Reset file foto
     showEditModal.value = false;
     fetchDataAdmins();
     generateNewAdminId();
@@ -107,6 +163,7 @@ const saveEditAdmin = async () => {
     console.error('Error saving edit admin:', error);
   }
 };
+
 
 const generateNewAdminId = async () => {
   try {
@@ -184,15 +241,17 @@ onMounted(async () => {
                     <tr>
                       <th scope="col" style="width:10%">ID Admin</th>
                       <th scope="col" style="width:10%">Nama</th>
+                      <th scope="col" style="width:15%">Jenis Kelamin</th>
                       <th scope="col" style="width:15%">No HP</th>
                       <th scope="col" style="width:15%">Email</th>
-                      <th scope="col" style="width:10%">Password</th>
+                      <th scope="col" style="width:15%">Status</th>
+                      <th scope="col" style="width:15%">Foto</th>
                       <th scope="col" style="width:15%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-if="admins.length === 0">
-                      <td colspan="6" class="text-center">
+                      <td colspan="10" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
@@ -201,9 +260,11 @@ onMounted(async () => {
                     <tr v-else v-for="(admin, index) in admins" :key="index">
                       <td class="text-center">{{ admin.id_admin }}</td>
                       <td>{{ admin.nama }}</td>
+                      <td>{{ admin.jenkel }}</td>
                       <td>{{ admin.no_hp }}</td>
                       <td>{{ admin.email }}</td>
-                      <td>{{ admin.password }}</td>
+                      <td>{{ admin.status }}</td>
+                      <td><img :src="admin.foto" width="70" class="rounded-3" /></td>
                       <td class="text-center">
                         <button @click="editAdmin(admin)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">Ubah</button>
@@ -236,26 +297,59 @@ onMounted(async () => {
   <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
     <div class="modal-content">
       <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Tambah Data Admin</h4>
-      <div class="form-group">
-        <label for="id_admin">ID Admin</label>
-        <input type="text" id="id_admin" v-model="addFormData.id_admin" />
+      <div class="form-group-row">
+        <div class="form-group" style="width: 165px;">
+          <label for="id_admin">ID Admin</label>
+          <input type="text" id="id_admin" v-model="addFormData.id_admin" />
+        </div>
+        <div class="form-group" style="width: 225px;">
+          <label for="nama">Nama</label>
+          <input type="text" id="nama" v-model="addFormData.nama" />
+        </div>
       </div>
-      <div class="form-group">
-        <label for="nama">Nama</label>
-        <input type="text" id="nama" v-model="addFormData.nama" />
+      <div class="form-group-row">
+        <div class="form-group" style="width: 225px;">
+          <label for="email">Email</label>
+          <input type="text" id="email" v-model="addFormData.email" />
+        </div>
+        <div class="form-group" style="width: 165px;">
+          <label for="password">Password</label>
+          <input type="password" id="password" v-model="addFormData.password" />
+        </div>
       </div>
-      <div class="form-group">
-        <label for="no_hp">No HP</label>
-        <input type="text" id="no_hp" v-model="addFormData.no_hp" />
+      <div class="form-group-row">
+        <div class="form-group">
+          <label for="no_hp">No HP</label>
+          <input type="text" id="no_hp" v-model="addFormData.no_hp" />
+        </div>
+        <div class="form-group" style="width: 200px;">
+          <label for="status">Status</label>
+          <select id="status" v-model="addFormData.status">s
+            <option value="Aktif">Aktif</option>
+            <option value="Nonaktif">Non Aktif</option>
+          </select>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="text" id="email" v-model="addFormData.email" />
+      <div class="form-group-row">
+        <div style="width: 190px;">
+          <label for="jenkel">Jenis Kelamin</label>
+          <div style="margin-bottom: 20px; margin-top: 5px;">
+            <div>
+              <input type="radio" id="laki-laki" value="laki-laki" v-model="addFormData.jenkel" />
+              <label for="laki-laki" style="margin-left: 5px;">Laki-laki</label>
+            </div>
+            <div>
+              <input type="radio" id="perempuan" value="Perempuan" v-model="addFormData.jenkel" />
+              <label style="margin-left: 5px;" for="perempuan">Perempuan</label>
+            </div>
+          </div>
+        </div>
+        <div style="width: 185px; margin: 0px 10px 20px 0px;">
+          <label for="foto">Upload Foto Anda</label>
+          <input type="file" @change="handleFileChange" class="form-control">
+        </div>
       </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model="addFormData.password" />
-      </div>
+
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewAdmin">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
@@ -267,25 +361,57 @@ onMounted(async () => {
   <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
     <div class="modal-content">
       <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Data Admin</h4>
-      <div class="form-group">
-        <label for="id_admin">ID Admin</label>
-        <input type="text" id="id_admin" v-model="editFormData.id_admin" />
+      <div class="form-group-row">
+        <div class="form-group" style="width: 165px;">
+          <label for="id_admin">ID Admin</label>
+          <input type="text" id="id_admin" v-model="editFormData.id_admin" />
+        </div>
+        <div class="form-group" style="width: 225px;">
+          <label for="nama">Nama</label>
+          <input type="text" id="nama" v-model="editFormData.nama" />
+        </div>
       </div>
-      <div class="form-group">
-        <label for="nama">Nama</label>
-        <input type="text" id="nama" v-model="editFormData.nama" />
+      <div class="form-group-row">
+        <div class="form-group" style="width: 225px;">
+          <label for="email">Email</label>
+          <input type="text" id="email" v-model="editFormData.email" />
+        </div>
+        <div class="form-group" style="width: 165px;">
+          <label for="password">Password</label>
+          <input type="password" id="password" v-model="editFormData.password" />
+        </div>
       </div>
-      <div class="form-group">
-        <label for="no_hp">No HP</label>
-        <input type="text" id="no_hp" v-model="editFormData.no_hp" />
+      <div class="form-group-row">
+        <div class="form-group">
+          <label for="no_hp">No HP</label>
+          <input type="text" id="no_hp" v-model="editFormData.no_hp" />
+        </div>
+        <div class="form-group" style="width: 200px;">
+          <label for="status">Status</label>
+          <select id="status" v-model="editFormData.status">
+            <option value="Aktif">Aktif</option>
+            <option value="Nonaktif">Non Aktif</option>
+          </select>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="text" id="email" v-model="editFormData.email" />
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model="editFormData.password" />
+      <div class="form-group-row">
+        <div style="width: 190px;">
+          <label for="jenkel">Jenis Kelamin</label>
+          <div style="margin-bottom: 20px; margin-top: 5px;">
+            <div>
+              <input type="radio" id="jenkel" value="laki-laki" v-model="editFormData.jenkel" />
+              <label for="laki-laki" style="margin-left: 5px;">Laki-laki</label>
+            </div>
+            <div>
+              <input type="radio" id="jenkel" value="Perempuan" v-model="editFormData.jenkel" />
+              <label style="margin-left: 5px;" for="perempuan">Perempuan</label>
+            </div>
+          </div>
+        </div>
+        <div style="width: 185px; margin: 0px 10px 20px 0px;">
+          <label for="foto">Upload Foto Anda</label>
+          <input type="file" @change="handleFileChange" class="form-control">
+        </div>
       </div>
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditAdmin">Simpan Perubahan</button>

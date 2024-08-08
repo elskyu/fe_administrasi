@@ -1,35 +1,68 @@
 <script setup>
 import axios from 'axios';
 import '../style/sidebar.css';
+import api from '../api'; // Pastikan api ini digunakan jika diperlukan
+import '../style/modal.css';
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter(); // Initialize the router
 const route = useRoute(); // Get the current route
-const userName = ref(''); // Default name
+
 const showProfileModal = ref(false);
 
-const fetchUserName = async () => {
+const userName = ref(''); // Default name
+const userDepartemen = ref('');
+const userCabang = ref('');
+const userNIP = ref('');
+const userPhoto = ref(''); // Default photo
+
+const cabangList = ref([]);
+const departementList = ref([]);
+
+const fetchAllData = async () => {
     const token = localStorage.getItem('token');
     if (token) {
         try {
-            const response = await axios.get('http://localhost:8000/api/userpegawai', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            const user = response.data;
-            if (user && user.nama) {
-                userName.value = user.nama;
+            const [userResponse, cabangResponse, departementResponse] = await Promise.all([
+                axios.get('http://localhost:8000/api/userpegawai', { headers: { Authorization: `Bearer ${token}` } }),
+                axios.get('http://localhost:8000/api/cp', { headers: { Authorization: `Bearer ${token}` } }),
+                axios.get('http://localhost:8000/api/dp', { headers: { Authorization: `Bearer ${token}` } })
+            ]);
+
+            const user = userResponse.data;
+            cabangList.value = cabangResponse.data.data.data;
+            departementList.value = departementResponse.data.data.data;
+
+            if (user) {
+                userName.value = user.nama || 'Nama tidak ditemukan';
+                userDepartemen.value = getNamaDepartemen(user.departement) || 'Departemen tidak ditemukan';
+                userCabang.value = getNamaCabang(user.cabang) || 'Cabang tidak ditemukan';
+                userPhoto.value = user.foto || 'https://bootdey.com/img/Content/avatar/avatar7.png'; // Default image if no photo
+                userNIP.value = user.nip || 'NIP tidak ditemukan';
             } else {
                 console.error('Data pengguna tidak ditemukan dalam respons');
             }
         } catch (error) {
-            console.error('Gagal mengambil data pengguna:', error);
+            console.error('Error fetching data:', error);
         }
     } else {
         console.error('Token tidak ditemukan');
     }
+};
+
+onMounted(async () => {
+    await fetchAllData();
+});
+
+const getNamaCabang = (idCabang) => {
+    const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
+    return cabang ? cabang.nama_cabang : '';
+};
+
+const getNamaDepartemen = (idDepartemen) => {
+    const departement = departementList.value.find(d => d.id_departement === idDepartemen);
+    return departement ? departement.nama_departement : '';
 };
 
 const logoutAndReload = () => {
@@ -43,9 +76,10 @@ const isActive = (name) => {
 };
 
 onMounted(async () => {
-    fetchUserName();
+    fetchAllData();
 });
 </script>
+
 
 <template>
     <div class="d-flex">
@@ -54,17 +88,12 @@ onMounted(async () => {
 
                 <div class="profil" style="flex: 0 0 20%;">
                     <div class="form-group-row" style="display: flex; align-items: center; margin-right: 35px;">
-                        <svg @click="showProfileModal = true" width="24" height="24" viewBox="0 0 20 20" fill="none"
-                            xmlns="http://www.w3.org/2000/svg" style=" margin-left: 25px; cursor: pointer;">
-                            <path
-                                d="M10 0C15.52 0 20 4.48 20 10C20 15.52 15.52 20 10 20C4.48 20 0 15.52 0 10C0 4.48 4.48 0
-                                 10 0ZM4.023 13.416C5.491 15.606 7.695 17 10.16 17C12.624 17 14.829 15.607 16.296 13.416C14.6317 
-                                 11.8606 12.4379 10.9968 10.16 11C7.88171 10.9966 5.68751 11.8604 4.023 13.416V13.416ZM10 9C10.7956 9 11.5587 
-                                 8.68393 12.1213 8.12132C12.6839 7.55871 13 6.79565 13 6C13 5.20435 12.6839 4.44129 12.1213 3.87868C11.5587 3.31607 10.7956 3 
-                                 10 3C9.20435 3 8.44129 3.31607 7.87868 3.87868C7.31607 4.44129 7 5.20435 7 6C7 6.79565 7.31607 7.55871 7.87868 8.12132C8.44129 8.68393 9.20435 9 10 9V9Z"
-                                fill="#44d569" />
-                        </svg>
-                        <p class="text-profil" style="margin: 0 auto;">Halo {{ userName }}</p>
+                        <div>
+                            <img :src="userPhoto" @click="showProfileModal = true" width="24" height="24"
+                                style="border-radius: 50%; cursor: pointer; margin-left: 25px;" alt="User Photo" />
+                        </div>
+
+                        <p class="text-profil" style="margin: 0 auto; font-size: 15px;">Halo {{ userName }}</p>
                     </div>
                 </div>
 
@@ -130,14 +159,13 @@ onMounted(async () => {
                 </div>
                 <div class="user text-center">
                     <div class="profile">
-                        <img src="https://bootdey.com/img/Content/avatar/avatar7.png" class="rounded-circle"
-                            width="180">
+                        <img :src="userPhoto" class="rounded-circle" width="180">
                     </div>
                 </div>
                 <div class="text-center" style="margin-top: 65px;">
-                    <h5 class="mb-0">Pegawai 1</h5>
-                    <span class="text-profil">Back End Developer, Sidoarjo</span>
-                    <span class="text-profil d-block mb-2">Nip. 9876543</span>
+                    <h5 class="mb-0">{{ userName }}</h5>
+                    <span class="text-profil" style="font-size: 16px;">{{ userDepartemen }}, {{ userCabang }}</span>
+                    <span class="text-profil d-block mb-2" style="font-size: 14px;">Nip. {{ userNIP }}</span>
                     <div class="button-group-vertical">
                         <button class="btn-ubah-password">Ubah Password</button>
                         <button @click="showProfileModal = false" class="btn-batal-ubah-password">Batal</button>

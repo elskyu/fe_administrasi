@@ -11,6 +11,8 @@ import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 import logo23 from '/src/style/logo2.vue';
+import defaultImage from '/src/images/potoprofil.png';
+
 
 const isLoading = ref(true);
 const pegawai = ref([]);
@@ -27,6 +29,8 @@ const itemsPerPage = ref(5); // Tetap simpan ini untuk backend pagination
 const totalPages = ref(1); // Total pages dari backend
 const lastpage = ref('');
 
+const showProfileModal = ref(false);
+
 const addFormData = ref({
   id_pegawai: '',
   nip: '',
@@ -37,6 +41,9 @@ const addFormData = ref({
   alamat: '',
   no_hp: '',
   cabang: '',
+  foto: '',
+  jenkel: '',
+  status: '',
 });
 
 const editFormData = ref({
@@ -49,8 +56,24 @@ const editFormData = ref({
   alamat: '',
   no_hp: '',
   cabang: '',
+  foto: '',
+  jenkel: '',
+  status: '',
 });
 
+const addFotoFile = ref(null);
+const editFotoFile = ref(null);
+
+const handleFileChange = (event, isEdit = false) => {
+  const file = event.target.files[0];
+  if (file) {
+    if (isEdit) {
+      editFotoFile.value = file;
+    } else {
+      addFotoFile.value = file;
+    }
+  }
+};
 
 const changePage = async (page) => {
   console.log("s", page);
@@ -63,14 +86,32 @@ const changePage = async (page) => {
 
 const fetchDataPegawai = async () => {
   try {
-    const response = await api.get(`/api/pegawai?page=${currentPage.value}&keyword=${searchQuery.value}&departement?=${departementFilter.value}&cabang?=${cabangFilter.value}`);
-    pegawai.value = response.data.data.data;
+    let url = `/api/pegawai?page=${currentPage.value}&keyword=${encodeURIComponent(searchQuery.value)}`;
+
+    if (departementFilter.value) {
+      url += `&departement?=${encodeURIComponent(departementFilter.value)}`;
+    }
+
+    if (cabangFilter.value) {
+      url += `&cabang?=${encodeURIComponent(cabangFilter.value)}`;
+    }
+
+    const response = await api.get(url);
+
+    pegawai.value = response.data.data.data.map(pegawai => {
+      return {
+        ...pegawai,
+        foto: pegawai.foto // Pastikan URL gambar sudah lengkap dari backend
+      };
+    });
+
     currentPage.value = response.data.data.current_page;
     totalPages.value = response.data.data.last_page;
   } catch (error) {
     console.error('Error fetching pegawai:', error);
   }
 };
+
 
 const fetchDataCabang = async () => {
   try {
@@ -97,11 +138,14 @@ const editPegawai = (p) => {
     nip: p.nip,
     nama: p.nama,
     email: p.email,
-    password: p.password,
+    password: '',
     departement: p.departement,
     alamat: p.alamat,
     no_hp: p.no_hp,
     cabang: p.cabang,
+    foto: p.foto,
+    jenkel: p.jenkel,
+    status: p.status,
   };
   showEditModal.value = true;
 };
@@ -119,34 +163,38 @@ const deletePegawai = async (id_pegawai) => {
   }
 };
 
-// const filteredPegawai = computed(() => {
-//   const query = searchQuery.value.toLowerCase();
-
-//   let filtered = pegawai.value;
-
-//   if (query) {
-//     filtered = filtered.filter(p =>
-//       p.nip.toLowerCase().includes(query) ||
-//       p.nama.toLowerCase().includes(query) ||
-//       p.email.toLowerCase().includes(query) ||
-//       p.departement.toLowerCase().includes(query) ||
-//       p.alamat.toLowerCase().includes(query) ||
-//       p.no_hp.toLowerCase().includes(query) ||
-//       getNamaCabang(p.cabang).toLowerCase().includes(query)
-//     );
-//   }
-
-//   return filtered;
-// });
-
 const saveNewPegawai = async () => {
   try {
+    // Memeriksa apakah cabang telah dipilih
     if (!addFormData.value.cabang) {
       console.error('Cabang harus dipilih');
       return;
     }
 
-    await api.post('/api/pegawai', addFormData.value);
+    // Membuat instance FormData
+    const formData = new FormData();
+    Object.keys(addFormData.value).forEach(key => {
+      formData.append(key, addFormData.value[key]);
+    });
+
+    if (addFotoFile.value) {
+      formData.append('foto', addFotoFile.value);
+    } else {
+      // Menggunakan gambar default dari folder images
+      const defaultFile = await fetch(defaultImage)
+        .then(res => res.blob())
+        .then(blob => new File([blob], "potoprofil.png", { type: "image/png" }));
+      formData.append('foto', defaultFile);
+    }
+
+    // Mengirim data menggunakan FormData
+    await api.post('/api/pegawai', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    // Reset form data setelah berhasil
     addFormData.value = {
       id_pegawai: '',
       nip: '',
@@ -157,8 +205,14 @@ const saveNewPegawai = async () => {
       alamat: '',
       no_hp: '',
       cabang: '',
+      foto: '',
+      jenkel: '',
+      status: ''
     };
+
+    // Menutup modal dan memperbarui daftar pegawai
     showAddModal.value = false;
+    addFotoFile.value = null; // Reset file foto jika ada
     fetchDataPegawai();
     generateNewPegawaiId();
   } catch (error) {
@@ -168,7 +222,29 @@ const saveNewPegawai = async () => {
 
 const saveEditPegawai = async () => {
   try {
-    await api.put(`/api/pegawai/${currentPegawaiId.value}`, editFormData.value);
+    // Membuat instance FormData
+    const formData = new FormData();
+    Object.keys(editFormData.value).forEach(key => {
+      formData.append(key, editFormData.value[key]);
+    });
+
+    // Menambahkan foto jika ada
+    if (addFotoFile.value) {
+      formData.append('foto', addFotoFile.value);
+    }
+
+    // Menambahkan _method untuk menyimulasikan metode PUT
+    formData.append('_method', 'PUT');
+
+    // Mengirim data menggunakan FormData
+    await api.post(`/api/pegawai/${currentPegawaiId.value}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    console.log(editFormData.value);
+
+    // Reset form data setelah berhasil
     editFormData.value = {
       id_pegawai: '',
       nip: '',
@@ -179,14 +255,21 @@ const saveEditPegawai = async () => {
       alamat: '',
       no_hp: '',
       cabang: '',
+      foto: '',
+      jenkel: '',
+      status: ''
     };
+
+    // Menutup modal dan memperbarui daftar pegawai
     showEditModal.value = false;
+    addFotoFile.value = null; // Reset file foto jika ada
     fetchDataPegawai();
     generateNewPegawaiId();
   } catch (error) {
     console.error('Error saving edit pegawai:', error);
   }
 };
+
 
 const getNamaCabang = (idCabang) => {
   const cabang = cabangList.value.find(c => c.id_cabang === idCabang);
@@ -223,6 +306,13 @@ const generateNewPegawaiId = async () => {
   } catch (error) {
     console.error('Error generating new Pegawai ID:', error);
   }
+};
+
+const formattedFotoUrl = (foto) => {
+  if (!foto) {
+    return 'https://bootdey.com/img/Content/avatar/avatar7.png'; // URL default jika foto kosong
+  }
+  return foto.startsWith('http') ? foto : `${baseUrl}${foto}`;
 };
 
 watch([cabangFilter, departementFilter, searchQuery, currentPage], async () => {
@@ -289,17 +379,20 @@ onMounted(async () => {
                       <th scope="col" style="width:8%">ID Pegawai</th>
                       <th scope="col" style="width:8%">NIP</th>
                       <th scope="col" style="width:10%">Nama</th>
+                      <th scope="col" style="width:15%">Jenis Kelamin</th>
                       <th scope="col" style="width:15%">Email</th>
                       <th scope="col" style="width:10%">Departemen</th>
                       <th scope="col" style="width:10%">Alamat</th>
                       <th scope="col" style="width:10%">No HP</th>
                       <th scope="col" style="width:7%">Cabang</th>
+                      <th scope="col" style="width:15%">Status</th>
+                      <th scope="col" style="width:15%">Foto</th>
                       <th scope="col" style="width:11%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-if="pegawai.length === 0">
-                      <td colspan="9" class="text-center">
+                      <td colspan="15" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
@@ -316,11 +409,14 @@ onMounted(async () => {
                       <td class="text-center">{{ p.id_pegawai }}</td>
                       <td>{{ p.nip }}</td>
                       <td>{{ p.nama }}</td>
+                      <td>{{ p.jenkel }}</td>
                       <td>{{ p.email }}</td>
                       <td>{{ getNamaDepartemen(p.departement) }}</td>
                       <td>{{ p.alamat }}</td>
                       <td>{{ p.no_hp }}</td>
                       <td>{{ getNamaCabang(p.cabang) }}</td> <!-- Menampilkan nama cabang -->
+                      <td>{{ p.status }}</td>
+                      <td><img :src="formattedFotoUrl(p.foto)" alt="Foto Pegawai" width="70" class="rounded-3" /></td>
                       <td class="text-center">
                         <button @click="editPegawai(p)" class="btn btn-sm btn-warning  border-0"
                           style="margin-right: 7px;">Ubah</button>
@@ -372,22 +468,35 @@ onMounted(async () => {
             <input type="email" id="email" v-model="addFormData.email" />
           </div>
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" v-model="addFormData.password" />
+        <div class="form-group-row">
+          <div class="form-group" style="width: 195px;">
+            <label for="password">Password</label>
+            <input type="password" id="password" v-model="addFormData.password" />
+          </div>
+          <div class="form-group" style="width: 200px;">
+            <label for="no_hp">No HP</label>
+            <input type="text" id="no_hp" v-model="addFormData.no_hp" />
+          </div>
         </div>
         <div class="form-group-row">
-          <div class="form-group" style="width: 200px;">
+          <div class="form-group" style="width: 130px;">
             <label for="departement">Departement</label>
             <select id="departement" v-model="addFormData.departement">
               <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{
                 dep.nama_departement }}</option>
             </select>
           </div>
-          <div class="form-group" style="width: 190px;">
+          <div class="form-group" style="width: 130px;">
             <label for="cabang">Cabang</label>
             <select id="cabang" v-model="addFormData.cabang">
               <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+            </select>
+          </div>
+          <div class="form-group" style="width: 130px;">
+            <label for="status">Status</label>
+            <select id="status" v-model="addFormData.status">s
+              <option value="Aktif">Aktif</option>
+              <option value="Nonaktif">Non Aktif</option>
             </select>
           </div>
         </div>
@@ -395,9 +504,24 @@ onMounted(async () => {
           <label for="alamat">Alamat</label>
           <input type="text" id="alamat" v-model="addFormData.alamat" />
         </div>
-        <div class="form-group">
-          <label for="no_hp">No HP</label>
-          <input type="text" id="no_hp" v-model="addFormData.no_hp" />
+        <div class="form-group-row">
+          <div style="width: 190px;">
+            <label for="jenkel">Jenis Kelamin</label>
+            <div style="margin-bottom: 10px; margin-top: 5px;">
+              <div>
+                <input type="radio" id="laki-laki" value="laki-laki" v-model="addFormData.jenkel" />
+                <label for="laki-laki" style="margin-left: 5px;">Laki-laki</label>
+              </div>
+              <div>
+                <input type="radio" id="perempuan" value="Perempuan" v-model="addFormData.jenkel" />
+                <label style="margin-left: 5px;" for="perempuan">Perempuan</label>
+              </div>
+            </div>
+          </div>
+          <div style="width: 185px; margin: 0px 10px 20px 0px;">
+            <label for="foto">Upload Foto Anda</label>
+            <input type="file" @change="handleFileChange" class="form-control">
+          </div>
         </div>
         <div class="form-actions">
           <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewPegawai">Simpan Perubahan</button>
@@ -430,22 +554,35 @@ onMounted(async () => {
             <input type="email" id="email" v-model="editFormData.email" />
           </div>
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" v-model="editFormData.password" />
+        <div class="form-group-row">
+          <div class="form-group" style="width: 195px;">
+            <label for="password">Password</label>
+            <input placeholder="ubah password" type="text" id="password" v-model="editFormData.password" />
+          </div>
+          <div class="form-group" style="width: 200px;">
+            <label for="no_hp">No HP</label>
+            <input type="text" id="no_hp" v-model="editFormData.no_hp" />
+          </div>
         </div>
         <div class="form-group-row">
-          <div class="form-group" style="width: 200px;">
-            <label for="departement">Departemen</label>
+          <div class="form-group" style="width: 130px;">
+            <label for="departement">Departement</label>
             <select id="departement" v-model="editFormData.departement">
               <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{
                 dep.nama_departement }}</option>
             </select>
           </div>
-          <div class="form-group" style="width: 190px;">
+          <div class="form-group" style="width: 130px;">
             <label for="cabang">Cabang</label>
             <select id="cabang" v-model="editFormData.cabang">
               <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+            </select>
+          </div>
+          <div class="form-group" style="width: 130px;">
+            <label for="status">Status</label>
+            <select id="status" v-model="editFormData.status">s
+              <option value="Aktif">Aktif</option>
+              <option value="Nonaktif">Non Aktif</option>
             </select>
           </div>
         </div>
@@ -453,9 +590,24 @@ onMounted(async () => {
           <label for="alamat">Alamat</label>
           <input type="text" id="alamat" v-model="editFormData.alamat" />
         </div>
-        <div class="form-group">
-          <label for="no_hp">No HP</label>
-          <input type="text" id="no_hp" v-model="editFormData.no_hp" />
+        <div class="form-group-row">
+          <div style="width: 190px;">
+            <label for="jenkel">Jenis Kelamin</label>
+            <div style="margin-bottom: 10px; margin-top: 5px;">
+              <div>
+                <input type="radio" id="laki-laki" value="laki-laki" v-model="editFormData.jenkel" />
+                <label for="laki-laki" style="margin-left: 5px;">Laki-laki</label>
+              </div>
+              <div>
+                <input type="radio" id="perempuan" value="Perempuan" v-model="editFormData.jenkel" />
+                <label style="margin-left: 5px;" for="perempuan">Perempuan</label>
+              </div>
+            </div>
+          </div>
+          <div style="width: 185px; margin: 0px 10px 20px 0px;">
+            <label for="foto">Upload Foto Anda</label>
+            <input type="file" @change="handleFileChange" class="form-control">
+          </div>
         </div>
         <div class="form-actions">
           <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditPegawai">Simpan Perubahan</button>

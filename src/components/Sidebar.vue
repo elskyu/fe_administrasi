@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { onMounted } from 'vue';
 import '../style/sidebar.css';
+import '../style/modal.css';
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
@@ -280,8 +281,7 @@ onMounted(async () => {
 
         <!-- Profil modal -->
         <div v-if="showProfileModal" class="modal card-profil">
-            <div class="modal-profil">
-
+            <div class="modal-profil" style="padding-bottom: 20px;">
                 <div class="upper">
                     <img src="" class="img-fluid">
                 </div>
@@ -292,11 +292,8 @@ onMounted(async () => {
                     </div>
                 </div>
                 <div class="text-center" style="margin-top: 65px;">
-                    <h5 class="mb-0">Admin</h5>
-                    <span class="text-profil">Back End Developer, Sidoarjo</span>
-                    <span class="text-profil d-block mb-2">Nip. 9876543</span>
+                    <h5 class="mb-0">{{ userName }}</h5>
                     <div class="button-group-vertical">
-                        <button class="btn-ubah-password">Ubah Password</button>
                         <button @click="showProfileModal = false" class="btn-batal-ubah-password">Batal</button>
                     </div>
                 </div>

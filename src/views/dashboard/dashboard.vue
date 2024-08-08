@@ -40,7 +40,6 @@ const currentPage = ref(1);
 const totalPages = ref(1);
 const isLoading = ref(true);
 
-const showProfileModal = ref(false);
 
 const addFormData = ref({
   id_jadwal: '',
@@ -498,33 +497,6 @@ onMounted(async () => {
             <button type="button" @click="editModal = false" class="btn btn-danger">Batal</button>
           </div>
         </form>
-      </div>
-    </div>
-
-    <!-- Modal for Profile -->
-    <ProfileModal v-if="showProfileModal" @close="showProfileModal = false" />
-
-    <!-- Profil modal -->
-    <div v-if="showProfileModal" class="modal card-profil">
-      <div class="modal-profil">
-
-        <div class="upper">
-          <img src="" class="img-fluid">
-        </div>
-        <div class="user text-center">
-          <div class="profile">
-            <img src="https://bootdey.com/img/Content/avatar/avatar7.png" class="rounded-circle" width="180">
-          </div>
-        </div>
-        <div class="text-center" style="margin-top: 65px;">
-          <h5 class="mb-0">Pegawai 1</h5>
-          <span class="text-profil">Back End Developer, Sidoarjo</span>
-          <span class="text-profil d-block mb-2">Nip. 9876543</span>
-          <div class="button-group-vertical">
-            <button class="btn-ubah-password">Ubah Password</button>
-            <button @click="showProfileModal = false" class="btn-batal-ubah-password">Batal</button>
-          </div>
-        </div>
       </div>
     </div>
   </div>
