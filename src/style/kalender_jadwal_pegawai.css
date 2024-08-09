@@ -17,9 +17,9 @@
 }
 
 .vuecal--month-view .vuecal__cell-content {
-  justify-content: flex-start;
+  /* justify-content: flex-start; */
   height: 4.49rem;
-  align-items: flex-end;
+  /* align-items: flex-end; */
 }
 
 .vuecal--year-view .vuecal__cell-content {

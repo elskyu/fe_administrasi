@@ -16,29 +16,41 @@ import logo23 from '/src/style/logo2.vue';
 const showProfileModal = ref(false);
 const isLoading = ref(true);
 const surat = ref([]);
+const nomor_surat = ref([]);
 const searchQuery = ref('');
 const showAddModal = ref(false);
 const showEditModal = ref(false);
-const currentPage = ref(1); // State untuk paginasi
-const itemsPerPage = ref(5); // Tetap simpan ini untuk backend pagination
-const totalPages = ref(1); // Total pages dari backend
+const showEditModalNomor = ref(false);
+const currentPage = ref(1);
+const totalPages = ref(1);
 
 const addFormData = ref({
   kode_surat: '',
   jenis_surat: '',
+  prefix_surat: '',
 });
 
 const editFormData = ref({
   kode_surat: '',
   jenis_surat: '',
+  prefix_surat: '',
 });
 
+const editFormDatanomor = ref({
+  kode_surat: '',
+  jenis_surat: '',
+  prefix_surat: '',
+});
+
+
+
 const currentSuratId = ref(null);
+const currentNomorId = ref(null);
 
 const changePage = async (page) => {
   if (page > 0 && page <= totalPages.value) {
     currentPage.value = page;
-    await fetchDataSurat(page); // Fetch data for the new page
+    await fetchDataSurat(page);
   }
 };
 
@@ -60,10 +72,28 @@ const fetchDataSurat = async (page = 1) => {
   }
 };
 
+const fetchDataNomor = async () => {
+  try {
+    let url = `/api/nomor`;
+
+    const response = await api.get(url);
+
+    nomor_surat.value = response.data.data.data;
+  } catch (error) {
+    console.error('Error fetching nomor surat:', error);
+  }
+};
+
 const editSurat = (s) => {
   currentSuratId.value = s.kode_surat;
   editFormData.value = { ...s };
   showEditModal.value = true;
+};
+
+const editNomor = (n) => {
+  currentNomorId.value = n.id;
+  editFormDatanomor.value = { ...n };
+  showEditModalNomor.value = true;
 };
 
 const deleteSurat = async (kode_surat) => {
@@ -92,11 +122,22 @@ const saveNewSurat = async () => {
 const saveEditSurat = async () => {
   try {
     await api.put(`/api/surat/${currentSuratId.value}`, editFormData.value);
-    editFormData.value = { kode_surat: '', jenis_surat: '' };
+    editFormData.value = { kode_surat: '', jenis_surat: '' ,prefix_surat: ''};
     showEditModal.value = false;
     fetchDataSurat();
   } catch (error) {
     console.error('Error saving edit surat:', error);
+  }
+};
+
+const saveEditNomor = async () => {
+  try {
+    await api.put(`/api/nomor/${currentNomorId.value}`, editFormDatanomor.value);
+    editFormDatanomor.value = {  format: '' };
+    showEditModalNomor.value = false;
+    fetchDataNomor();
+  } catch (error) {
+    console.error('Error saving edit nomor surat:', error);
   }
 };
 
@@ -105,6 +146,7 @@ watch(searchQuery, async () => {
 });
 
 onMounted(async () => {
+  fetchDataNomor();
   await fetchDataSurat();
   isLoading.value = false;
 });
@@ -144,7 +186,8 @@ onMounted(async () => {
                   <thead class="bg-dark text-white text-center">
                     <tr>
                       <th scope="col" style="width:10%">Kode Surat</th>
-                      <th scope="col" style="width:15%">Jenis Surat</th>
+                      <th scope="col" style="width:10%">Jenis Surat</th>
+                      <th scope="col" style="width:10%">Prefix Surat</th>
                       <th scope="col" style="width:3%">Aksi</th>
                     </tr>
                   </thead>
@@ -159,6 +202,7 @@ onMounted(async () => {
                     <tr v-else v-for="(s, index) in surat" :key="index">
                       <td class="text-center">{{ s.kode_surat }}</td>
                       <td>{{ s.jenis_surat }}</td>
+                      <td>{{ s.prefix_surat }}</td>
                       <td class="text-center">
                         <button @click="editSurat(s)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">Ubah</button>
@@ -175,6 +219,30 @@ onMounted(async () => {
                   <button class="btn-next" @click="changePage(currentPage + 1)"
                     :disabled="currentPage === totalPages">Next</button>
                 </div>
+                <table class="table table-bordered" style="margin-top: 30px;">
+                  <thead class="bg-dark text-white text-center">
+                    <tr>
+                      <th scope="col" style="width:15%">Format Surat</th>
+                      <th scope="col" style="width:3%">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-if="nomor_surat.length === 0">
+                      <td colspan="3" class="text-center">  
+                        <div class="alert alert-danger mb-0">
+                          Data Belum Tersedia!
+                        </div>
+                      </td>
+                    </tr>
+                    <tr v-else v-for="(n, index) in nomor_surat" :key="index">
+                      <td class="text-center">{{ n.format }}</td>
+                      <td class="text-center">
+                        <button @click="editNomor(n)" class="btn btn-sm btn-warning border-0"
+                          style="margin-right: 7px;">Ubah</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -201,6 +269,10 @@ onMounted(async () => {
         <label for="jenis_surat">Jenis Surat</label>
         <input type="text" id="jenis_surat" v-model="addFormData.jenis_surat" />
       </div>
+      <div class="form-group">
+        <label for="prefix_surat">Prefix Surat</label>
+        <input type="text" id="prefix_surat" v-model="addFormData.prefix_surat" />
+      </div>
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewSurat">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
@@ -211,7 +283,7 @@ onMounted(async () => {
   <!-- Modal for editing surat -->
   <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal = false">
     <div class="modal-content">
-      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Data Suratx</h4>
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Data Surat</h4>
       <div class="form-group">
         <label for="kode_surat">Kode Surat</label>
         <input type="text" id="kode_surat" v-model="editFormData.kode_surat" />
@@ -220,6 +292,10 @@ onMounted(async () => {
         <label for="jenis_surat">Jenis Surat</label>
         <input type="text" id="jenis_surat" v-model="editFormData.jenis_surat" />
       </div>
+      <div class="form-group">
+        <label for="prefix_surat">Prefix Surat</label>
+        <input type="text" id="prefix_surat" v-model="editFormData.prefix_surat" />
+      </div>
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditSurat">Simpan Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModal = false">Batal</button>
@@ -227,6 +303,19 @@ onMounted(async () => {
     </div>
   </div>
 
-
-
+  <!-- Modal for nomor surat -->
+  <div v-if="showEditModalNomor" class="modal-overlay" @click.self="showEditModalNomor = false">
+    <div class="modal-content">
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Formula Nomor</h4>
+      
+      <div class="form-group">
+        <label for="format">Format</label>
+        <input type="text" id="format" v-model="editFormDatanomor.format" />
+      </div>
+      <div class="form-actions">
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveEditNomor">Simpan Perubahan</button>
+        <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showEditModalNomor = false">Batal</button>
+      </div>
+    </div>
+  </div>
 </template>

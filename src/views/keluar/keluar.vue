@@ -19,10 +19,11 @@ const kodeSuratList = ref([]);
 const searchQuery = ref('');
 const showAddModal = ref(false);
 const cabangFilter = ref('');
-const isLoading = ref(true); // State untuk loading
-const currentPage = ref(1); // State untuk paginasi
-const itemsPerPage = ref(5); // Disesuaikan dengan pagination dari backend
-const totalPages = ref(1); // Total pages dari backend
+const isLoading = ref(true);
+const currentPage = ref(1); 
+const itemsPerPage = ref(5); 
+const totalPages = ref(1); 
+const departementList = ref([]);
 
 const addFormData = ref({
   id_surat_keluar: '',
@@ -33,6 +34,11 @@ const addFormData = ref({
   perihal: '',
   cabang: '',
   kode_surat: '',
+});
+
+const nomordataset = ref({
+  kode_surat: '',
+  departement: '',
 });
 
 const changePage = async (page) => {
@@ -73,6 +79,20 @@ const fetchDataCabang = async () => {
   }
 };
 
+const fetchDataDepartement = async () => {
+  try {
+    const response = await api.get('/api/departement');
+    departementList.value = response.data.data.data;
+  } catch (error) {
+    console.error('Error fetching departement list:', error);
+  }
+};
+
+const getNamaDepartement = (idDepartemen) => {
+  const departement = departementList.value.find(d => d.id_departement === idDepartemen);
+  return departement ? departement.nama_departement : '';
+};
+
 const fetchDataKodeSurat = async () => {
   try {
     const response = await api.get('/api/surat');
@@ -110,24 +130,59 @@ const getNamaCabang = (idCabang) => {
 };
 
 const generateNewNomorSurat = async () => {
-  const monthNames = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
-  const currentMonth = monthNames[new Date().getMonth()];
-  const currentYear = new Date().getFullYear();
+  try {
+    const monthNames = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+    const currentMonth = monthNames[new Date().getMonth()];
+    const currentYear = new Date().getFullYear();
 
-  const selectedKodeSurat = addFormData.value.kode_surat;
-  const selectedCabang = addFormData.value.cabang;
+    const selectedKodeSurat = nomordataset.value.kode_surat;
+    const selectedDepartement = nomordataset.value.departement;
+    const selectedCabang = addFormData.value.cabang;
 
-  const response = await api.get(`/api/sk?cabang=${selectedCabang}&kode_surat=${selectedKodeSurat}`);
-  const suratList = response.data.data.data;
+    const prefixResponse = await api.get(`/api/surat/${selectedKodeSurat}`);
+    const fetchprefix = prefixResponse.data.data.prefix_surat;
+    const templateprefix = fetchprefix;
 
-  let newNumber = 1;
-  if (suratList.length > 0) {
-    const existingNumbers = suratList.map(s => parseInt(s.nomor_surat.split('.')[1]));
-    newNumber = Math.max(...existingNumbers) + 1;
+    const templateResponse = await api.get(`/api/nomor`);
+    const fetchnomor = templateResponse.data.data.data[0].format;
+    const template = fetchnomor;
+
+    const response = await api.get(`/api/sk?cabang=${selectedCabang}&kode_surat=${selectedKodeSurat}`);
+    const suratList = response.data.data.data;
+
+    let newNumber = 1;
+    if (suratList.length > 0) {
+      const existingNumbers = suratList.map(s => parseInt(s.nomor_surat.split('.')[1]));
+      newNumber = Math.max(...existingNumbers) + 1;
+    }
+    const formattedNumber = String(newNumber).padStart(3, '0');
+    
+    const replacePlaceholders = (template, replacements) => {
+      let result = template;
+      for (const [placeholder, value] of Object.entries(replacements)) {
+        const regex = new RegExp(`\\{${placeholder}\\}`, 'g');
+        result = result.replace(regex, value);
+      }
+      return result;
+    };
+
+    const replacements = {
+      kode_surat: selectedKodeSurat,
+      nomor: formattedNumber,
+      bulan: currentMonth,
+      tahun: currentYear,
+      prefix_surat: templateprefix,
+      id_departement: selectedDepartement,
+    };
+
+    const nomorSurat = replacePlaceholders(template, replacements);
+
+    return nomorSurat;
+
+  } catch (error) {
+    console.error("Error generating nomor surat:", error);
+    return null;
   }
-
-  const formattedNumber = String(newNumber).padStart(3, '0');
-  return `${selectedKodeSurat}.${formattedNumber}/HEXA/${currentMonth}/${currentYear}`;
 };
 
 const generateNewSkId = async () => {
@@ -165,6 +220,7 @@ watch([cabangFilter, searchQuery], async () => {
 
 onMounted(async () => {
   fetchDataKodeSurat();
+  fetchDataDepartement();
   fetchDataCabang();
   await fetchDataSuratKeluar();
   await generateNewSkId();
@@ -229,13 +285,6 @@ onMounted(async () => {
                         </div>
                       </td>
                     </tr>
-                    <!-- <tr v-else-if="suratKeluar.length === 0">
-                      <td colspan="8" class="text-center">
-                        <div class="alert alert-warning mb-0">
-                          Data Tidak Ditemukan!
-                        </div>
-                      </td>
-                    </tr> -->
                     <tr v-else v-for="(s, index) in suratKeluar" :key="index">
                       <td class="text-center">{{ s.id_surat_keluar }}</td>
                       <td class="text-center">{{ s.nomor_surat }}</td>
@@ -277,10 +326,10 @@ onMounted(async () => {
       </div>
       <div class="form-group">
         <label for="kode_surat">Jenis Surat</label>
-        <select id="kode_surat" v-model="addFormData.kode_surat">
+        <select id="kode_surat" v-model="nomordataset.kode_surat">
           <option v-for="k in kodeSuratList" :value="k.kode_surat" :key="k.kode_surat">{{ k.jenis_surat }}</option>
         </select>
-      </div>
+      </div>      
       <div class="form-group-row">
         <div class="form-group">
           <label for="tanggal_surat" style="width: 195px;">Tanggal Surat</label>
@@ -299,11 +348,20 @@ onMounted(async () => {
         <label for="perihal">Perihal</label>
         <input type="text" id="perihal" v-model="addFormData.perihal" />
       </div>
-      <div class="form-group">
-        <label for="cabang">Cabang</label>
-        <select id="cabang" v-model="addFormData.cabang">
-          <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
-        </select>
+      <div class="form-group-row">
+        <div class="form-group" style="width: 195px;">
+          <label for="departement">Departement</label>
+          <select id="departement" v-model="nomordataset.departement">
+            <option v-for="dep in departementList" :value="dep.id_departement" :key="dep.id_departement">{{
+              dep.nama_departement }}</option>
+          </select>
+        </div>
+        <div class="form-group" style="width: 195px;">
+          <label for="cabang">Cabang</label>
+          <select id="cabang" v-model="addFormData.cabang">
+            <option v-for="c in cabangList" :value="c.id_cabang" :key="c.id_cabang">{{ c.nama_cabang }}</option>
+          </select>
+        </div>
       </div>
       <div class="form-actions">
         <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewSuratKeluar">Simpan Perubahan</button>

@@ -170,7 +170,7 @@ onMounted(async () => {
 
           <VueCal hide-view-selector :time="false" active-view="month" v-model:active-view="activeView"
             :disable-views="['years', 'week', 'day']" events-count-on-year-view :events="events"
-            events-on-month-view="short" @view-change="handleViewChange" @event-click="viewEvent"
+             @view-change="handleViewChange" @event-click="viewEvent"
             @cell-click="addEventForDate" @event-change="changeEvent" locale="id" />
         </div>
       </div>
