@@ -12,6 +12,7 @@ import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 import logo23 from '/src/style/logo2.vue';
+import defaultImage from '/src/images/potomobil.png';
 
 const inventarisList = ref([]);
 const kategoriFilter = ref('');
@@ -67,11 +68,30 @@ const handleFileChange = (event, isEdit = false) => {
   }
 };
 
+// Fungsi untuk memformat angka menjadi Rupiah
+const formatRupiah = (number) => {
+  return new Intl.NumberFormat("id", {
+    style: "currency",
+    currency: "IDR"
+  }).format(number);
+};
+
+// Menggunakan formatRupiah saat menampilkan pajak dan harga_beli
+const inventarisFormatted = computed(() => {
+  return inventarisList.value.map(inventaris => {
+    return {
+      ...inventaris,
+      pajak: formatRupiah(inventaris.pajak),
+      harga_beli: formatRupiah(inventaris.harga_beli)
+    };
+  });
+});
+
 const changePage = async (page) => {
   console.log("s", page);
   if (page > 0 && page <= totalPages.value) {
     currentPage.value = page;
-    await fetchDataInventaris(page); // Fetch data for the new page
+    await fetchDataInventaris(page);
   }
 };
 
@@ -174,9 +194,14 @@ const saveNewInventaris = async () => {
       formData.append(key, addFormData.value[key]);
     });
 
-    // Menambahkan foto jika ada
     if (addFotoFile.value) {
       formData.append('foto', addFotoFile.value);
+    } else {
+      // Menggunakan gambar default dari folder images
+      const defaultFile = await fetch(defaultImage)
+        .then(res => res.blob())
+        .then(blob => new File([blob], "potomobil.png", { type: "image/png" }));
+      formData.append('foto', defaultFile);
     }
 
     // Mengirim data menggunakan FormData
@@ -358,23 +383,23 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col">ID Inventaris</th>
-                      <th scope="col">Nopol</th>
-                      <th scope="col">Merek</th>
-                      <th scope="col">Kategori</th>
-                      <th scope="col">Tahun</th>
-                      <th scope="col">Pajak</th>
-                      <th scope="col">Masa Pajak</th>
-                      <th scope="col">Harga Beli</th>
-                      <th scope="col">Tanggal Beli</th>
-                      <th scope="col">Cabang</th>
-                      <th scope="col">Foto</th>
-                      <th scope="col">Aksi</th>
+                      <th scope="col" style="width: 9%;">ID Inventaris</th>
+                      <th scope="col" style="width: 8%;">Nopol</th>
+                      <th scope="col" style="width: 10%;">Merek</th>
+                      <th scope="col" style="width: 5%;">Kategori</th>
+                      <th scope="col" style="width: 5%;">Tahun</th>
+                      <th scope="col" style="width: 7%;">Pajak</th>
+                      <th scope="col" style="width: 9%;">Masa Pajak</th>
+                      <th scope="col" style="width: 9%;">Harga Beli</th>
+                      <th scope="col" style="width: 9%;">Tanggal Beli</th>
+                      <th scope="col" style="width: 7%;">Cabang</th>
+                      <th scope="col" style="width: 9%;">Foto</th>
+                      <th scope="col" style="width: 15%;">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-if="filteredInventaris.length === 0">
-                      <td colspan="11" class="text-center">
+                      <td colspan="12" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
@@ -386,12 +411,12 @@ onMounted(async () => {
                       <td>{{ inventaris.merek }}</td>
                       <td>{{ inventaris.kategori }}</td>
                       <td>{{ inventaris.tahun }}</td>
-                      <td>{{ inventaris.pajak }}</td>
+                      <td>{{ formatRupiah(inventaris.pajak) }}</td>
                       <td>{{ inventaris.masa_pajak }}</td>
-                      <td>{{ inventaris.harga_beli }}</td>
+                      <td>{{ formatRupiah(inventaris.harga_beli) }}</td>
                       <td>{{ inventaris.tanggal_beli }}</td>
                       <td>{{ getNamaCabang(inventaris.cabang) }}</td>
-                      <td><img :src="inventaris.foto" width="80" class="rounded-3" /></td>
+                      <td><img :src="inventaris.foto" width="70" class="rounded-3" /></td>
                       <td class="text-center">
                         <button @click="editInventaris(inventaris)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">Ubah</button>

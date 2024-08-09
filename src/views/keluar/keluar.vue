@@ -20,9 +20,9 @@ const searchQuery = ref('');
 const showAddModal = ref(false);
 const cabangFilter = ref('');
 const isLoading = ref(true);
-const currentPage = ref(1); 
-const itemsPerPage = ref(5); 
-const totalPages = ref(1); 
+const currentPage = ref(1);
+const itemsPerPage = ref(5);
+const totalPages = ref(1);
 const departementList = ref([]);
 
 const addFormData = ref({
@@ -248,9 +248,7 @@ onMounted(async () => {
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
                   <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
                 </div>
-                <div class="col-md-6 mb-3" style="margin-top: 5px;">
-                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
-                </div>
+
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
                     <select id="cabangFilter" v-model="cabangFilter" class="form-cari"
@@ -331,7 +329,7 @@ onMounted(async () => {
         <select id="kode_surat" v-model="nomordataset.kode_surat">
           <option v-for="k in kodeSuratList" :value="k.kode_surat" :key="k.kode_surat">{{ k.jenis_surat }}</option>
         </select>
-      </div>      
+      </div>
       <div class="form-group-row">
         <div class="form-group">
           <label for="tanggal_surat" style="width: 195px;">Tanggal Surat</label>

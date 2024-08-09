@@ -13,7 +13,6 @@ import Loading from '/src/style/loading.vue';
 import logo23 from '/src/style/logo2.vue';
 import defaultImage from '/src/images/potoprofil2.png';
 
-
 const isLoading = ref(true);
 const pegawai = ref([]);
 const cabangList = ref([]);
@@ -28,6 +27,7 @@ const currentPage = ref(1); // State untuk paginasi
 const itemsPerPage = ref(5); // Tetap simpan ini untuk backend pagination
 const totalPages = ref(1); // Total pages dari backend
 const lastpage = ref('');
+
 
 const showProfileModal = ref(false);
 
@@ -173,6 +173,7 @@ const saveNewPegawai = async () => {
 
     // Membuat instance FormData
     const formData = new FormData();
+
     Object.keys(addFormData.value).forEach(key => {
       formData.append(key, addFormData.value[key]);
     });
@@ -323,6 +324,7 @@ watch([cabangFilter, departementFilter, searchQuery, currentPage], async () => {
 onMounted(async () => {
   fetchDataDepartement();
   fetchDataCabang();
+
   await fetchDataPegawai();
   await generateNewPegawaiId();
   isLoading.value = false;
@@ -376,18 +378,18 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:8%">ID Pegawai</th>
+                      <th scope="col" style="width:10%">ID Pegawai</th>
                       <th scope="col" style="width:8%">NIP</th>
-                      <th scope="col" style="width:10%">Nama</th>
-                      <th scope="col" style="width:15%">Jenis Kelamin</th>
-                      <th scope="col" style="width:15%">Email</th>
-                      <th scope="col" style="width:10%">Departemen</th>
-                      <th scope="col" style="width:10%">Alamat</th>
-                      <th scope="col" style="width:10%">No HP</th>
                       <th scope="col" style="width:7%">Cabang</th>
+                      <th scope="col" style="width:10%">Nama</th>
+                      <th scope="col" style="width:12%">Jenis Kelamin</th>
+                      <th scope="col" style="width:10%">No Telepon</th>
+                      <th scope="col" style="width:15%">Email</th>
+                      <th scope="col" style="width:10%">Alamat</th>
+                      <th scope="col" style="width:10%">Departemen</th>
                       <th scope="col" style="width:15%">Status</th>
                       <th scope="col" style="width:15%">Foto</th>
-                      <th scope="col" style="width:11%">Aksi</th>
+                      <th scope="col" style="width:15%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -398,23 +400,16 @@ onMounted(async () => {
                         </div>
                       </td>
                     </tr>
-                    <!-- <tr v-else-if="pegawai.length === 0">
-                      <td colspan="9" class="text-center">
-                        <div class="alert alert-warning mb-0">
-                          Data Tidak Ditemukan!
-                        </div>
-                      </td>
-                    </tr> -->
                     <tr v-else v-for="(p, index) in pegawai" :key="index">
                       <td class="text-center">{{ p.id_pegawai }}</td>
                       <td>{{ p.nip }}</td>
+                      <td>{{ getNamaCabang(p.cabang) }}</td> <!-- Menampilkan nama cabang -->
                       <td>{{ p.nama }}</td>
                       <td>{{ p.jenkel }}</td>
-                      <td>{{ p.email }}</td>
-                      <td>{{ getNamaDepartemen(p.departement) }}</td>
-                      <td>{{ p.alamat }}</td>
                       <td>{{ p.no_hp }}</td>
-                      <td>{{ getNamaCabang(p.cabang) }}</td> <!-- Menampilkan nama cabang -->
+                      <td>{{ p.email }}</td>
+                      <td>{{ p.alamat }}</td>
+                      <td>{{ getNamaDepartemen(p.departement) }}</td>
                       <td>{{ p.status }}</td>
                       <td><img :src="formattedFotoUrl(p.foto)" alt="Foto Pegawai" width="70" class="rounded-3" /></td>
                       <td class="text-center">

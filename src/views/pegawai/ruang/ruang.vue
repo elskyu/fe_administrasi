@@ -77,8 +77,8 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:10%">Id Ruang</th>
-                      <th scope="col" style="width:15%">Nama Ruang</th>
+                      <th scope="col" style="width:20%">Id Ruang</th>
+                      <th scope="col" style="width:20%">Nama Ruang</th>
                       <th scope="col" style="width:1%">Aksi</th>
                     </tr>
                   </thead>

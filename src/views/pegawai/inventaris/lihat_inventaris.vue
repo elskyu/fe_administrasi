@@ -46,6 +46,31 @@ const fetchDataInventaris = async () => {
   }
 };
 
+const fetchUserName = async () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const response = await axios.get('http://localhost:8000/api/userpegawai', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const user = response.data;
+      if (user && user.nama) {
+        userID.value = user.id_pegawai;
+        userCabang.value = user.cabang;
+      } else {
+        console.error('Data pengguna tidak ditemukan dalam respons');
+      }
+    } catch (error) {
+      console.error('Gagal mengambil data pengguna:', error);
+    }
+  } else {
+    console.error('Token tidak ditemukan');
+  }
+};
+
+
 const isAvailable = (tanggal_pinjam, tanggal_kembali) => {
   const existingPemakaian = inventarisList.value[0]?.pemakaian_inventaris || [];
   for (const pemakaian of existingPemakaian) {
@@ -69,9 +94,25 @@ const saveNewPemakaian = async () => {
       return;
     }
 
+    // Hitung durasi pemakaian
+    const tanggalPinjam = new Date(addFormData.value.tanggal_pinjam);
+    const tanggalKembali = new Date(addFormData.value.tanggal_kembali);
+    const durasiMs = tanggalKembali - tanggalPinjam; // Durasi dalam milidetik
+    const durasiDetik = Math.ceil(durasiMs / 1000); // Durasi dalam detik
+
+    // Konversi durasi ke format hh:mm:ss
+    const jam = Math.floor(durasiDetik / 3600);
+    const menit = Math.floor((durasiDetik % 3600) / 60);
+    const detik = durasiDetik % 60;
+
+    // Format menjadi 00:00:00
+    const formatWaktu = `${String(jam).padStart(2, '0')}:${String(menit).padStart(2, '0')}:${String(detik).padStart(2, '0')}`;
+
+    addFormData.value.durasi_pinjam = formatWaktu;
     addFormData.value.pegawai = userID.value;
     addFormData.value.cabang = userCabang.value;
     addFormData.value.inventaris = id.value;
+
     await api.post('/api/pip', addFormData.value);
     addFormData.value = {
       id_pinjam: '',
@@ -130,6 +171,11 @@ const totalPages = computed(() => {
   return Math.ceil((inventarisList.value[0]?.pemakaian_inventaris.length || 0) / itemsPerPage.value);
 });
 
+function convertToMinutes(time) {
+  const [hours, minutes, seconds] = time.split(':');
+  return parseInt(hours) * 60 + parseInt(minutes);
+}
+
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
     currentPage.value += 1;
@@ -147,6 +193,7 @@ onBeforeMount(() => {
 });
 
 onMounted(async () => {
+  fetchUserName();
   await fetchDataInventaris();
   await generateNewPiId();
   isLoading.value = false;
@@ -177,22 +224,20 @@ onMounted(async () => {
                   <div class="form-group-row">
                     <div class="card-lihat" style="width: 940px;">
                       <div class="form-group-row">
-                        <label class="label-lihat">ID Inventaris :</label>
-                        <p class="text-lihat">{{ inventarisList[0].id_inventaris }}</p>
+                        <label class="label-lihat" style="font-size: 18px;">ID Inventaris :</label>
+                        <p class="text-lihat" style="font-size: 16px;">{{ inventarisList[0].id_inventaris }}</p>
                       </div>
-                      <div class="form-group-row">
-                        <label class="label-lihat">Merek :</label>
-                        <p class="text-lihat">{{ inventarisList[0].merek }}</p>
+                      <div class=" form-group-row">
+                        <label class="label-lihat" style="font-size: 18px;">Merek :</label>
+                        <p class="text-lihat" style="font-size: 16px;">{{ inventarisList[0].merek }}</p>
                       </div>
-                      <div class="form-group-row">
-                        <label class="label-lihat">Nopol :</label>
-                        <p class="text-lihat">{{ inventarisList[0].nopol }}</p>
+                      <div class=" form-group-row">
+                        <label class="label-lihat" style="font-size: 18px;">Nopol :</label>
+                        <p class="text-lihat" style="font-size: 16px;">{{ inventarisList[0].nopol }}</p>
                       </div>
                     </div>
-                    <div class="card-lihat" style="width: 250px;">
-                      <img :src="inventarisList[0].foto" width="220" class="rounded-3" alt="Inventaris Foto"
-                        style="display: flex; margin: 0 auto;" />
-                    </div>
+                    <img :src="inventarisList[0].foto" width="220" class="rounded-3" alt="Inventaris Foto"
+                      style="display: flex; margin: 0 auto;" />
                   </div>
                 </div>
 
@@ -233,7 +278,7 @@ onMounted(async () => {
                       <td class="text-center">{{ pinventaris.id_pinjam }}</td>
                       <td>{{ pinventaris.tanggal_pinjam }}</td>
                       <td>{{ pinventaris.tanggal_kembali }}</td>
-                      <td>{{ pinventaris.durasi_pinjam }}</td>
+                      <td>{{ convertToMinutes(pinventaris.durasi_pinjam) + " menit" }}</td>
                       <td>{{ pinventaris.keterangan }}</td>
                     </tr>
                   </tbody>
@@ -273,16 +318,17 @@ onMounted(async () => {
           <input type="datetime-local" id="tanggal_kembali" v-model="addFormData.tanggal_kembali" />
         </div>
       </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="durasi_pinjam" style="width: 195px;">Durasi</label>
         <input type="time" id="durasi_pinjam" v-model="addFormData.durasi_pinjam" />
-      </div>
+      </div> -->
       <div class="form-group">
         <label for="keterangan">Keterangan</label>
         <input type="text" id="keterangan" v-model="addFormData.keterangan" />
       </div>
       <div class="form-actions">
-        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewPemakaian">Simpan Perubahan</button>
+        <button class=" btn-modal-save rounded-sm shadow border-0" @click="saveNewPemakaian">Simpan
+          Perubahan</button>
         <button class=" btn-modal-batal rounded-sm shadow border-0" @click="showAddModal = false">Batal</button>
       </div>
     </div>

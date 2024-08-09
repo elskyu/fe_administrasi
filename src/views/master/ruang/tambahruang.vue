@@ -12,6 +12,7 @@ import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 import logo23 from '/src/style/logo2.vue';
+import defaultImage from '/src/images/potoruang.png';
 
 const isLoading = ref(true);
 const ruang = ref([]);
@@ -135,9 +136,14 @@ const saveNewRuang = async () => {
       formData.append(key, addFormData.value[key]);
     });
 
-    // Menambahkan foto jika ada
     if (addFotoFile.value) {
       formData.append('foto', addFotoFile.value);
+    } else {
+      // Menggunakan gambar default dari folder images
+      const defaultFile = await fetch(defaultImage)
+        .then(res => res.blob())
+        .then(blob => new File([blob], "potoruang.png", { type: "image/png" }));
+      formData.append('foto', defaultFile);
     }
 
     // Mengirim data menggunakan FormData
@@ -274,11 +280,11 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:10%">ID Ruang</th>
-                      <th scope="col" style="width:15%">Nama Ruang</th>
-                      <th scope="col" style="width:15%">Cabang</th>
-                      <th scope="col" style="width:15%">Foto</th>
-                      <th scope="col" style="width:5%">Aksi</th>
+                      <th scope="col" style="width:13%">ID Ruang</th>
+                      <th scope="col" style="width:13%">Nama Ruang</th>
+                      <th scope="col" style="width:13%">Cabang</th>
+                      <th scope="col" style="width:2%">Foto</th>
+                      <th scope="col" style="width:6%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -293,7 +299,7 @@ onMounted(async () => {
                       <td class="text-center">{{ r.id_ruang }}</td>
                       <td>{{ r.nama_ruang }}</td>
                       <td>{{ getNamaCabang(r.cabang) }}</td>
-                      <td><img :src="r.foto" width="80" class="rounded-3" /></td>
+                      <td><img :src="r.foto" width="100" class="rounded-3" /></td>
                       <td class="text-center">
                         <button @click="editRuang(r)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">Ubah</button>

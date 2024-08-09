@@ -9,6 +9,7 @@ import '/src/style/modal.css';
 import '/src/style/admin.css';
 import '/src/style/surat_masuk.css';
 import '/src/style/loading.css';
+import '/src/style/kalender_jadwal.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 import logo23 from '/src/style/logo2.vue';
@@ -23,6 +24,7 @@ const showEditModal = ref(false);
 const showEditModalNomor = ref(false);
 const currentPage = ref(1);
 const totalPages = ref(1);
+const showFormatModal = ref(false);
 
 const addFormData = ref({
   kode_surat: '',
@@ -122,7 +124,7 @@ const saveNewSurat = async () => {
 const saveEditSurat = async () => {
   try {
     await api.put(`/api/surat/${currentSuratId.value}`, editFormData.value);
-    editFormData.value = { kode_surat: '', jenis_surat: '' ,prefix_surat: ''};
+    editFormData.value = { kode_surat: '', jenis_surat: '', prefix_surat: '' };
     showEditModal.value = false;
     fetchDataSurat();
   } catch (error) {
@@ -133,7 +135,7 @@ const saveEditSurat = async () => {
 const saveEditNomor = async () => {
   try {
     await api.put(`/api/nomor/${currentNomorId.value}`, editFormDatanomor.value);
-    editFormDatanomor.value = {  format: '' };
+    editFormDatanomor.value = { format: '' };
     showEditModalNomor.value = false;
     fetchDataNomor();
   } catch (error) {
@@ -174,6 +176,9 @@ onMounted(async () => {
 
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
+                    <button style="margin-right: 10px;" @click="showFormatModal = true"
+                      class="btn btn-md btn-success border-0">Format</button>
+
                     <div class="search-container" style="margin-right: -10px; width: 275px;">
                       <input type="text" class="form-cari" v-model="searchQuery" placeholder="cari surat"
                         style="width: 100%; padding-right: 40px;" />
@@ -219,7 +224,7 @@ onMounted(async () => {
                   <button class="btn-next" @click="changePage(currentPage + 1)"
                     :disabled="currentPage === totalPages">Next</button>
                 </div>
-                <table class="table table-bordered" style="margin-top: 30px;">
+                <!-- <table class="table table-bordered" style="margin-top: 30px;">
                   <thead class="bg-dark text-white text-center">
                     <tr>
                       <th scope="col" style="width:15%">Format Surat</th>
@@ -228,7 +233,7 @@ onMounted(async () => {
                   </thead>
                   <tbody>
                     <tr v-if="nomor_surat.length === 0">
-                      <td colspan="3" class="text-center">  
+                      <td colspan="3" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
@@ -242,7 +247,7 @@ onMounted(async () => {
                       </td>
                     </tr>
                   </tbody>
-                </table>
+                </table> -->
               </div>
             </div>
           </div>
@@ -303,11 +308,42 @@ onMounted(async () => {
     </div>
   </div>
 
+  <!-- Modal Format -->
+  <div v-if="showFormatModal" class="modal-overlay" @click.self="showFormatModal = false">
+    <div class="modal-content-kalendar">
+      <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Formula Nomor</h4>
+      <table class="table table-bordered" style="margin-top: 30px;">
+        <thead class="bg-dark text-white text-center">
+          <tr>
+            <th scope="col" style="width:15%">Format Surat</th>
+            <th scope="col" style="width:3%">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-if="nomor_surat.length === 0">
+            <td colspan="3" class="text-center">
+              <div class="alert alert-danger mb-0">
+                Data Belum Tersedia!
+              </div>
+            </td>
+          </tr>
+          <tr v-else v-for="(n, index) in nomor_surat" :key="index">
+            <td class="text-center">{{ n.format }}</td>
+            <td class="text-center">
+              <button @click="editNomor(n)" class="btn btn-sm btn-warning border-0"
+                style="margin-right: 7px;">Ubah</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- Modal for nomor surat -->
   <div v-if="showEditModalNomor" class="modal-overlay" @click.self="showEditModalNomor = false">
-    <div class="modal-content">
+    <div class="modal-content-kalendar">
       <h4 style="text-align: center; color: #28a745; font-weight: bolder;">Ubah Formula Nomor</h4>
-      
+
       <div class="form-group">
         <label for="format">Format</label>
         <input type="text" id="format" v-model="editFormDatanomor.format" />

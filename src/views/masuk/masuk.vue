@@ -222,13 +222,13 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:13%">ID Surat Masuk</th>
-                      <th scope="col" style="width:13%">Nomor Surat</th>
-                      <th scope="col" style="width:13%">Tanggal Terima</th>
+                      <th scope="col" style="width:10%">ID Surat Masuk</th>
+                      <th scope="col" style="width:15%">Nomor Surat</th>
+                      <th scope="col" style="width:15%">Tanggal Terima</th>
                       <th scope="col" style="width:15%">Asal Surat</th>
                       <th scope="col" style="width:15%">Perihal</th>
                       <th scope="col" style="width:10%">Cabang</th>
-                      <th scope="col" style="width:20%">Foto</th>
+                      <th scope="col" style="width:10%">Foto</th>
                     </tr>
                   </thead>
                   <tbody>

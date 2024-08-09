@@ -45,6 +45,30 @@ const fetchDataRuang = async () => {
   }
 };
 
+const fetchUserName = async () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const response = await axios.get('http://localhost:8000/api/userpegawai', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const user = response.data;
+      if (user && user.nama) {
+        userID.value = user.id_pegawai;
+        userCabang.value = user.cabang;
+      } else {
+        console.error('Data pengguna tidak ditemukan dalam respons');
+      }
+    } catch (error) {
+      console.error('Gagal mengambil data pengguna:', error);
+    }
+  } else {
+    console.error('Token tidak ditemukan');
+  }
+};
+
 const checkAvailability = () => {
   const startNew = new Date(addFormData.value.tanggal_reservasi).getTime();
   const endNew = new Date(addFormData.value.tanggal_selesai).getTime();
@@ -72,9 +96,27 @@ const saveNewReservasi = async () => {
   }
 
   try {
+    // Hitung durasi peminjaman
+    const tanggalReservasi = new Date(addFormData.value.tanggal_reservasi);
+    const tanggalSelesai = new Date(addFormData.value.tanggal_selesai);
+    const durasiMs = tanggalSelesai - tanggalReservasi; // Durasi dalam milidetik
+    const durasiDetik = Math.ceil(durasiMs / 1000); // Durasi dalam detik
+
+    // Konversi durasi ke format hh:mm:ss
+    const jam = Math.floor(durasiDetik / 3600);
+    const menit = Math.floor((durasiDetik % 3600) / 60);
+    const detik = durasiDetik % 60;
+
+    // Format menjadi 00:00:00
+    const formatWaktu = `${String(jam).padStart(2, '0')}:${String(menit).padStart(2, '0')}:${String(detik).padStart(2, '0')}`;
+
+    addFormData.value.durasi = formatWaktu;
+
+    // Isi field lainnya
     addFormData.value.pegawai = userID.value;
     addFormData.value.cabang = userCabang.value;
     addFormData.value.ruang = id.value;
+
     await api.post('/api/rrp', addFormData.value);
     addFormData.value = {
       id_reservasi: '',
@@ -93,6 +135,7 @@ const saveNewReservasi = async () => {
     console.error('Error saving new reservasi:', error);
   }
 };
+
 
 const generateNewRrId = async () => {
   try {
@@ -133,6 +176,11 @@ const totalPages = computed(() => {
   return Math.ceil((ruang.value[0]?.reservasi_ruang.length || 0) / itemsPerPage.value);
 });
 
+function convertToMinutes(time) {
+  const [hours, minutes, seconds] = time.split(':');
+  return parseInt(hours) * 60 + parseInt(minutes);
+}
+
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
     currentPage.value += 1;
@@ -150,12 +198,12 @@ onBeforeMount(() => {
 });
 
 onMounted(async () => {
+  fetchUserName();
   await fetchDataRuang();
   await generateNewRrId();
   isLoading.value = false;
 });
 </script>
-
 
 <template>
   <div class="background-container">
@@ -184,14 +232,12 @@ onMounted(async () => {
                         <h6 class="text-lihat" style="font-size: 16px;">{{ ruang[0].id_ruang }}</h6>
                       </div>
                       <div class="form-group-row">
-                        <label class="label-lihat" style="font-size: 18px;">Nama Ruang :</label>
+                        <label class="label-lihat" style="font-size: 18px; margin-top: 15px;">Nama Ruang :</label>
                         <h6 class="text-lihat" style="font-size: 16px;">{{ ruang[0].nama_ruang }}</h6>
                       </div>
                     </div>
-                    <div class="card-lihat-ruang" style="width: 250px;">
-                      <img :src="ruang[0].foto" width="220" class="rounded-3" alt="Inventaris Foto"
-                        style="display: flex; margin: 0 auto;" />
-                    </div>
+                    <img :src="ruang[0].foto" width="230" class="rounded-3" alt="Inventaris Foto"
+                      style="display: flex; margin: 0 auto;" />
                   </div>
                 </div>
 
@@ -230,7 +276,7 @@ onMounted(async () => {
                       <td class="text-center">{{ rr.id_reservasi }}</td>
                       <td>{{ rr.tanggal_reservasi }}</td>
                       <td>{{ rr.tanggal_selesai }}</td>
-                      <td>{{ rr.durasi }}</td>
+                      <td>{{ convertToMinutes(rr.durasi) + " menit" }}</td>
                       <td>{{ rr.keterangan }}</td>
                     </tr>
                   </tbody>
@@ -271,10 +317,10 @@ onMounted(async () => {
           <input v-model="addFormData.tanggal_selesai" type="datetime-local" id="tanggal_selesai">
         </div>
       </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="durasi">Durasi</label>
         <input v-model="addFormData.durasi" type="time" id="durasi">
-      </div>
+      </div> -->
       <div class="form-group">
         <label for="keterangan">Keterangan</label>
         <input v-model="addFormData.keterangan" type="text" id="keterangan">

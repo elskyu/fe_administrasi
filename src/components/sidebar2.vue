@@ -23,6 +23,9 @@ const userPhoto = ref(''); // Default photo
 const cabangList = ref([]);
 const departementList = ref([]);
 
+const oldPassword = ref('');
+const newPassword = ref('');
+
 const fetchAllData = async () => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -118,11 +121,46 @@ const saveFotoProfil = async () => {
     }
 };
 
+const saveUbahPassword = async () => {
+    const token = localStorage.getItem('token');
+
+    if (oldPassword.value && newPassword.value) {
+        const formData = new FormData();
+        formData.append('password_lama', oldPassword.value);
+        formData.append('password', newPassword.value);
+        formData.append('_method', 'PUT'); // Simulasi PUT request
+
+        try {
+            const response = await api.post(`http://localhost:8000/api/updatep/${userId.value}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.data.success) {
+                console.log('Password updated successfully');
+                oldPassword.value = '';
+                newPassword.value = '';
+                showModalPassword.value = false; // Tutup modal
+                await fetchAllData(); // Fetch data terbaru
+            } else {
+                console.error('Error updating password:', response.data.message);
+            }
+        } catch (error) {
+            console.error('Error updating password:', error);
+        }
+    } else {
+        console.log('Please enter both old and new passwords');
+    }
+};
+
 
 onMounted(async () => {
     fetchAllData();
 });
 </script>
+
 
 
 <template>
@@ -205,11 +243,13 @@ onMounted(async () => {
                         <img :src="userPhoto" class="rounded-circle profile-photo" width="180">
                         <!-- SVG di depan foto profil -->
                         <svg style="cursor: pointer;" @click="showModalUbahProfil = true" class="profile-icon"
-                            width="20" height="20" xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1"
-                            viewBox="0 0 24 24">
-                            <path
-                                d="m15.5,9h-7c-.275,0-.5.225-.5.5v5.5h8v-5.5c0-.275-.225-.5-.5-.5Zm-3.5,5c-1.105,0-2-.895-2-2s.895-2,2-2,2,.895,2,2-.895,2-2,2Zm0-14C5.383,0,0,5.383,0,12s5.383,12,12,12,12-5.383,12-12S18.617,0,12,0Zm6,17H6v-7.5c0-1.379,1.121-2.5,2.5-2.5h.454l1.285-2h3.521l1.285,2h.454c1.379,0,2.5,1.121,2.5,2.5v7.5Z" />
+                            width="24" height="24" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="29" cy="29" r="29" fill="#A3A3A3" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M22.9837 13.5546C22.5555 13.8087 22.2036 14.1735 21.9652 14.6107L20.3597 17.5525L15.7316 17.7742C14.6137 17.8271 13.559 18.3084 12.7866 19.1183C12.0141 19.9282 11.5832 21.0044 11.5833 22.1236V40.4792C11.5833 41.634 12.042 42.7415 12.8586 43.558C13.6751 44.3746 14.7826 44.8333 15.9374 44.8333H42.0624C43.2172 44.8333 44.3247 44.3746 45.1413 43.558C45.9578 42.7415 46.4166 41.634 46.4166 40.4792V22.122C46.4158 21.0036 45.9848 19.9284 45.2127 19.1193C44.4407 18.3101 43.3869 17.829 42.2698 17.7758L37.6402 17.5541L36.0347 14.6107C35.5486 13.7208 34.6144 13.1667 33.6011 13.1667H24.3988C23.9008 13.1665 23.412 13.3005 22.9837 13.5546ZM28.9999 37.7083C32.4977 37.7083 35.3333 34.8728 35.3333 31.375C35.3333 27.8772 32.4977 25.0417 28.9999 25.0417C25.5021 25.0417 22.6666 27.8772 22.6666 31.375C22.6666 34.8728 25.5021 37.7083 28.9999 37.7083Z"
+                                fill="white" />
                         </svg>
+
                     </div>
                 </div>
                 <div class="text-center" style="margin-top: 65px;">
@@ -231,17 +271,21 @@ onMounted(async () => {
                 <h4 style="text-align: center; color: #28a745; font-weight: bolder; margin-bottom: 15px;">Ubah Password
                 </h4>
                 <div class="form-group" style="margin-left: 0px;">
-                    <label for="password">Password Lama</label>
-                    <input type="password" id="password" />
+                    <label for="password_lama">Password Lama</label>
+                    <input type="password" id="password_lama" v-model="oldPassword" />
                 </div>
                 <div class="form-group" style="margin-left: 0px;">
                     <label for="password">Password Baru</label>
-                    <input type="password" id="password" />
+                    <input type="password" id="password" v-model="newPassword" />
                 </div>
+                <button class="btn-simpan-ubah-profil" @click="saveUbahPassword"
+                    style="margin: 20px 10px 10px 10px;">Simpan
+                    Perubahan</button>
                 <button @click="showModalPassword = false" class="btn-batal-ubah-password"
-                    style="margin: 20px 10px 10px 10px;">Batal</button>
+                    style="margin: 10px 10px 10px 10px;">Batal</button>
             </div>
         </div>
+
 
         <!-- Modal Ubah foto -->
         <div v-if="showModalUbahProfil" class="modal card-profil">
@@ -250,13 +294,13 @@ onMounted(async () => {
                 </h4>
                 <div style="width: 275px; margin: 0px 10px 20px 10px;">
                     <label for="foto">Upload Foto Anda</label>
-                    <input type="file" @change="handleProfilePhotoChange" class="form-control">
+                    <input style="margin-top: 7px;" type="file" @change="handleProfilePhotoChange" class="form-control">
                 </div>
                 <button class="btn-simpan-ubah-profil" @click="saveFotoProfil"
                     style="margin: 20px 10px 10px 10px;">Simpan
                     Perubahan</button>
-                <button @click="showModalUbahProfil = false" class="btn-batal-ubah-password"
-                    style="margin: 20px 10px 10px 10px;">Batal</button>
+                <button @click="showModalUbahProfil = false" class="btn-batal-ubah-profil"
+                    style="margin: 10px 10px 10px 10px;">Batal</button>
             </div>
         </div>
     </div>
@@ -270,9 +314,9 @@ onMounted(async () => {
 
 .profile-icon {
     position: absolute;
-    bottom: 2px;
+    bottom: 1px;
     /* Jarak dari bawah */
-    right: 10px;
+    right: 5px;
     /* Jarak dari kanan */
     z-index: 2;
     /* SVG berada di atas foto profil */

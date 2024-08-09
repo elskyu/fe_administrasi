@@ -185,6 +185,16 @@ const getNamaCabang = (idCabang) => {
   return cabang ? cabang.nama_cabang : '';
 };
 
+const getNamaInventaris = (idInventaris) => {
+  const inventaris = inventarisList.value.find(i => i.id_inventaris === idInventaris);
+  return inventaris ? inventaris.merek : '';
+};
+
+const getNopolInventaris = (idInventaris) => {
+  const inventaris = inventarisList.value.find(i => i.id_inventaris === idInventaris);
+  return inventaris ? inventaris.nopol : '';
+};
+
 const deletePemakaian = async (id_pinjam) => {
   if (confirm("Apakah anda ingin menghapus data ini?")) {
     try {
@@ -206,6 +216,8 @@ const fetchDataPegawai = async () => {
     console.error('Error fetching pegawai list:', error);
   }
 };
+
+
 
 const getNamaPegawai = (idPegawai) => {
   const pegawai = pegawaiList.value.find(p => p.id_pegawai === idPegawai);
@@ -300,8 +312,9 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:8%">ID Peminjaman</th>
+                      <th scope="col" style="width:8%">ID Pinjam</th>
                       <th scope="col" style="width:7%">Inventaris</th>
+                      <th scope="col" style="width:7%">Nopol</th>
                       <th scope="col" style="width:15%">Tanggal Pinjam</th>
                       <th scope="col" style="width:15%">Tanggal Kembali</th>
                       <th scope="col" style="width:12%">Durasi Pinjam</th>
@@ -321,7 +334,8 @@ onMounted(async () => {
                     </tr>
                     <tr v-else v-for="(pemakaian, index) in filteredPemakaian" :key="index">
                       <td class="text-center">{{ pemakaian.id_pinjam }}</td>
-                      <td>{{ pemakaian.inventaris }}</td>
+                      <td>{{ getNamaInventaris(pemakaian.inventaris) }}</td>
+                      <td>{{ getNopolInventaris(pemakaian.inventaris) }}</td>
                       <td>{{ pemakaian.tanggal_pinjam }}</td>
                       <td>{{ pemakaian.tanggal_kembali }}</td>
                       <td>{{ convertToMinutes(pemakaian.durasi_pinjam) + " menit" }}</td>

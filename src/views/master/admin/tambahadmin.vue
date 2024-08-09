@@ -12,6 +12,7 @@ import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 import logo23 from '/src/style/logo2.vue';
+import defaultImage from '/src/images/potoprofil2.png';
 
 const admins = ref([]);
 const searchQuery = ref('');
@@ -111,15 +112,21 @@ const deleteAdmin = async (id_admin) => {
 const saveNewAdmin = async () => {
   try {
     const formData = new FormData();
+
     Object.keys(addFormData.value).forEach(key => {
       formData.append(key, addFormData.value[key]);
     });
+
     if (addFotoFile.value) {
       formData.append('foto', addFotoFile.value);
     } else {
-      alert('Foto file is required');
-      return;
+      // Menggunakan gambar default dari folder images
+      const defaultFile = await fetch(defaultImage)
+        .then(res => res.blob())
+        .then(blob => new File([blob], "potoprofil2.png", { type: "image/png" }));
+      formData.append('foto', defaultFile);
     }
+
     await api.post('/api/admin', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -239,14 +246,14 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col" style="width:10%">ID Admin</th>
-                      <th scope="col" style="width:10%">Nama</th>
-                      <th scope="col" style="width:15%">Jenis Kelamin</th>
-                      <th scope="col" style="width:15%">No HP</th>
-                      <th scope="col" style="width:15%">Email</th>
-                      <th scope="col" style="width:15%">Status</th>
-                      <th scope="col" style="width:15%">Foto</th>
-                      <th scope="col" style="width:15%">Aksi</th>
+                      <th scope="col" style="width:9%">ID Admin</th>
+                      <th scope="col" style="width:9%">Nama</th>
+                      <th scope="col" style="width:9%">Jenis Kelamin</th>
+                      <th scope="col" style="width:13%">No Telepon</th>
+                      <th scope="col" style="width:13%">Email</th>
+                      <th scope="col" style="width:9%">Status</th>
+                      <th scope="col" style="width:5%">Foto</th>
+                      <th scope="col" style="width:10%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -264,7 +271,7 @@ onMounted(async () => {
                       <td>{{ admin.no_hp }}</td>
                       <td>{{ admin.email }}</td>
                       <td>{{ admin.status }}</td>
-                      <td><img :src="admin.foto" width="70" class="rounded-3" /></td>
+                      <td><img :src="admin.foto" width="60" class="rounded-3" /></td>
                       <td class="text-center">
                         <button @click="editAdmin(admin)" class="btn btn-sm btn-warning border-0"
                           style="margin-right: 7px;">Ubah</button>

@@ -96,12 +96,12 @@ onMounted(async () => {
                 <table class="table table-bordered">
                   <thead class="bg-dark text-white text-center">
                     <tr>
-                      <th scope="col">Id Inventaris</th>
-                      <th scope="col">Nopol</th>
-                      <th scope="col">Merek</th>
-                      <th scope="col">Kategori</th>
-                      <th scope="col">Tahun</th>
-                      <th scope="col">Aksi</th>
+                      <th scope="col" style="width: 20%;">Id Inventaris</th>
+                      <th scope="col" style="width: 20%;">Nopol</th>
+                      <th scope="col" style="width: 20%;">Merek</th>
+                      <th scope="col" style="width: 20%;">Kategori</th>
+                      <th scope="col" style="width: 20%;">Tahun</th>
+                      <th scope="col" style="width: 10%;">Aksi</th>
 
                     </tr>
                   </thead>
