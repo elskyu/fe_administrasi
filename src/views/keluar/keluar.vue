@@ -156,7 +156,7 @@ const generateNewNomorSurat = async () => {
       newNumber = Math.max(...existingNumbers) + 1;
     }
     const formattedNumber = String(newNumber).padStart(3, '0');
-    
+
     const replacePlaceholders = (template, replacements) => {
       let result = template;
       for (const [placeholder, value] of Object.entries(replacements)) {
@@ -248,7 +248,9 @@ onMounted(async () => {
                 <div class="col-md-6 mb-3" style="margin-top: 5px;">
                   <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
                 </div>
-
+                <div class="col-md-6 mb-3" style="margin-top: 5px;">
+                  <button @click="showAddModal = true" class="btn btn-md btn-success border-0">Tambah</button>
+                </div>
                 <div class="col-md-6 mb-3" style="margin-top: 5px; right: auto;">
                   <div class="d-flex justify-content-end">
                     <select id="cabangFilter" v-model="cabangFilter" class="form-cari"
