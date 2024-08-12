@@ -179,7 +179,7 @@ const getNamaRuang = (idRuang) => {
 
 const getNamaPegawai = (idPegawai) => {
   const pegawai = pegawaiList.value.find(p => p.id_pegawai === idPegawai);
-  return pegawai ? pegawai.nama_pegawai : '';
+  return pegawai ? pegawai.nama : '';
 };
 
 const deleteReservasi = async (id_reservasi) => {
@@ -322,7 +322,7 @@ onMounted(async () => {
                       <td>{{ reservasi.tanggal_reservasi }}</td>
                       <td>{{ reservasi.tanggal_selesai }}</td>
                       <td>{{ convertToMinutes(reservasi.durasi) + " menit" }}</td>
-                      <td>{{ reservasi.pegawai }}</td>
+                      <td>{{ getNamaPegawai(reservasi.pegawai) }}</td>
                       <td>{{ reservasi.keterangan }}</td>
                       <td>{{ getNamaCabang(reservasi.cabang) }}</td>
                       <td class="text-center">

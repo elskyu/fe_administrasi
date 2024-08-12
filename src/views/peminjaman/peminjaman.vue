@@ -217,8 +217,6 @@ const fetchDataPegawai = async () => {
   }
 };
 
-
-
 const getNamaPegawai = (idPegawai) => {
   const pegawai = pegawaiList.value.find(p => p.id_pegawai === idPegawai);
   return pegawai ? pegawai.nama : '';
@@ -326,7 +324,7 @@ onMounted(async () => {
                   </thead>
                   <tbody>
                     <tr v-if="filteredPemakaian.length === 0">
-                      <td colspan="9" class="text-center">
+                      <td colspan="11" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>

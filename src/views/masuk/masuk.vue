@@ -11,6 +11,7 @@ import '/src/style/loading.css';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 import logo23 from '/src/style/logo2.vue';
+import defaultImage from '/src/images/potopesan.png';
 
 const suratMasuk = ref([]);
 const cabangList = ref([]);
@@ -106,6 +107,12 @@ const saveNewSuratMasuk = async () => {
     // Menambahkan foto jika ada
     if (addFotoFile.value) {
       formData.append('foto', addFotoFile.value);
+    } else {
+      // Menggunakan gambar default dari folder images
+      const defaultFile = await fetch(defaultImage)
+        .then(res => res.blob())
+        .then(blob => new File([blob], "potopesan.png", { type: "image/png" }));
+      formData.append('foto', defaultFile);
     }
 
     // Mengirim data menggunakan FormData

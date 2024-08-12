@@ -198,7 +198,7 @@ onMounted(async () => {
                   </thead>
                   <tbody>
                     <tr v-if="surat.length === 0">
-                      <td colspan="3" class="text-center">
+                      <td colspan="4" class="text-center">
                         <div class="alert alert-danger mb-0">
                           Data Belum Tersedia!
                         </div>
