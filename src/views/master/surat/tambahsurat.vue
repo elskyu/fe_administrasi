@@ -224,30 +224,6 @@ onMounted(async () => {
                   <button class="btn-next" @click="changePage(currentPage + 1)"
                     :disabled="currentPage === totalPages">Next</button>
                 </div>
-                <!-- <table class="table table-bordered" style="margin-top: 30px;">
-                  <thead class="bg-dark text-white text-center">
-                    <tr>
-                      <th scope="col" style="width:15%">Format Surat</th>
-                      <th scope="col" style="width:3%">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-if="nomor_surat.length === 0">
-                      <td colspan="3" class="text-center">
-                        <div class="alert alert-danger mb-0">
-                          Data Belum Tersedia!
-                        </div>
-                      </td>
-                    </tr>
-                    <tr v-else v-for="(n, index) in nomor_surat" :key="index">
-                      <td class="text-center">{{ n.format }}</td>
-                      <td class="text-center">
-                        <button @click="editNomor(n)" class="btn btn-sm btn-warning border-0"
-                          style="margin-right: 7px;">Ubah</button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table> -->
               </div>
             </div>
           </div>
@@ -336,6 +312,14 @@ onMounted(async () => {
           </tr>
         </tbody>
       </table>
+      <p class="deskripsi">
+        <span style="font-weight: 1000;">Keterangan</span><br>
+        <span style="font-weight: 500;">{kode_surat}</span> : Kode surat berdasarkan jenis surat yang dipilih<br>
+        <span style="font-weight: 500;">{nomor}</span> : Nomor urut surat<br>
+        <span style="font-weight: 500;">{prefix_surat}</span> : Prefix surat berdasarkan jenis surat yang dipilih<br>
+        <span style="font-weight: 500;">{bulan}</span> : Bulan surat<br>
+        <span style="font-weight: 500;">{tahun}</span> : Tahun surat
+      </p>   
     </div>
   </div>
 
