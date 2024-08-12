@@ -315,8 +315,9 @@ onMounted(async () => {
       <p class="deskripsi">
         <span style="font-weight: 1000;">Keterangan</span><br>
         <span style="font-weight: 500;">{kode_surat}</span> : Kode surat berdasarkan jenis surat yang dipilih<br>
-        <span style="font-weight: 500;">{nomor}</span> : Nomor urut surat<br>
         <span style="font-weight: 500;">{prefix_surat}</span> : Prefix surat berdasarkan jenis surat yang dipilih<br>
+        <span style="font-weight: 500;">{id_departement}</span> : ID departement berdasarkan departement yang dipilih<br>
+        <span style="font-weight: 500;">{nomor}</span> : Nomor urut surat<br>
         <span style="font-weight: 500;">{bulan}</span> : Bulan surat<br>
         <span style="font-weight: 500;">{tahun}</span> : Tahun surat
       </p>   
