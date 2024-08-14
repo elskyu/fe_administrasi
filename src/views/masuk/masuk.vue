@@ -8,6 +8,7 @@ import '/src/style/table.css';
 import '/src/style/modal.css';
 import '/src/style/surat_masuk.css';
 import '/src/style/loading.css';
+import Swal from 'sweetalert2';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 import logo23 from '/src/style/logo2.vue';
@@ -18,10 +19,10 @@ const cabangList = ref([]);
 const searchQuery = ref('');
 const cabangFilter = ref('');
 const showAddModal = ref(false);
-const isLoading = ref(true); // State untuk loading
-const currentPage = ref(1); // State untuk paginasi
-const itemsPerPage = ref(5); // Disesuaikan dengan pagination dari backend
-const totalPages = ref(1); // Total pages dari backend
+const isLoading = ref(true);
+const currentPage = ref(1);
+const itemsPerPage = ref(5);
+const totalPages = ref(1);
 
 const addFormData = ref({
   id_surat_masuk: '',
@@ -50,7 +51,7 @@ const handleFileChange = (event, isEdit = false) => {
 const changePage = async (page) => {
   if (page > 0 && page <= totalPages.value) {
     currentPage.value = page;
-    fetchDataSuratKeluar(); // Fetch data for the new page
+    fetchDataSuratKeluar();
   }
 };
 
@@ -71,7 +72,7 @@ const fetchDataSuratMasuk = async () => {
     suratMasuk.value = response.data.data.data.map(suratMasuk => {
       return {
         ...suratMasuk,
-        foto: suratMasuk.foto // Pastikan URL gambar sudah lengkap dari backend
+        foto: suratMasuk.foto
       };
     });
 
@@ -93,33 +94,43 @@ const fetchDataCabang = async () => {
 
 const saveNewSuratMasuk = async () => {
   try {
-    if (!addFormData.value.cabang) {
-      console.error('Cabang harus dipilih');
+    if (!addFormData.value.id_surat_masuk || !addFormData.value.nomor_surat ||
+        !addFormData.value.tanggal_terima || !addFormData.value.asal_surat ||
+        !addFormData.value.perihal || !addFormData.value.cabang) {
+      Swal.fire({
+        title: 'Form tidak lengkap',
+        text: 'Harap isi semua field yang diperlukan.',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      });
       return;
     }
 
-    // Membuat instance FormData
     const formData = new FormData();
     Object.keys(addFormData.value).forEach(key => {
       formData.append(key, addFormData.value[key]);
     });
 
-    // Menambahkan foto jika ada
     if (addFotoFile.value) {
       formData.append('foto', addFotoFile.value);
     } else {
-      // Menggunakan gambar default dari folder images
       const defaultFile = await fetch(defaultImage)
         .then(res => res.blob())
         .then(blob => new File([blob], "potopesan.png", { type: "image/png" }));
       formData.append('foto', defaultFile);
     }
 
-    // Mengirim data menggunakan FormData
     await api.post('/api/sm', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+    });
+
+    Swal.fire({
+      title: 'Berhasil!',
+      text: 'Data surat masuk berhasil disimpan.',
+      icon: 'success',
+      confirmButtonText: 'OK'
     });
 
     addFormData.value = {
@@ -133,11 +144,17 @@ const saveNewSuratMasuk = async () => {
     };
 
     showAddModal.value = false;
-    addFotoFile.value = null; // Reset file foto jika ada
+    addFotoFile.value = null;
     fetchDataSuratMasuk();
     generateNewSmId();
   } catch (error) {
     console.error('Error saving new surat masuk:', error);
+    Swal.fire({
+      title: 'Error',
+      text: 'Terjadi kesalahan saat menyimpan data.',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
   }
 };
 

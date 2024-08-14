@@ -9,6 +9,7 @@ import '/src/style/modal.css';
 import '/src/style/admin.css';
 import '/src/style/surat_masuk.css';
 import '/src/style/loading.css';
+import Swal from 'sweetalert2';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 import logo23 from '/src/style/logo2.vue';
@@ -105,7 +106,31 @@ const fetchDataKodeSurat = async () => {
 const saveNewSuratKeluar = async () => {
   try {
     addFormData.value.nomor_surat = await generateNewNomorSurat();
+
+    if (!addFormData.value.nomor_surat || 
+        !addFormData.value.tanggal_surat || 
+        !addFormData.value.tanggal_kirim || 
+        !addFormData.value.tujuan_surat || 
+        !addFormData.value.perihal ||
+        !addFormData.value.cabang) {
+      Swal.fire({
+        title: 'Form tidak lengkap',
+        text: 'Harap isi semua field yang diperlukan.',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
     await api.post('/api/sk', addFormData.value);
+
+    Swal.fire({
+      title: 'Berhasil!',
+      text: 'Data surat keluar berhasil disimpan.',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    });
+
     addFormData.value = {
       id_surat_keluar: '',
       nomor_surat: '',
@@ -116,11 +141,23 @@ const saveNewSuratKeluar = async () => {
       cabang: '',
       kode_surat: '',
     };
+
+    nomordataset.value = {
+      kode_surat: '',
+      departement: '',
+    };
+    
     fetchDataSuratKeluar();
     showAddModal.value = false;
     generateNewSkId();
   } catch (error) {
     console.error('Error saving new surat keluar:', error);
+    Swal.fire({
+      title: 'Error',
+      text: 'Terjadi kesalahan saat menyimpan data.',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
   }
 };
 
@@ -134,6 +171,17 @@ const generateNewNomorSurat = async () => {
     const monthNames = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
     const currentMonth = monthNames[new Date().getMonth()];
     const currentYear = new Date().getFullYear();
+
+    if (!nomordataset.value.kode_surat || 
+        !nomordataset.value.departement) {
+      Swal.fire({
+        title: 'Form tidak lengkap',
+        text: 'Harap isi semua field yang diperlukan.',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
 
     const selectedKodeSurat = nomordataset.value.kode_surat;
     const selectedDepartement = nomordataset.value.departement;

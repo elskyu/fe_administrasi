@@ -10,6 +10,7 @@ import '/src/style/admin.css';
 import '/src/style/surat_masuk.css';
 import '/src/style/loading.css';
 import '/src/style/kalender_jadwal.css';
+import Swal from 'sweetalert2';
 import SearchIcon from '/src/style/SearchIcon.vue';
 import Loading from '/src/style/loading.vue';
 import logo23 from '/src/style/logo2.vue';
@@ -39,9 +40,7 @@ const editFormData = ref({
 });
 
 const editFormDatanomor = ref({
-  kode_surat: '',
-  jenis_surat: '',
-  prefix_surat: '',
+  format: '',
 });
 
 
@@ -99,49 +98,144 @@ const editNomor = (n) => {
 };
 
 const deleteSurat = async (kode_surat) => {
-  if (confirm("Apakah anda ingin menghapus data ini?")) {
+  const result = await Swal.fire({
+    title: 'Konfirmasi Hapus',
+    text: 'Apakah Anda yakin ingin menghapus data ini?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    confirmButtonText: 'Hapus',
+    cancelButtonText: 'Batal',
+    reverseButtons: true
+  });
+
+  if (result.isConfirmed) {
     try {
       await api.delete(`/api/surat/${kode_surat}`);
+      Swal.fire({
+        title: 'Dihapus!',
+        text: 'Data surat berhasil dihapus.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
       surat.value = surat.value.filter(s => s.kode_surat !== kode_surat);
     } catch (error) {
       console.error('Error deleting surat:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'Terjadi kesalahan saat menghapus data.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
     }
   }
 };
 
 const saveNewSurat = async () => {
   try {
+    if (!addFormData.value.kode_surat || 
+        !addFormData.value.jenis_surat || 
+        !addFormData.value.prefix_surat) {
+      Swal.fire({
+        title: 'Form tidak lengkap',
+        text: 'Harap isi semua field yang diperlukan.',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
     await api.post('/api/surat', addFormData.value);
+
+    Swal.fire({
+      title: 'Berhasil!',
+      text: 'Data surat berhasil disimpan.',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    });
+
     addFormData.value = { kode_surat: '', jenis_surat: '' };
     showAddModal.value = false;
     fetchDataSurat();
   } catch (error) {
     console.error('Error saving new surat:', error);
+    Swal.fire({
+      title: 'Error',
+      text: 'Terjadi kesalahan saat menyimpan data.',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
   }
 };
 
-
 const saveEditSurat = async () => {
   try {
+    if (!editFormData.value.kode_surat || 
+       !editFormData.value.jenis_surat || 
+       !editFormData.value.prefix_surat) {
+      Swal.fire({
+        title: 'Form tidak lengkap',
+        text: 'Harap isi semua field yang diperlukan.',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
     await api.put(`/api/surat/${currentSuratId.value}`, editFormData.value);
+    Swal.fire({
+      title: 'Berhasil!',
+      text: 'Data surat berhasil diperbarui.',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    });
     editFormData.value = { kode_surat: '', jenis_surat: '', prefix_surat: '' };
     showEditModal.value = false;
     fetchDataSurat();
   } catch (error) {
     console.error('Error saving edit surat:', error);
+    Swal.fire({
+      title: 'Error',
+      text: 'Terjadi kesalahan saat memperbarui data.',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
   }
 };
 
 const saveEditNomor = async () => {
   try {
+    if (!editFormDatanomor.value.format) {
+      Swal.fire({
+        title: 'Form tidak lengkap',
+        text: 'Harap isi semua field yang diperlukan.',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
     await api.put(`/api/nomor/${currentNomorId.value}`, editFormDatanomor.value);
-    editFormDatanomor.value = { format: '' };
+    Swal.fire({
+      title: 'Berhasil!',
+      text: 'Formula nomor surat berhasil diperbarui.',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    });
+    editFormDatanomor.value = { format: ''};
     showEditModalNomor.value = false;
     fetchDataNomor();
   } catch (error) {
     console.error('Error saving edit nomor surat:', error);
+    Swal.fire({
+      title: 'Error',
+      text: 'Terjadi kesalahan saat memperbarui formula nomor surat.',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
   }
 };
+
 
 watch(searchQuery, async () => {
   await fetchDataSurat();

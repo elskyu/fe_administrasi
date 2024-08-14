@@ -80,7 +80,7 @@ const fetchDataAdmins = async () => {
     admins.value = response.data.data.data.map(admin => {
       return {
         ...admin,
-        foto: admin.foto // Pastikan URL gambar sudah lengkap dari backend
+        foto: admin.foto
       };
     });
     currentPage.value = response.data.data.current_page;
@@ -92,7 +92,16 @@ const fetchDataAdmins = async () => {
 
 const editAdmin = (admin) => {
   currentAdminId.value = admin.id_admin;
-  editFormData.value = { ...admin };
+  editFormData.value = { 
+    id_admin: admin.id_admin,
+    nama: admin.nama,
+    no_hp: admin.no_hp,
+    email: admin.email,
+    password: '',
+    foto: admin.foto,
+    jenkel: admin.jenkel,
+    status: admin.status,
+   };
   showEditModal.value = true;
 };
 
@@ -385,7 +394,7 @@ onMounted(async () => {
         </div>
         <div class="form-group" style="width: 165px;">
           <label for="password">Password</label>
-          <input type="password" id="password" v-model="editFormData.password" />
+          <input placeholder="ubah password" type="text" id="password" v-model="editFormData.password" />
         </div>
       </div>
       <div class="form-group-row">
