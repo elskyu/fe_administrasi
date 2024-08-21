@@ -18,6 +18,8 @@
   .table td {
     background-color: var(--whitee6); /* Cell background color */
     color: var(--event); /* Cell text color */
+    text-align: left; /* Align text to the right */
+    padding-left: 10px;
   }
   
   .table-bordered {

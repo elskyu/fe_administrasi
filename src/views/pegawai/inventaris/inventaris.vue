@@ -115,10 +115,10 @@ onMounted(async () => {
                     </tr>
                     <tr v-else v-for="(inventaris, index) in filteredInventaris" :key="index">
                       <td class="text-center">{{ inventaris.id_inventaris }}</td>
-                      <td>{{ inventaris.nopol }}</td>
+                      <td class="text-center">{{ inventaris.nopol }}</td>
                       <td>{{ inventaris.merek }}</td>
-                      <td>{{ inventaris.kategori }}</td>
-                      <td>{{ inventaris.tahun }}</td>
+                      <td class="text-center">{{ inventaris.kategori }}</td>
+                      <td class="text-center">{{ inventaris.tahun }}</td>
                       <td class="text-center">
                         <router-link
                           :to="{ name: 'inventaris_pegawai.lihat_inventaris', params: { id: inventaris.id_inventaris } }"

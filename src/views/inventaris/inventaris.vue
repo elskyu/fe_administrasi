@@ -77,15 +77,15 @@ const formatRupiah = (number) => {
 };
 
 // Menggunakan formatRupiah saat menampilkan pajak dan harga_beli
-const inventarisFormatted = computed(() => {
-  return inventarisList.value.map(inventaris => {
-    return {
-      ...inventaris,
-      pajak: formatRupiah(inventaris.pajak),
-      harga_beli: formatRupiah(inventaris.harga_beli)
-    };
-  });
-});
+// const inventarisFormatted = computed(() => {
+//   return inventarisList.value.map(inventaris => {
+//     return {
+//       ...inventaris,
+//       pajak: formatRupiah(inventaris.pajak),
+//       harga_beli: formatRupiah(inventaris.harga_beli)
+//     };
+//   });
+// });
 
 const changePage = async (page) => {
   console.log("s", page);

@@ -49,7 +49,7 @@ const fetchUserName = async () => {
   const token = localStorage.getItem('token');
   if (token) {
     try {
-      const response = await axios.get('http://localhost:8000/api/userpegawai', {
+      const response = await api.get('/api/userpegawai', {
         headers: {
           Authorization: `Bearer ${token}`
         }

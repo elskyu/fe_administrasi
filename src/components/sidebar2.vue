@@ -31,9 +31,9 @@ const fetchAllData = async () => {
     if (token) {
         try {
             const [userResponse, cabangResponse, departementResponse] = await Promise.all([
-                axios.get('http://localhost:8000/api/userpegawai', { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get('http://localhost:8000/api/cp', { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get('http://localhost:8000/api/dp', { headers: { Authorization: `Bearer ${token}` } })
+                api.get('/api/userpegawai', { headers: { Authorization: `Bearer ${token}` } }),
+                api.get('/api/cp', { headers: { Authorization: `Bearer ${token}` } }),
+                api.get('/api/dp', { headers: { Authorization: `Bearer ${token}` } })
             ]);
 
             const user = userResponse.data;
@@ -98,7 +98,7 @@ const saveFotoProfil = async () => {
         formData.append('_method', 'PUT'); // Simulasi PUT request
 
         try {
-            const response = await api.post(`http://localhost:8000/api/updatep/${userId.value}`, formData, {
+            const response = await api.post(`/api/updatep/${userId.value}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
@@ -131,7 +131,7 @@ const saveUbahPassword = async () => {
         formData.append('_method', 'PUT'); // Simulasi PUT request
 
         try {
-            const response = await api.post(`http://localhost:8000/api/updatep/${userId.value}`, formData, {
+            const response = await api.post(`/api/updatep/${userId.value}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',

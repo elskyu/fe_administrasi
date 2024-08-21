@@ -1,6 +1,7 @@
 <script setup>
 import axios from 'axios';
 import { onMounted } from 'vue';
+import api from '../api';
 import '../style/sidebar.css';
 import '../style/modal.css';
 import { ref } from 'vue';
@@ -22,7 +23,7 @@ const fetchUserName = async () => {
     const token = localStorage.getItem('token');
     if (token) {
         try {
-            const response = await axios.get('http://localhost:8000/api/useradmin', {
+            const response = await api.get('/api/useradmin', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -47,7 +48,7 @@ const fetchUserName = async () => {
 
 const logoutAndReload = async () => {
     try {
-        const response = await axios.post('http://localhost:8000/api/logout', {}, {
+        const response = await api.post('/api/logout', {}, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             }

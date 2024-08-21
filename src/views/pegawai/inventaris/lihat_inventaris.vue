@@ -50,7 +50,7 @@ const fetchUserName = async () => {
   const token = localStorage.getItem('token');
   if (token) {
     try {
-      const response = await axios.get('http://localhost:8000/api/userpegawai', {
+      const response = await api.get('/api/userpegawai', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -276,9 +276,9 @@ onMounted(async () => {
                     </tr>
                     <tr v-else v-for="pinventaris in paginatedPemakaian" :key="pinventaris.id_pinjam">
                       <td class="text-center">{{ pinventaris.id_pinjam }}</td>
-                      <td>{{ pinventaris.tanggal_pinjam }}</td>
-                      <td>{{ pinventaris.tanggal_kembali }}</td>
-                      <td>{{ convertToMinutes(pinventaris.durasi_pinjam) + " menit" }}</td>
+                      <td class="text-center">{{ pinventaris.tanggal_pinjam }}</td>
+                      <td class="text-center">{{ pinventaris.tanggal_kembali }}</td>
+                      <td class="text-center">{{ convertToMinutes(pinventaris.durasi_pinjam) + " menit" }}</td>
                       <td>{{ pinventaris.keterangan }}</td>
                     </tr>
                   </tbody>

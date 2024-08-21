@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import axios from 'axios';
+import api from '../api';
 import '../style/login.css';
 import '../style/font.css';
 import logo23 from '/src/style/logo2.vue';
@@ -14,7 +15,7 @@ const toast = useToast();
 
 const login = async () => {
   try {
-    const response = await axios.post('http://localhost:8000/api/login', {
+    const response = await api.post('/api/login', {
       email: email.value,
       password: password.value,
     });
